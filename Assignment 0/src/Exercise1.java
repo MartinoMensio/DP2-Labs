@@ -1,4 +1,5 @@
 
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
@@ -14,8 +15,8 @@ public class Exercise1 {
 			Files.lines(Paths.get(args[0]))
 			.filter(s -> !dictionaryRows.contains(s))
 			.forEach(s -> System.out.println(s));
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (IOException e) {
+			System.err.println("IO exception with file " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

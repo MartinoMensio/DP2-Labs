@@ -1,4 +1,5 @@
 
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
@@ -21,8 +22,8 @@ public class Exercise3 {
 			
 			Files.write(Paths.get(args[2]),sortedRows);
 			
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (IOException e) {
+			System.err.println("IO exception with file " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
