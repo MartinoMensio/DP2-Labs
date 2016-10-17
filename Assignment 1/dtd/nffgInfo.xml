@@ -32,11 +32,77 @@
 			</link>
 		</links>
 		<policies>
-			<reachability_policy result="positive">
+			<policy name="Policy11" result="positive">
 				<src id="WebClient1" />
 				<dst id="WebServer1" />
-			</reachability_policy>
-			
+			</policy>
+			<policy name="Policy12" result="negative">
+				<src id="WebServer1" />
+				<dst id="WebClient1" />
+			</policy>
+			<policy name="Policy13" result="positive">
+				<src id="WebClient1" />
+				<dst id="WebServer1" />
+				<functionality type="firewall" />
+			</policy>
+		</policies>
+	</nffg>
+	
+	<nffg name="Example2">
+		<nodes>
+			<node name="WebClient2">
+				<functionality type="web_client" />
+			</node>
+			<node name="NAT2">
+				<functionality type="NAT" />
+			</node>
+			<node name="Firewall2">
+				<functionality type="firewall" />
+			</node>
+			<node name="WebServer2">
+				<functionality type="web_server" />
+			</node>
+		</nodes>
+		<links>
+			<link name="l011">
+				<src id="WebClient2" />
+				<dst id="NAT2" />
+			</link>
+			<link name="l012">
+				<src id="NAT2" />
+				<dst id="Firewall2" />
+			</link>
+			<link name="l013">
+				<src id="Firewall2" />
+				<dst id="WebServer2" />
+			</link>
+			<link name="l014">
+				<src id="NAT2" />
+				<dst id="WebClient2" />
+			</link>
+			<link name="l015">
+				<src id="Firewall2" />
+				<dst id="NAT2" />
+			</link>
+			<link name="l016">
+				<src id="WebServer2" />
+				<dst id="Firewall2" />
+			</link>
+		</links>
+		<policies>
+			<policy name="Policy21" result="positive">
+				<src id="WebClient1" />
+				<dst id="WebServer1" />
+			</policy>
+			<policy name="Policy22" result="positive">
+				<src id="WebServer1" />
+				<dst id="WebClient1" />
+			</policy>
+			<policy name="Policy23" result="positive">
+				<src id="WebClient1" />
+				<dst id="WebServer1" />
+				<functionality type="firewall" />
+			</policy>
 		</policies>
 	</nffg>
 

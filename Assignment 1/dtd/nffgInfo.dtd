@@ -9,9 +9,8 @@
 <!ELEMENT src EMPTY>
 <!ELEMENT dst EMPTY>
 <!ELEMENT name (#PCDATA)>
-<!ELEMENT policies (reachability_policy|traversal_policy)*>
-<!ELEMENT reachability_policy (src,dst)>
-<!ELEMENT traversal_policy (src,dst,functionality*)>
+<!ELEMENT policies (policy)*>
+<!ELEMENT policy (src,dst,functionality*)>
 
 
 <!ATTLIST nffg
@@ -26,8 +25,6 @@
 	id IDREF #REQUIRED>
 <!ATTLIST dst
 	id IDREF #REQUIRED>
-
-<!ATTLIST reachability_policy
-	result (positive|negative) "positive">
-<!ATTLIST traversal_policy
+<!ATTLIST policy
+	name ID #REQUIRED
 	result (positive|negative) "positive">
