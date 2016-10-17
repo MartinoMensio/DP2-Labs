@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT nffgs (nffg)*>
+<!ELEMENT nffg (nodes,links, policies?)>
+<!ELEMENT nodes (node)*>
+<!ELEMENT node (functionality)>
+<!ELEMENT functionality EMPTY>
+<!ELEMENT links (link)*>
+<!ELEMENT link (src,dst)>
+<!ELEMENT src EMPTY>
+<!ELEMENT dst EMPTY>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT policies (reachability_policy|traversal_policy)*>
+<!ELEMENT reachability_policy (src,dst)>
+<!ELEMENT traversal_policy (src,dst,functionality*)>
+
+
+<!ATTLIST nffg
+	name ID #REQUIRED>
+<!ATTLIST node
+	name ID #REQUIRED>
+<!ATTLIST functionality
+	type (firewall | DPI | NAT | antispam | web_cache | VPN_gateway | web_server | web_client | mail_server | mail_client) #REQUIRED>
+<!ATTLIST link
+	name ID #REQUIRED>
+<!ATTLIST src
+	id IDREF #REQUIRED>
+<!ATTLIST dst
+	id IDREF #REQUIRED>
+
+<!ATTLIST reachability_policy
+	result (positive|negative) "positive">
+<!ATTLIST traversal_policy
+	result (positive|negative) "positive">

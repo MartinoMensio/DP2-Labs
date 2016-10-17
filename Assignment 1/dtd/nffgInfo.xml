@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nffg SYSTEM "nffgInfo.dtd">
+
+<nffgs>
+	<nffg name="Example1">
+		<nodes>
+			<node name="WebClient1">
+				<functionality type="web_client" />
+			</node>
+			<node name="NAT1">
+				<functionality type="NAT" />
+			</node>
+			<node name="Firewall1">
+				<functionality type="firewall" />
+			</node>
+			<node name="WebServer1">
+				<functionality type="web_server" />
+			</node>
+		</nodes>
+		<links>
+			<link name="l001">
+				<src id="WebClient1" />
+				<dst id="NAT1" />
+			</link>
+			<link name="l002">
+				<src id="NAT1" />
+				<dst id="Firewall1" />
+			</link>
+			<link name="l003">
+				<src id="Firewall1" />
+				<dst id="WebServer1" />
+			</link>
+		</links>
+		<policies>
+			<reachability_policy result="positive">
+				<src id="WebClient1" />
+				<dst id="WebServer1" />
+			</reachability_policy>
+			
+		</policies>
+	</nffg>
+
+</nffgs>
