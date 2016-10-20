@@ -49,7 +49,7 @@
 	
 	<xs:complexType name="nffg_t">
 		<xs:sequence>
-			<xs:element name="name" type="xs:string" />
+			<xs:element name="name" type="name_t" />
 			<xs:element name="node" minOccurs="0" maxOccurs="unbounded" type="node_t" />
 			<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link_t" />
 			<xs:element name="policy" minOccurs="0" maxOccurs="unbounded" type="policy_t" />
@@ -58,16 +58,16 @@
 	
 	<xs:complexType name="node_t">
 		<xs:sequence>
-			<xs:element name="name" type="xs:string" />
+			<xs:element name="name" type="name_t" />
 			<xs:element name="functionality" type="functionality_t" />
 		</xs:sequence>
 	</xs:complexType>
 	
 	<xs:complexType name="link_t">
 		<xs:sequence>
-			<xs:element name="name" type="xs:string" />
-			<xs:element name="src" type="xs:string" />
-			<xs:element name="dst" type="xs:string" />
+			<xs:element name="name" type="name_t" />
+			<xs:element name="src" type="name_t" />
+			<xs:element name="dst" type="name_t" />
 		</xs:sequence>
 	</xs:complexType>
 	
@@ -87,4 +87,11 @@
 			<xs:pattern value="firewall|DPI|NAT|antispam|web_cache|VPN_gateway|web_server|web_client|mail_server|mail_client" />
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<xs:simpleType name="name_t">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z][a-zA-Z\d]*" />
+		</xs:restriction>
+	</xs:simpleType>
+	
 </xs:schema>
