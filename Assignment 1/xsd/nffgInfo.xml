@@ -54,8 +54,8 @@
     </policy>
   </nffg>
   
-    <nffg>
-    <name>Example1</name>
+  <nffg>
+    <name>Example2</name>
     <node>
     	<name>WebClient1</name>
     	<functionality>web_client</functionality>
