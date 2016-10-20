@@ -29,17 +29,17 @@
 		<policy name="Policy1">
 			<src ref="WebClient1" />
 			<dst ref="WebServer1" />
-			<result>true</result>
+			<result>positive</result>
 		</policy>
 		<policy name="Policy2">
 			<src ref="WebServer1" />
 			<dst ref="WebClient1" />
-			<result>false</result>
+			<result>negative</result>
 		</policy>
 		<policy name="Policy3">
 			<src ref="WebClient1" />
 			<dst ref="WebServer1" />
-			<result>true</result>
+			<result>positive</result>
 			<functionality>firewall</functionality>
 		</policy>
 	</nffg>
@@ -84,17 +84,17 @@
 		<policy name="Policy1">
 			<src ref="WebClient1" />
 			<dst ref="WebServer1" />
-			<result>true</result>
+			<result>positive</result>
 		</policy>
 		<policy name="Policy2">
 			<src ref="WebServer1" />
 			<dst ref="WebClient1" />
-			<result>true</result>
+			<result>positive</result>
 		</policy>
 		<policy name="Policy3">
 			<src ref="WebClient1" />
 			<dst ref="WebServer1" />
-			<result>true</result>
+			<result>positive</result>
 			<functionality>firewall</functionality>
 		</policy>
 	</nffg>

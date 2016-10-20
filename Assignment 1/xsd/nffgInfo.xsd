@@ -78,7 +78,7 @@
 		<xs:complexContent>
 			<xs:extension base="link_t">
 				<xs:sequence>
-					<xs:element name="result" type="xs:boolean" />
+					<xs:element name="result" type="result_t" />
 					<xs:element name="functionality" minOccurs="0"
 						maxOccurs="unbounded" type="functionality_t" />
 				</xs:sequence>
@@ -100,6 +100,12 @@
 	<xs:simpleType name="name_t">
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[a-zA-Z][a-zA-Z\d]*" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="result_t">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="positive|negative" />
 		</xs:restriction>
 	</xs:simpleType>
 
