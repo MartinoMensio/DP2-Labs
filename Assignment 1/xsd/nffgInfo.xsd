@@ -9,89 +9,98 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="nffg" maxOccurs="unbounded" type="nffg_t">
-						<xs:key name="node_key">
-							<xs:selector xpath="node" />
-							<xs:field xpath="name" />
-						</xs:key>
-						<xs:key name="link_key">
-							<xs:selector xpath="link" />
-							<xs:field xpath="name" />
-						</xs:key>
-						<xs:key name="policy_key">
-							<xs:selector xpath="policy" />
-							<xs:field xpath="name" />
-						</xs:key>
-						
-						<xs:keyref name="src_keyref" refer="node_key">
-							<xs:selector xpath="link/src" />
-							<xs:field xpath="name" />
-						</xs:keyref>
-						<xs:keyref name="dst_keyref" refer="node_key">
-							<xs:selector xpath="link/dst" />
-							<xs:field xpath="name"></xs:field>
-						</xs:keyref>
-						<xs:keyref name="policy_src_keyref" refer="node_key">
-							<xs:selector xpath="policy/src" />
-							<xs:field xpath="name"></xs:field>
-						</xs:keyref>
-						<xs:keyref name="policy_dst_keyref" refer="node_key">
-							<xs:selector xpath="policy/dst" />
-							<xs:field xpath="name"></xs:field>
-						</xs:keyref>
+					<xs:key name="node_key">
+						<xs:selector xpath="node" />
+						<xs:field xpath="@name" />
+					</xs:key>
+					<xs:key name="link_key">
+						<xs:selector xpath="link" />
+						<xs:field xpath="@name" />
+					</xs:key>
+					<xs:key name="policy_key">
+						<xs:selector xpath="policy" />
+						<xs:field xpath="@name" />
+					</xs:key>
+
+					<xs:keyref name="src_keyref" refer="node_key">
+						<xs:selector xpath="link/src" />
+						<xs:field xpath="@name" />
+					</xs:keyref>
+					<xs:keyref name="dst_keyref" refer="node_key">
+						<xs:selector xpath="link/dst" />
+						<xs:field xpath="@name" />
+					</xs:keyref>
+					<xs:keyref name="policy_src_keyref" refer="node_key">
+						<xs:selector xpath="policy/src" />
+						<xs:field xpath="@name" />
+					</xs:keyref>
+					<xs:keyref name="policy_dst_keyref" refer="node_key">
+						<xs:selector xpath="policy/dst" />
+						<xs:field xpath="@name" />
+					</xs:keyref>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 		<xs:key name="nffg_key">
 			<xs:selector xpath="nffg" />
-			<xs:field xpath="name" />
+			<xs:field xpath="@name" />
 		</xs:key>
 	</xs:element>
-	
+
 	<xs:complexType name="nffg_t">
 		<xs:sequence>
-			<xs:element name="name" type="name_t" />
-			<xs:element name="node" minOccurs="0" maxOccurs="unbounded" type="node_t" />
-			<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link_t" />
-			<xs:element name="policy" minOccurs="0" maxOccurs="unbounded" type="policy_t" />
+			<xs:element name="node" minOccurs="0" maxOccurs="unbounded"
+				type="node_t" />
+			<xs:element name="link" minOccurs="0" maxOccurs="unbounded"
+				type="link_t" />
+			<xs:element name="policy" minOccurs="0" maxOccurs="unbounded"
+				type="policy_t" />
 		</xs:sequence>
+		<xs:attribute name="name" type="name_t" use="required" />
 	</xs:complexType>
-	
+
 	<xs:complexType name="node_t">
 		<xs:sequence>
-			<xs:element name="name" type="name_t" />
 			<xs:element name="functionality" type="functionality_t" />
 		</xs:sequence>
+		<xs:attribute name="name" type="name_t" use="required" />
 	</xs:complexType>
-	
+
 	<xs:complexType name="link_t">
 		<xs:sequence>
-			<xs:element name="name" type="name_t" />
-			<xs:element name="src" type="name_t" />
-			<xs:element name="dst" type="name_t" />
+			<xs:element name="src" type="node_ref_t" />
+			<xs:element name="dst" type="node_ref_t" />
 		</xs:sequence>
+		<xs:attribute name="name" type="name_t" use="required" />
 	</xs:complexType>
-	
+
 	<xs:complexType name="policy_t">
 		<xs:complexContent>
 			<xs:extension base="link_t">
 				<xs:sequence>
 					<xs:element name="result" type="xs:boolean" />
-					<xs:element name="functionality" minOccurs="0" maxOccurs="unbounded" type="functionality_t" />
+					<xs:element name="functionality" minOccurs="0"
+						maxOccurs="unbounded" type="functionality_t" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
+
 	<xs:simpleType name="functionality_t">
 		<xs:restriction base="xs:string">
-			<xs:pattern value="firewall|DPI|NAT|antispam|web_cache|VPN_gateway|web_server|web_client|mail_server|mail_client" />
+			<xs:pattern
+				value="firewall|DPI|NAT|antispam|web_cache|VPN_gateway|web_server|web_client|mail_server|mail_client" />
 		</xs:restriction>
 	</xs:simpleType>
-	
+
+	<xs:complexType name="node_ref_t">
+		<xs:attribute name="name" type="name_t" />
+	</xs:complexType>
+
 	<xs:simpleType name="name_t">
 		<xs:restriction base="xs:string">
 			<xs:pattern value="[a-zA-Z][a-zA-Z\d]*" />
 		</xs:restriction>
 	</xs:simpleType>
-	
+
 </xs:schema>
