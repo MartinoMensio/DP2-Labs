@@ -22,9 +22,9 @@
 <!ATTLIST link
 	name ID #REQUIRED>
 <!ATTLIST src
-	id IDREF #REQUIRED>
+	ref IDREF #REQUIRED>
 <!ATTLIST dst
-	id IDREF #REQUIRED>
+	ref IDREF #REQUIRED>
 <!ATTLIST policy
 	name ID #REQUIRED
 	result (positive|negative) "positive">

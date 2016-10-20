@@ -24,19 +24,19 @@
 
 					<xs:keyref name="src_keyref" refer="node_key">
 						<xs:selector xpath="link/src" />
-						<xs:field xpath="@name" />
+						<xs:field xpath="@ref" />
 					</xs:keyref>
 					<xs:keyref name="dst_keyref" refer="node_key">
 						<xs:selector xpath="link/dst" />
-						<xs:field xpath="@name" />
+						<xs:field xpath="@ref" />
 					</xs:keyref>
 					<xs:keyref name="policy_src_keyref" refer="node_key">
 						<xs:selector xpath="policy/src" />
-						<xs:field xpath="@name" />
+						<xs:field xpath="@ref" />
 					</xs:keyref>
 					<xs:keyref name="policy_dst_keyref" refer="node_key">
 						<xs:selector xpath="policy/dst" />
-						<xs:field xpath="@name" />
+						<xs:field xpath="@ref" />
 					</xs:keyref>
 				</xs:element>
 			</xs:sequence>
@@ -94,7 +94,7 @@
 	</xs:simpleType>
 
 	<xs:complexType name="node_ref_t">
-		<xs:attribute name="name" type="name_t" />
+		<xs:attribute name="ref" type="name_t" />
 	</xs:complexType>
 
 	<xs:simpleType name="name_t">

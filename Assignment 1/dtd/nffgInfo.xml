@@ -19,30 +19,30 @@
 		</nodes>
 		<links>
 			<link name="l001">
-				<src id="WebClient1" />
-				<dst id="NAT1" />
+				<src ref="WebClient1" />
+				<dst ref="NAT1" />
 			</link>
 			<link name="l002">
-				<src id="NAT1" />
-				<dst id="Firewall1" />
+				<src ref="NAT1" />
+				<dst ref="Firewall1" />
 			</link>
 			<link name="l003">
-				<src id="Firewall1" />
-				<dst id="WebServer1" />
+				<src ref="Firewall1" />
+				<dst ref="WebServer1" />
 			</link>
 		</links>
 		<policies>
 			<policy name="Policy11" result="positive">
-				<src id="WebClient1" />
-				<dst id="WebServer1" />
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
 			</policy>
 			<policy name="Policy12" result="negative">
-				<src id="WebServer1" />
-				<dst id="WebClient1" />
+				<src ref="WebServer1" />
+				<dst ref="WebClient1" />
 			</policy>
 			<policy name="Policy13" result="positive">
-				<src id="WebClient1" />
-				<dst id="WebServer1" />
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
 				<functionality type="firewall" />
 			</policy>
 		</policies>
@@ -65,42 +65,42 @@
 		</nodes>
 		<links>
 			<link name="l011">
-				<src id="WebClient2" />
-				<dst id="NAT2" />
+				<src ref="WebClient2" />
+				<dst ref="NAT2" />
 			</link>
 			<link name="l012">
-				<src id="NAT2" />
-				<dst id="Firewall2" />
+				<src ref="NAT2" />
+				<dst ref="Firewall2" />
 			</link>
 			<link name="l013">
-				<src id="Firewall2" />
-				<dst id="WebServer2" />
+				<src ref="Firewall2" />
+				<dst ref="WebServer2" />
 			</link>
 			<link name="l014">
-				<src id="NAT2" />
-				<dst id="WebClient2" />
+				<src ref="NAT2" />
+				<dst ref="WebClient2" />
 			</link>
 			<link name="l015">
-				<src id="Firewall2" />
-				<dst id="NAT2" />
+				<src ref="Firewall2" />
+				<dst ref="NAT2" />
 			</link>
 			<link name="l016">
-				<src id="WebServer2" />
-				<dst id="Firewall2" />
+				<src ref="WebServer2" />
+				<dst ref="Firewall2" />
 			</link>
 		</links>
 		<policies>
 			<policy name="Policy21" result="positive">
-				<src id="WebClient1" />
-				<dst id="WebServer1" />
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
 			</policy>
 			<policy name="Policy22" result="positive">
-				<src id="WebServer1" />
-				<dst id="WebClient1" />
+				<src ref="WebServer1" />
+				<dst ref="WebClient1" />
 			</policy>
 			<policy name="Policy23" result="positive">
-				<src id="WebClient1" />
-				<dst id="WebServer1" />
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
 				<functionality type="firewall" />
 			</policy>
 		</policies>

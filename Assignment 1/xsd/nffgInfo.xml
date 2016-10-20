@@ -15,30 +15,30 @@
 			<functionality>web_server</functionality>
 		</node>
 		<link name="link1">
-			<src name="WebClient1" />
-			<dst name="NAT1" />
+			<src ref="WebClient1" />
+			<dst ref="NAT1" />
 		</link>
 		<link name="link2">
-			<src name="NAT1" />
-			<dst name="Firewall1" />
+			<src ref="NAT1" />
+			<dst ref="Firewall1" />
 		</link>
 		<link name="link3">
-			<src name="Firewall1" />
-			<dst name="WebServer1" />
+			<src ref="Firewall1" />
+			<dst ref="WebServer1" />
 		</link>
 		<policy name="Policy1">
-			<src name="WebClient1" />
-			<dst name="WebServer1" />
+			<src ref="WebClient1" />
+			<dst ref="WebServer1" />
 			<result>true</result>
 		</policy>
 		<policy name="Policy2">
-			<src name="WebServer1" />
-			<dst name="WebClient1" />
+			<src ref="WebServer1" />
+			<dst ref="WebClient1" />
 			<result>false</result>
 		</policy>
 		<policy name="Policy3">
-			<src name="WebClient1" />
-			<dst name="WebServer1" />
+			<src ref="WebClient1" />
+			<dst ref="WebServer1" />
 			<result>true</result>
 			<functionality>firewall</functionality>
 		</policy>
@@ -58,42 +58,42 @@
 			<functionality>web_server</functionality>
 		</node>
 		<link name="link1">
-			<src name="WebClient1" />
-			<dst name="NAT1" />
+			<src ref="WebClient1" />
+			<dst ref="NAT1" />
 		</link>
 		<link name="link2">
-			<src name="NAT1" />
-			<dst name="Firewall1" />
+			<src ref="NAT1" />
+			<dst ref="Firewall1" />
 		</link>
 		<link name="link3">
-			<src name="Firewall1" />
-			<dst name="WebServer1" />
+			<src ref="Firewall1" />
+			<dst ref="WebServer1" />
 		</link>
 		<link name="link4">
-			<src name="NAT1" />
-			<dst name="WebClient1" />
+			<src ref="NAT1" />
+			<dst ref="WebClient1" />
 		</link>
 		<link name="link5">
-			<src name="Firewall1" />
-			<dst name="NAT1" />
+			<src ref="Firewall1" />
+			<dst ref="NAT1" />
 		</link>
 		<link name="link6">
-			<src name="WebServer1" />
-			<dst name="Firewall1" />
+			<src ref="WebServer1" />
+			<dst ref="Firewall1" />
 		</link>
 		<policy name="Policy1">
-			<src name="WebClient1" />
-			<dst name="WebServer1" />
+			<src ref="WebClient1" />
+			<dst ref="WebServer1" />
 			<result>true</result>
 		</policy>
 		<policy name="Policy2">
-			<src name="WebServer1" />
-			<dst name="WebClient1" />
+			<src ref="WebServer1" />
+			<dst ref="WebClient1" />
 			<result>true</result>
 		</policy>
 		<policy name="Policy3">
-			<src name="WebClient1" />
-			<dst name="WebServer1" />
+			<src ref="WebClient1" />
+			<dst ref="WebServer1" />
 			<result>true</result>
 			<functionality>firewall</functionality>
 		</policy>
