@@ -2,16 +2,16 @@
 <nffgs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nffgInfo.xsd">
 	<nffg name="Example1">
 		<node name="WebClient1">
-			<functionality>web_client</functionality>
+			<functionality>WEB_CLIENT</functionality>
 		</node>
 		<node name="NAT1">
 			<functionality>NAT</functionality>
 		</node>
 		<node name="Firewall1">
-			<functionality>firewall</functionality>
+			<functionality>FW</functionality>
 		</node>
 		<node name="WebServer1">
-			<functionality>web_server</functionality>
+			<functionality>WEB_SERVER</functionality>
 		</node>
 		<link name="link1">
 			<src ref="WebClient1" />
@@ -39,22 +39,22 @@
 			<src ref="WebClient1" />
 			<dst ref="WebServer1" />
 			<result>positive</result>
-			<functionality>firewall</functionality>
+			<functionality>FW</functionality>
 		</policy>
 	</nffg>
 
 	<nffg name="Example2">
 		<node name="WebClient1">
-			<functionality>web_client</functionality>
+			<functionality>WEB_CLIENT</functionality>
 		</node>
 		<node name="NAT1">
 			<functionality>NAT</functionality>
 		</node>
 		<node name="Firewall1">
-			<functionality>firewall</functionality>
+			<functionality>FW</functionality>
 		</node>
 		<node name="WebServer1">
-			<functionality>web_server</functionality>
+			<functionality>WEB_SERVER</functionality>
 		</node>
 		<link name="link1">
 			<src ref="WebClient1" />
@@ -94,7 +94,7 @@
 			<src ref="WebClient1" />
 			<dst ref="WebServer1" />
 			<result>positive</result>
-			<functionality>firewall</functionality>
+			<functionality>FW</functionality>
 		</policy>
 	</nffg>
 </nffgs>

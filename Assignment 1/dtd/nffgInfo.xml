@@ -5,16 +5,16 @@
 	<nffg name="Example1">
 		<nodes>
 			<node name="WebClient1">
-				<functionality type="web_client" />
+				<functionality type="WEB_CLIENT" />
 			</node>
 			<node name="NAT1">
 				<functionality type="NAT" />
 			</node>
 			<node name="Firewall1">
-				<functionality type="firewall" />
+				<functionality type="FW" />
 			</node>
 			<node name="WebServer1">
-				<functionality type="web_server" />
+				<functionality type="WEB_SERVER" />
 			</node>
 		</nodes>
 		<links>
@@ -43,7 +43,7 @@
 			<policy name="Policy13" result="positive">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<functionality type="firewall" />
+				<functionality type="FW" />
 			</policy>
 		</policies>
 	</nffg>
@@ -51,16 +51,16 @@
 	<nffg name="Example2">
 		<nodes>
 			<node name="WebClient2">
-				<functionality type="web_client" />
+				<functionality type="WEB_CLIENT" />
 			</node>
 			<node name="NAT2">
 				<functionality type="NAT" />
 			</node>
 			<node name="Firewall2">
-				<functionality type="firewall" />
+				<functionality type="FW" />
 			</node>
 			<node name="WebServer2">
-				<functionality type="web_server" />
+				<functionality type="WEB_SERVER" />
 			</node>
 		</nodes>
 		<links>
@@ -101,7 +101,7 @@
 			<policy name="Policy23" result="positive">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<functionality type="firewall" />
+				<functionality type="FW" />
 			</policy>
 		</policies>
 	</nffg>

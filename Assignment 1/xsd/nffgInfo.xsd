@@ -97,16 +97,16 @@
 
 	<xs:simpleType name="functionality_t">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="firewall" />
+			<xs:enumeration value="CACHE" />
 			<xs:enumeration value="DPI" />
+			<xs:enumeration value="FW" />
+			<xs:enumeration value="MAIL_CLIENT" />
+			<xs:enumeration value="MAIL_SERVER" />
 			<xs:enumeration value="NAT" />
-			<xs:enumeration value="antispam" />
-			<xs:enumeration value="web_cache" />
-			<xs:enumeration value="VPN_gateway" />
-			<xs:enumeration value="web_server" />
-			<xs:enumeration value="web_client" />
-			<xs:enumeration value="mail_server" />
-			<xs:enumeration value="mail_client" />
+			<xs:enumeration value="SPAM" />
+			<xs:enumeration value="VPN" />
+			<xs:enumeration value="WEB_CLIENT" />
+			<xs:enumeration value="WEB_SERVER" />
 		</xs:restriction>
 	</xs:simpleType>
 

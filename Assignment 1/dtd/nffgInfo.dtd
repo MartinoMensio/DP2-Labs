@@ -18,7 +18,7 @@
 <!ATTLIST node
 	name ID #REQUIRED>
 <!ATTLIST functionality
-	type (firewall | DPI | NAT | antispam | web_cache | VPN_gateway | web_server | web_client | mail_server | mail_client) #REQUIRED>
+	type (CACHE | DPI | FW | MAIL_CLIENT | MAIL_SERVER | NAT | SPAM | VPN | WEB_CLIENT | WEB_SERVER) #REQUIRED>
 <!ATTLIST link
 	name ID #REQUIRED>
 <!ATTLIST src
