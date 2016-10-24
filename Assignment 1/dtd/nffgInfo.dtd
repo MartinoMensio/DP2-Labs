@@ -14,7 +14,8 @@
 
 
 <!ATTLIST nffg
-	name ID #REQUIRED>
+	name ID #REQUIRED
+	lastUpdate CDATA #REQUIRED>
 <!ATTLIST node
 	name ID #REQUIRED>
 <!ATTLIST functionality

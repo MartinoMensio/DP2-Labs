@@ -59,6 +59,7 @@
 					<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link_t" />
 					<xs:element name="policy" minOccurs="0" maxOccurs="unbounded" type="policy_t" />
 				</xs:sequence>
+				<xs:attribute name="lastUpdate" type="xs:dateTime" use="required" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
