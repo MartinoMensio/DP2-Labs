@@ -9,24 +9,11 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="nffg" maxOccurs="unbounded" type="nffg_t">
-					<xs:key name="node_key">
-						<xs:selector xpath="nodes/node" />
-						<xs:field xpath="@name" />
-					</xs:key>
-					<xs:key name="link_key">
-						<xs:selector xpath="links/link" />
-						<xs:field xpath="@name" />
-					</xs:key>
-					<xs:key name="policy_key">
-						<xs:selector xpath="policies/policy" />
-						<xs:field xpath="@name" />
-					</xs:key>
-
-					<xs:keyref name="src_keyref" refer="node_key">
+					<xs:keyref name="link_src_keyref" refer="node_key">
 						<xs:selector xpath="links/link/src" />
 						<xs:field xpath="@ref" />
 					</xs:keyref>
-					<xs:keyref name="dst_keyref" refer="node_key">
+					<xs:keyref name="link_dst_keyref" refer="node_key">
 						<xs:selector xpath="links/link/dst" />
 						<xs:field xpath="@ref" />
 					</xs:keyref>
@@ -61,6 +48,10 @@
 								<xs:element name="node" minOccurs="0" maxOccurs="unbounded" type="node_t" />
 							</xs:sequence>
 						</xs:complexType>
+						<xs:key name="node_key">
+							<xs:selector xpath="node" />
+							<xs:field xpath="@name" />
+						</xs:key>
 					</xs:element>
 					<xs:element name="links">
 						<xs:complexType>
@@ -68,6 +59,10 @@
 								<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link_t" />
 							</xs:sequence>
 						</xs:complexType>
+						<xs:key name="link_key">
+							<xs:selector xpath="link" />
+							<xs:field xpath="@name" />
+						</xs:key>
 					</xs:element>
 					<xs:element name="policies">
 						<xs:complexType>
@@ -75,6 +70,10 @@
 								<xs:element name="policy" minOccurs="0" maxOccurs="unbounded" type="policy_t" />
 							</xs:sequence>
 						</xs:complexType>
+						<xs:key name="policy_key">
+							<xs:selector xpath="policy" />
+							<xs:field xpath="@name" />
+						</xs:key>
 					</xs:element>
 				</xs:sequence>
 				<xs:attribute name="lastUpdate" type="xs:dateTime" use="required" />
