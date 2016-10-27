@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Assignment 0" default="all" basedir=".">
+
+	<property name="src_location" value="src" />
+	<property name="classes_location" value="bin" />
+	<property name="ex1_name" value="Exercise1" />
+	<property name="ex2_name" value="Exercise2" />
+	<property name="ex3_name" value="Exercise3" />
+	<property name="ex1_input" value="input1.txt" />
+	<property name="ex2_input" value="input2.txt" />
+	<property name="ex3_input_a" value="input1.txt" />
+	<property name="ex3_input_b" value="dictionary.txt" />
+	<property name="ex3_output" value="output3.txt" />
+
+	<loadfile property="ex3_output_file" srcfile="${ex3_output}" />
+
+	<target name="all" depends="compile,ex1,ex2,ex3" />
+
+	<target name="clean">
+		<delete dir="${classes_location}" />
+		<mkdir dir="${classes_location}" />
+	</target>
+	<target name="compile" depends="clean">
+		<javac srcdir="${src_location}" destdir="${classes_location}" includeantruntime="false" />
+	</target>
+
+	<target name="ex1">
+		<java classname="${ex1_name}">
+			<arg value="${ex1_input}" />
+			<classpath>
+				<pathelement path="${classes_location}" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="ex2">
+		<java classname="${ex2_name}">
+			<sysproperty key="it.polito.dp2.file" value="${ex2_input}" />
+			<classpath>
+				<pathelement path="${classes_location}" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="ex3">
+		<java classname="${ex3_name}">
+			<arg value="${ex3_input_a}" />
+			<arg value="${ex3_input_b}" />
+			<arg value="${ex3_output}" />
+			<classpath>
+				<pathelement path="${classes_location}" />
+			</classpath>
+		</java>
+		<echo>This is the output file:</echo>
+		<echo>${ex3_output_file}</echo>
+	</target>
+</project>
