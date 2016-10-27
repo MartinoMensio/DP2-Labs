@@ -1,100 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <verifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nffgInfo.xsd">
 	<nffg name="Example1" lastUpdate="2002-05-30T09:00:00">
-		<node name="WebClient1">
-			<functionality>WEB_CLIENT</functionality>
-		</node>
-		<node name="NAT1">
-			<functionality>NAT</functionality>
-		</node>
-		<node name="Firewall1">
-			<functionality>FW</functionality>
-		</node>
-		<node name="WebServer1">
-			<functionality>WEB_SERVER</functionality>
-		</node>
-		<link name="link1">
-			<src ref="WebClient1" />
-			<dst ref="NAT1" />
-		</link>
-		<link name="link2">
-			<src ref="NAT1" />
-			<dst ref="Firewall1" />
-		</link>
-		<link name="link3">
-			<src ref="Firewall1" />
-			<dst ref="WebServer1" />
-		</link>
-		<policy name="Policy1">
-			<src ref="WebClient1" />
-			<dst ref="WebServer1" />
-			<result>positive</result>
-		</policy>
-		<policy name="Policy2">
-			<src ref="WebServer1" />
-			<dst ref="WebClient1" />
-			<result>negative</result>
-		</policy>
-		<policy name="Policy3">
-			<src ref="WebClient1" />
-			<dst ref="WebServer1" />
-			<result>positive</result>
-			<functionality>FW</functionality>
-		</policy>
+		<nodes>
+			<node name="WebClient1">
+				<functionality>WEB_CLIENT</functionality>
+			</node>
+			<node name="NAT1">
+				<functionality>NAT</functionality>
+			</node>
+			<node name="Firewall1">
+				<functionality>FW</functionality>
+			</node>
+			<node name="WebServer1">
+				<functionality>WEB_SERVER</functionality>
+			</node>
+		</nodes>
+		<links>
+			<link name="link1">
+				<src ref="WebClient1" />
+				<dst ref="NAT1" />
+			</link>
+			<link name="link2">
+				<src ref="NAT1" />
+				<dst ref="Firewall1" />
+			</link>
+			<link name="link3">
+				<src ref="Firewall1" />
+				<dst ref="WebServer1" />
+			</link>
+		</links>
+		<policies>
+			<policy name="Policy1">
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
+				<result>positive</result>
+			</policy>
+			<policy name="Policy2">
+				<src ref="WebServer1" />
+				<dst ref="WebClient1" />
+				<result>negative</result>
+			</policy>
+			<policy name="Policy3">
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
+				<result>positive</result>
+				<functionality>FW</functionality>
+			</policy>
+		</policies>
 	</nffg>
 
 	<nffg name="Example2" lastUpdate="2002-05-30T09:00:00">
-		<node name="WebClient1">
-			<functionality>WEB_CLIENT</functionality>
-		</node>
-		<node name="NAT1">
-			<functionality>NAT</functionality>
-		</node>
-		<node name="Firewall1">
-			<functionality>FW</functionality>
-		</node>
-		<node name="WebServer1">
-			<functionality>WEB_SERVER</functionality>
-		</node>
-		<link name="link1">
-			<src ref="WebClient1" />
-			<dst ref="NAT1" />
-		</link>
-		<link name="link2">
-			<src ref="NAT1" />
-			<dst ref="Firewall1" />
-		</link>
-		<link name="link3">
-			<src ref="Firewall1" />
-			<dst ref="WebServer1" />
-		</link>
-		<link name="link4">
-			<src ref="NAT1" />
-			<dst ref="WebClient1" />
-		</link>
-		<link name="link5">
-			<src ref="Firewall1" />
-			<dst ref="NAT1" />
-		</link>
-		<link name="link6">
-			<src ref="WebServer1" />
-			<dst ref="Firewall1" />
-		</link>
-		<policy name="Policy1">
-			<src ref="WebClient1" />
-			<dst ref="WebServer1" />
-			<result>positive</result>
-		</policy>
-		<policy name="Policy2">
-			<src ref="WebServer1" />
-			<dst ref="WebClient1" />
-			<result>positive</result>
-		</policy>
-		<policy name="Policy3">
-			<src ref="WebClient1" />
-			<dst ref="WebServer1" />
-			<result>positive</result>
-			<functionality>FW</functionality>
-		</policy>
+		<nodes>
+			<node name="WebClient1">
+				<functionality>WEB_CLIENT</functionality>
+			</node>
+			<node name="NAT1">
+				<functionality>NAT</functionality>
+			</node>
+			<node name="Firewall1">
+				<functionality>FW</functionality>
+			</node>
+			<node name="WebServer1">
+				<functionality>WEB_SERVER</functionality>
+			</node>
+		</nodes>
+		<links>
+			<link name="link1">
+				<src ref="WebClient1" />
+				<dst ref="NAT1" />
+			</link>
+			<link name="link2">
+				<src ref="NAT1" />
+				<dst ref="Firewall1" />
+			</link>
+			<link name="link3">
+				<src ref="Firewall1" />
+				<dst ref="WebServer1" />
+			</link>
+			<link name="link4">
+				<src ref="NAT1" />
+				<dst ref="WebClient1" />
+			</link>
+			<link name="link5">
+				<src ref="Firewall1" />
+				<dst ref="NAT1" />
+			</link>
+			<link name="link6">
+				<src ref="WebServer1" />
+				<dst ref="Firewall1" />
+			</link>
+		</links>
+		<policies>
+			<policy name="Policy1">
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
+				<result>positive</result>
+			</policy>
+			<policy name="Policy2">
+				<src ref="WebServer1" />
+				<dst ref="WebClient1" />
+				<result>positive</result>
+			</policy>
+			<policy name="Policy3">
+				<src ref="WebClient1" />
+				<dst ref="WebServer1" />
+				<result>positive</result>
+				<functionality>FW</functionality>
+			</policy>
+		</policies>
 	</nffg>
 </verifier>
