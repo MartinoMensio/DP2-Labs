@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<nffgs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nffgInfo.xsd">
+<verifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nffgInfo.xsd">
 	<nffg name="Example1" lastUpdate="2002-05-30T09:00:00">
 		<node name="WebClient1">
 			<functionality>WEB_CLIENT</functionality>
@@ -97,4 +97,4 @@
 			<functionality>FW</functionality>
 		</policy>
 	</nffg>
-</nffgs>
+</verifier>

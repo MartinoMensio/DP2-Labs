@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT nffgs (nffg)*>
+<!ELEMENT verifier (nffg)*>
 <!ELEMENT nffg (nodes,links,policies?)>
 <!ELEMENT nodes (node)*>
 <!ELEMENT node (functionality)>

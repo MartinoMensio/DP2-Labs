@@ -5,7 +5,7 @@
 			This is the schema for NFFG
 		</xs:documentation>
 	</xs:annotation>
-	<xs:element name="nffgs">
+	<xs:element name="verifier">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="nffg" maxOccurs="unbounded" type="nffg_t">

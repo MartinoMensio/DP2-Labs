@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE nffg SYSTEM "nffgInfo.dtd">
+<!DOCTYPE verifier SYSTEM "nffgInfo.dtd">
 
-<nffgs>
+<verifier>
 	<nffg name="Example1" lastUpdate="2002-05-30T09:00:00">
 		<nodes>
 			<node name="Example1_WebClient1">
@@ -47,7 +47,7 @@
 			</policy>
 		</policies>
 	</nffg>
-	
+
 	<nffg name="Example2" lastUpdate="2002-05-30T09:00:00">
 		<nodes>
 			<node name="Example2_WebClient1">
@@ -106,4 +106,4 @@
 		</policies>
 	</nffg>
 
-</nffgs>
+</verifier>
