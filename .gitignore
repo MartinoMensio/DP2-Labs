@@ -1,3 +1,6 @@
 .metadata
 */bin/
 .recommenders/
+*/.externalToolBuilders/
+*/.project
+*/.classpath
