@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Assignment 0" default="all" basedir=".">
 
-	<property name="src_location" value="src" />
-	<property name="classes_location" value="bin" />
+	<property name="src_location" location="src" />
+	<property name="classes_location" location="bin" />
 	<property name="ex1_name" value="Exercise1" />
 	<property name="ex2_name" value="Exercise2" />
 	<property name="ex3_name" value="Exercise3" />
