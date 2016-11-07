@@ -25,7 +25,8 @@ public class NffgInfoSerializer {
 	 * @throws NffgVerifierException
 	 */
 	public NffgInfoSerializer() throws NffgVerifierException {
-		NffgVerifierFactory factory = NffgVerifierFactory.newInstance();
+		// use the full path in order to call the generic factory
+		it.polito.dp2.NFFG.NffgVerifierFactory factory = it.polito.dp2.NFFG.NffgVerifierFactory.newInstance();
 		monitor = factory.newNffgVerifier();
 	}
 
