@@ -1,32 +1,49 @@
 package it.polito.dp2.NFFG.sol1;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Set;
-import it.polito.dp2.NFFG.*;
+import java.util.*;
+import java.util.stream.*;
 
+import javax.xml.bind.*;
+import javax.xml.datatype.*;
+import javax.xml.validation.*;
+
+import org.xml.sax.*;
+
+import it.polito.dp2.NFFG.*;
+import it.polito.dp2.NFFG.sol1.jaxb.*;
+
+import java.io.*;
 
 public class NffgInfoSerializer {
 	private NffgVerifier monitor;
-	private DateFormat dateFormat;
+	private String outFile = null;
 
-	
 	/**
-	 * Default constructror
-	 * @throws NffgVerifierException 
+	 * Default constructor. Prints to stdout unless a file name is given for
+	 * output
+	 * 
+	 * @throws NffgVerifierException
 	 */
 	public NffgInfoSerializer() throws NffgVerifierException {
 		NffgVerifierFactory factory = NffgVerifierFactory.newInstance();
 		monitor = factory.newNffgVerifier();
-		dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 	}
-	
+
+	/**
+	 * Constructor
+	 * 
+	 * @param outFile
+	 *            is the XML output file
+	 * @throws NffgVerifierException
+	 */
+	public NffgInfoSerializer(String outFile) throws NffgVerifierException {
+		this();
+		this.outFile = outFile;
+	}
+
 	public NffgInfoSerializer(NffgVerifier monitor) {
 		super();
 		this.monitor = monitor;
-		dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 	}
 
 	/**
@@ -35,8 +52,14 @@ public class NffgInfoSerializer {
 	public static void main(String[] args) {
 		NffgInfoSerializer wf;
 		try {
-			wf = new NffgInfoSerializer();
-			wf.printAll();
+			if (args.length < 1) {
+				// use stdout
+				wf = new NffgInfoSerializer();
+			} else {
+				// Try to use the provided filename
+				wf = new NffgInfoSerializer(args[0]);
+			}
+			wf.serialize();
 		} catch (NffgVerifierException e) {
 			System.err.println("Could not instantiate data generator.");
 			e.printStackTrace();
@@ -44,107 +67,111 @@ public class NffgInfoSerializer {
 		}
 	}
 
+	public void serialize() {
 
-	public void printAll() {
-		printNffgs();
-		printPolicies();
-	}
-
-
-	private void printPolicies() {
-
-		// Get the list of policies
-		Set<PolicyReader> set = monitor.getPolicies();
-		
-		/* Print the header of the table */
-		System.out.println("#");
-		System.out.println("#Number of Policies: "+set.size());
-		System.out.println("#");
-		String header = new String("#List of policies:");
-		printHeader(header);
-		
-		// For each policy print related data
-		for (PolicyReader pr: set) {
-			System.out.println("Policy name: " + pr.getName());
-			System.out.println("Policy nffg name: " + pr.getNffg().getName());
-			if(pr.isPositive())
-				System.out.println("Policy is positive.");
-			else
-				System.out.println("Policy is negative.");
-			printVerificationResult(pr.getResult());
-			System.out.println("#");
-		}
-		System.out.println("#End of Policies");
-		System.out.println("#");
-	}
-
-
-	private void printVerificationResult(VerificationResultReader result) {
-		if (result == null) {
-			System.out.println("No verification result for policy");
-			return;
-		}
-		if (result.getVerificationResult())
-			System.out.println("Policy result is true");
-		else
-			System.out.println("Policy result is false");
-		System.out.println("Verification result message: " + result.getVerificationResultMsg());
-		System.out.println("Verification time (in local time zone): " + dateFormat.format(result.getVerificationTime().getTime()));
-	}
-
-	private void printNffgs() {
-		// Get the list of NFFGs
-		Set<NffgReader> set = monitor.getNffgs();
-		
-		/* Print the header of the table */
-		System.out.println("#");
-		System.out.println("#Number of Nffgs: "+set.size());
-		System.out.println("#");
-		String header = new String("#List of NFFgs:");
-		printHeader(header);	
-		
-		// For each NFFG print related data
-		for (NffgReader nffg_r: set) {
-			System.out.println();
-			printHeader("Data for NFFG " + nffg_r.getName());
-			System.out.println();
-			// Print update time
-			Calendar updateTime = nffg_r.getUpdateTime();
-			printHeader("Update time: "+dateFormat.format(updateTime.getTime()));
-
-			// Print nodes
-			Set<NodeReader> nodeSet = nffg_r.getNodes();
-			printHeader("Number of Nodes: "+nodeSet.size(),'%');
-			for (NodeReader nr: nodeSet) {
-				System.out.println("Node " + nr.getName() +"\tType: "+nr.getFuncType().toString()+"\tNumber of links: "+nr.getLinks().size());
-				Set<LinkReader> linkSet = nr.getLinks();
-				System.out.println("List of Links for node "+nr.getName());
-				printHeader("Link name \tsource \tdestination");
-				for (LinkReader lr: linkSet)
-					System.out.println(lr.getName()+"\t"+lr.getSourceNode().getName()+"\t"+lr.getDestinationNode().getName());
-				System.out.println(makeLine('%'));;
+		Verifier v = new Verifier();
+		List<NffgT> nffgs_x = v.getNffg();
+		monitor.getNffgs().forEach(nffg_j -> {
+			NffgT nffg_x = new NffgT();
+			nffg_x.setName(nffg_j.getName());
+			GregorianCalendar lastUpdate = new GregorianCalendar();
+			lastUpdate.setTime(nffg_j.getUpdateTime().getTime());
+			try {
+				nffg_x.setLastUpdate(DatatypeFactory.newInstance().newXMLGregorianCalendar(lastUpdate));
+			} catch (DatatypeConfigurationException e) {
+				System.err.println("Error in lastUpdate handling: lastUpdate = " + lastUpdate);
+				e.printStackTrace();
+				System.exit(1);
 			}
-			System.out.println("#");
-		}	
-		System.out.println("#End of Nodes");
-		System.out.println("#");
-	}
+			// nodes
+			NffgT.Nodes nodes_x = new NffgT.Nodes();
+			List<NodeT> node_list_x = nodes_x.getNode();
+			nffg_j.getNodes().forEach(node_j -> {
+				NodeT node_x = new NodeT();
+				node_x.setName(node_j.getName());
+				node_x.setFunctionality(FunctionalityT.fromValue(node_j.getFuncType().value()));
+				node_list_x.add(node_x);
+			});
+			nffg_x.setNodes(nodes_x);
+			// links
+			NffgT.Links links_x = new NffgT.Links();
+			List<LinkT> link_list_x = links_x.getLink();
+			// nodes
+			nffg_j.getNodes().stream()
+					// from a stream of nodes to a stream of links
+					.flatMap((NodeReader nr) -> nr.getLinks().stream())
+					// remove duplicates (using a map and reading the values
+					// set)
+					.collect(Collectors.toMap(LinkReader::getName, p -> p, (p, q) -> p)).values()
+					// create and add a link to the list of links
+					.forEach(link_j -> {
+						LinkT link_x = new LinkT();
+						link_x.setName(link_j.getName());
+						NodeRefT src = new NodeRefT();
+						src.setRef(link_j.getSourceNode().getName());
+						link_x.setSrc(src);
+						NodeRefT dst = new NodeRefT();
+						dst.setRef(link_j.getDestinationNode().getName());
+						link_x.setDst(dst);
+						link_list_x.add(link_x);
+					});
+			nffg_x.setLinks(links_x);
+			// policies
+			NffgT.Policies policies_x = new NffgT.Policies();
+			List<PolicyT> policy_list_x = policies_x.getPolicy();
+			monitor.getPolicies(nffg_j.getName()).forEach(policy_j -> {
+				PolicyT policy = new PolicyT();
+				policy.setName(policy_j.getName());
+				policy.setResult(policy_j.isPositive() ? ResultT.POSITIVE : ResultT.NEGATIVE);
+				NodeRefT src = new NodeRefT();
+				NodeRefT dst = new NodeRefT();
+				// TraversalPolicyReader is a subclass of
+				// ReachabilityPolicyReader
+				ReachabilityPolicyReader reach_p = (ReachabilityPolicyReader) policy_j;
+				src.setRef(reach_p.getSourceNode().getName());
+				policy.setSrc(src);
+				dst.setRef(reach_p.getDestinationNode().getName());
+				policy.setDst(dst);
+				if (policy_j instanceof TraversalPolicyReader) {
+					TraversalPolicyReader trav_p = (TraversalPolicyReader) policy_j;
+					List<FunctionalityT> func_list_x = policy.getFunctionality();
+					trav_p.getTraversedFuctionalTypes().forEach(func_j -> {
+						func_list_x.add(FunctionalityT.fromValue(func_j.value()));
+					});
+				}
+				policy_list_x.add(policy);
+			});
 
-	private void printHeader(String header, char c) {		
-		System.out.println(header);
-		System.out.println(makeLine(c));	
-	}
+			nffg_x.setPolicies(policies_x);
+			// TODO more
+			nffgs_x.add(nffg_x);
+		});
 
-	private StringBuffer makeLine(char c) {
-		StringBuffer line = new StringBuffer(132);
-		
-		for (int i = 0; i < 132; ++i) {
-			line.append(c);
+		// serialize (+schema)
+
+		try {
+			JAXBContext jc = JAXBContext.newInstance("it.polito.dp2.NFFG.sol1.jaxb");
+			Marshaller m = jc.createMarshaller();
+
+			SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+			try {
+				m.setSchema(sf.newSchema(new File("xsd/nffgInfo.xsd")));
+			} catch (SAXException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			if (outFile != null) {
+				m.marshal(v, new File(outFile));
+			} else {
+				m.marshal(v, System.out);
+			}
+
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return line;
-	}
-
-	private void printHeader(String header) {
-		printHeader(header,'-');
 	}
 }
