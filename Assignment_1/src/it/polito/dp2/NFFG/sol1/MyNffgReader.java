@@ -4,21 +4,15 @@ import java.util.*;
 
 import it.polito.dp2.NFFG.*;
 
-public class MyNffgReader implements NffgReader {
-	
-	private String name;
+public class MyNffgReader extends MyNamedEntityReader implements NffgReader {
+
 	private Map<String,NodeReader> nodes;
 	private Calendar updateTime;
 
 	public MyNffgReader(String name, Calendar updateTime, Map<String,NodeReader> nodes) {
-		this.name = name;
+		super(name);
 		this.updateTime = updateTime;
 		this.nodes = nodes;
-	}
-
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	@Override
