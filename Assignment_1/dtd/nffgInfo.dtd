@@ -8,14 +8,14 @@
 <!ELEMENT link (src,dst)>
 <!ELEMENT src EMPTY>
 <!ELEMENT dst EMPTY>
-<!ELEMENT name (#PCDATA)>
 <!ELEMENT policies (policy)*>
-<!ELEMENT policy (src,dst,functionality*)>
+<!ELEMENT policy (src,dst,functionality*,result?)>
+<!ELEMENT result (#PCDATA)>
 
 
 <!ATTLIST nffg
 	name ID #REQUIRED
-	lastUpdate CDATA #REQUIRED>
+	updated CDATA #REQUIRED>
 <!ATTLIST node
 	name ID #REQUIRED>
 <!ATTLIST functionality
@@ -28,4 +28,7 @@
 	ref IDREF #REQUIRED>
 <!ATTLIST policy
 	name ID #REQUIRED
-	result (positive|negative) "positive">
+	expected (true|false) "true">
+<!ATTLIST result
+	satisfied (true|false) #REQUIRED
+	verified CDATA #REQUIRED>

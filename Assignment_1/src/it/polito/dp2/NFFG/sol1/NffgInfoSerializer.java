@@ -124,7 +124,7 @@ public class NffgInfoSerializer {
 		// set the name
 		nffg.setName(nffgR.getName());
 		// set the time
-		nffg.setLastUpdate(Utils.XMLGregorianCalendarFromCalendar(nffgR.getUpdateTime()));
+		nffg.setUpdated(Utils.XMLGregorianCalendarFromCalendar(nffgR.getUpdateTime()));
 
 		// nodes
 		NffgT.Nodes nodes = new NffgT.Nodes();
@@ -215,7 +215,12 @@ public class NffgInfoSerializer {
 		PolicyT policy = new PolicyT();
 		// set the name
 		policy.setName(policyR.getName());
-		policy.setResult(policyR.isPositive() ? ResultT.POSITIVE : ResultT.NEGATIVE);
+		policy.setExpected(policyR.isPositive());
+		policy.setResult(marshalResult(policyR.getResult()));
+		/*
+		 * VerificationResultReader resultR = policyR.getResult(); if(resultR !=
+		 * null) { policy.set }
+		 */
 		NodeRefT src = new NodeRefT();
 		NodeRefT dst = new NodeRefT();
 		// TraversalPolicyReader is a subclass of ReachabilityPolicyReader
@@ -233,6 +238,15 @@ public class NffgInfoSerializer {
 		}
 		return policy;
 	}
-	
-	
+
+	ResultT marshalResult(VerificationResultReader resultR) {
+		if (resultR == null) {
+			return null;
+		}
+		ResultT result = new ResultT();
+		result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
+		result.setSatisfied(resultR.getVerificationResult());
+		result.setMessage(resultR.getVerificationResultMsg());
+		return result;
+	}
 }

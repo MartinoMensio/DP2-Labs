@@ -2,7 +2,7 @@
 <!DOCTYPE verifier SYSTEM "nffgInfo.dtd">
 
 <verifier>
-	<nffg name="Example1" lastUpdate="2002-05-30T09:00:00">
+	<nffg name="Example1" updated="2002-05-30T09:00:00">
 		<nodes>
 			<node name="Example1_WebClient1">
 				<functionality type="WEB_CLIENT" />
@@ -32,15 +32,18 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Example1_Policy1" result="positive">
+			<policy name="Example1_Policy1" expected="true">
 				<src ref="Example1_WebClient1" />
 				<dst ref="Example1_WebServer1" />
+				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
+					Ahahah
+				</result>
 			</policy>
-			<policy name="Example1_Policy2" result="negative">
+			<policy name="Example1_Policy2" expected="false">
 				<src ref="Example1_WebServer1" />
 				<dst ref="Example1_WebClient1" />
 			</policy>
-			<policy name="Example1_Policy3" result="positive">
+			<policy name="Example1_Policy3" expected="true">
 				<src ref="Example1_WebClient1" />
 				<dst ref="Example1_WebServer1" />
 				<functionality type="FW" />
@@ -48,7 +51,7 @@
 		</policies>
 	</nffg>
 
-	<nffg name="Example2" lastUpdate="2002-05-30T09:00:00">
+	<nffg name="Example2" updated="2002-05-30T09:00:00">
 		<nodes>
 			<node name="Example2_WebClient1">
 				<functionality type="WEB_CLIENT" />
@@ -90,15 +93,15 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Example2_Policy1" result="positive">
+			<policy name="Example2_Policy1" expected="true">
 				<src ref="Example2_WebClient1" />
 				<dst ref="Example2_WebServer1" />
 			</policy>
-			<policy name="Example2_Policy2" result="positive">
+			<policy name="Example2_Policy2" expected="true">
 				<src ref="Example2_WebServer1" />
 				<dst ref="Example2_WebClient1" />
 			</policy>
-			<policy name="Example2_Policy3" result="positive">
+			<policy name="Example2_Policy3" expected="true">
 				<src ref="Example2_WebClient1" />
 				<dst ref="Example2_WebServer1" />
 				<functionality type="FW" />

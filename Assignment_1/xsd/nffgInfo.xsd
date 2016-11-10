@@ -45,7 +45,8 @@
 					<xs:element name="nodes">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="node" minOccurs="0" maxOccurs="unbounded" type="node_t" />
+								<xs:element name="node" minOccurs="0" maxOccurs="unbounded"
+									type="node_t" />
 							</xs:sequence>
 						</xs:complexType>
 						<xs:key name="node_key">
@@ -56,7 +57,8 @@
 					<xs:element name="links">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link_t" />
+								<xs:element name="link" minOccurs="0" maxOccurs="unbounded"
+									type="link_t" />
 							</xs:sequence>
 						</xs:complexType>
 						<xs:key name="link_key">
@@ -67,7 +69,8 @@
 					<xs:element name="policies">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="policy" minOccurs="0" maxOccurs="unbounded" type="policy_t" />
+								<xs:element name="policy" minOccurs="0" maxOccurs="unbounded"
+									type="policy_t" />
 							</xs:sequence>
 						</xs:complexType>
 						<xs:key name="policy_key">
@@ -76,7 +79,7 @@
 						</xs:key>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="lastUpdate" type="xs:dateTime" use="required" />
+				<xs:attribute name="updated" type="xs:dateTime" use="required" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -106,9 +109,11 @@
 		<xs:complexContent>
 			<xs:extension base="link_t">
 				<xs:sequence>
-					<xs:element name="result" type="result_t" />
-					<xs:element name="functionality" minOccurs="0" maxOccurs="unbounded" type="functionality_t" />
+					<xs:element name="functionality" minOccurs="0"
+						maxOccurs="unbounded" type="functionality_t" />
+					<xs:element name="result" type="result_t" minOccurs="0" />
 				</xs:sequence>
+				<xs:attribute name="expected" type="xs:boolean" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -138,11 +143,12 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="result_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="positive" />
-			<xs:enumeration value="negative" />
-		</xs:restriction>
-	</xs:simpleType>
+	<xs:complexType name="result_t">
+		<xs:sequence>
+			<xs:element name="message" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="satisfied" type="xs:boolean" use="required" />
+		<xs:attribute name="verified" type="xs:dateTime" use="required" />
+	</xs:complexType>
 
 </xs:schema>

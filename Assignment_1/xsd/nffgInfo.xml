@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <verifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nffgInfo.xsd">
-	<nffg name="Example1" lastUpdate="2002-05-30T09:00:00">
+	<nffg name="Example1" updated="2002-05-30T09:00:00">
 		<nodes>
 			<node name="WebClient1">
 				<functionality>WEB_CLIENT</functionality>
@@ -30,26 +30,38 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Policy1">
+			<policy name="Policy1" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<result>positive</result>
+				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
+					<message>
+						Ahahah
+					</message>
+				</result>
 			</policy>
-			<policy name="Policy2">
+			<policy name="Policy2" expected="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
-				<result>negative</result>
+				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
+					<message>
+						Ahahah
+					</message>
+				</result>
 			</policy>
-			<policy name="Policy3">
+			<policy name="Policy3" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<result>positive</result>
 				<functionality>FW</functionality>
+				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
+					<message>
+						Ahahah
+					</message>
+				</result>
 			</policy>
 		</policies>
 	</nffg>
 
-	<nffg name="Example2" lastUpdate="2002-05-30T09:00:00">
+	<nffg name="Example2" updated="2002-05-30T09:00:00">
 		<nodes>
 			<node name="WebClient1">
 				<functionality>WEB_CLIENT</functionality>
@@ -91,21 +103,33 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Policy1">
+			<policy name="Policy1" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<result>positive</result>
+				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
+					<message>
+						Ahahah
+					</message>
+				</result>
 			</policy>
-			<policy name="Policy2">
+			<policy name="Policy2" expected="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
-				<result>positive</result>
+				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
+					<message>
+						Ahahah
+					</message>
+				</result>
 			</policy>
-			<policy name="Policy3">
+			<policy name="Policy3" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<result>positive</result>
 				<functionality>FW</functionality>
+				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
+					<message>
+						Ahahah
+					</message>
+				</result>
 			</policy>
 		</policies>
 	</nffg>
