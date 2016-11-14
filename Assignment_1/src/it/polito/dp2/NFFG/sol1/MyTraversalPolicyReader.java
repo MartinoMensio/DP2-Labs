@@ -3,32 +3,24 @@ package it.polito.dp2.NFFG.sol1;
 import java.util.Set;
 
 import it.polito.dp2.NFFG.FunctionalType;
+import it.polito.dp2.NFFG.NffgReader;
 import it.polito.dp2.NFFG.NodeReader;
 import it.polito.dp2.NFFG.TraversalPolicyReader;
+import it.polito.dp2.NFFG.VerificationResultReader;
 
-public class MyTraversalPolicyReader extends MyPolicyReader implements TraversalPolicyReader {
+public class MyTraversalPolicyReader extends MyReachabilityPolicyReader implements TraversalPolicyReader {
 
-	public MyTraversalPolicyReader(String name) {
-		// TODO Auto-generated constructor stub
-		super(name);
-	}
+	private Set<FunctionalType> functionalities;
 
-	@Override
-	public NodeReader getDestinationNode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NodeReader getSourceNode() {
-		// TODO Auto-generated method stub
-		return null;
+	public MyTraversalPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected,
+			NodeReader src, NodeReader dst, Set<FunctionalType> functionalities) {
+		super(name, nffg, result, expected, src, dst);
+		this.functionalities = functionalities;
 	}
 
 	@Override
 	public Set<FunctionalType> getTraversedFuctionalTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		return functionalities;
 	}
 
 }

@@ -7,32 +7,36 @@ import it.polito.dp2.NFFG.VerificationResultReader;
 
 public class MyVerificationResultReader implements VerificationResultReader {
 
-	public MyVerificationResultReader() {
-		// TODO Auto-generated constructor stub
+	private PolicyReader policy;
+	private boolean result;
+	private String message;
+	private Calendar verificationTime;
+	
+	public MyVerificationResultReader(PolicyReader policy, Boolean result, String message, Calendar verificationTime) {
+		this.policy = policy;
+		this.result = result;
+		this.message = message;
+		this.verificationTime = verificationTime;
 	}
 
 	@Override
 	public PolicyReader getPolicy() {
-		// TODO Auto-generated method stub
-		return null;
+		return policy;
 	}
 
 	@Override
 	public Boolean getVerificationResult() {
-		// TODO Auto-generated method stub
-		return null;
+		return result;
 	}
 
 	@Override
 	public String getVerificationResultMsg() {
-		// TODO Auto-generated method stub
-		return null;
+		return message;
 	}
 
 	@Override
 	public Calendar getVerificationTime() {
-		// TODO Auto-generated method stub
-		return null;
+		return verificationTime;
 	}
 
 }

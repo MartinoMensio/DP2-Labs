@@ -17,38 +17,9 @@ public class MyNffgVerifier implements NffgVerifier {
 	private Map<String,NffgReader> nffgs;
 	private Map<String,Set<PolicyReader>> policies;
 
-	// TODO constructor
-	public MyNffgVerifier() {
-		// TODO this code must be written somewhere else (a parser??)
-		// TODO Auto-generated constructor stub
-		/*
-		String fileName = System.getProperty("it.polito.dp2.NFFG.sol1.NffgInfo.file");
-		
-		// TODO unmarshal
-		try {
-			JAXBContext jc = JAXBContext.newInstance("it.polito.dp2.NFFG.sol1.jaxb");
-			Unmarshaller u = jc.createUnmarshaller();
-			
-			Verifier v = new Verifier();
-			
-			SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			try {
-				u.setSchema(sf.newSchema(new File("xsd/nffgInfo.xsd")));
-			} catch (SAXException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			v = (Verifier)u.unmarshal(new FileInputStream(fileName));
-			verifier = v.getNffg().forEach(nffg_x -> {
-				System.out.println(nffg_x.getName());
-				// TODO
-				nffg_x.get
-				return 
-			});
-		} catch (Exception e) {
-			// TODO: handle exception
-		}*/
+	public MyNffgVerifier(Map<String,NffgReader> nffgs, Map<String,Set<PolicyReader>> policies) {
+		this.nffgs = nffgs;
+		this.policies = policies;
 	}
 
 	@Override

@@ -6,33 +6,30 @@ import it.polito.dp2.NFFG.VerificationResultReader;
 
 public class MyPolicyReader extends MyNamedEntityReader implements PolicyReader {
 
-	public MyPolicyReader(String name) {
-		// TODO Auto-generated constructor stub
+	private NffgReader nffg;
+	private VerificationResultReader result;
+	private boolean expected;
+	
+	public MyPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected) {
 		super(name);
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		this.nffg = nffg;
+		this.result = result;
+		this.expected = expected;
 	}
 
 	@Override
 	public NffgReader getNffg() {
-		// TODO Auto-generated method stub
-		return null;
+		return nffg;
 	}
 
 	@Override
 	public VerificationResultReader getResult() {
-		// TODO Auto-generated method stub
-		return null;
+		return result;
 	}
 
 	@Override
 	public Boolean isPositive() {
-		// TODO Auto-generated method stub
-		return null;
+		return expected;
 	}
 
 }

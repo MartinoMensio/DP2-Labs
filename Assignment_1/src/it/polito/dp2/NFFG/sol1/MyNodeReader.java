@@ -8,27 +8,24 @@ import it.polito.dp2.NFFG.NodeReader;
 
 public class MyNodeReader extends MyNamedEntityReader implements NodeReader {
 
-	public MyNodeReader(String name) {
+	private FunctionalType functionality;
+	private Set<LinkReader> outgoingLinks;
+	
+	public MyNodeReader(String name, FunctionalType functionality, Set<LinkReader> outgoingLinks) {
 		// TODO Auto-generated constructor stub
 		super(name);
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		this.functionality = functionality;
+		this.outgoingLinks = outgoingLinks;
 	}
 
 	@Override
 	public FunctionalType getFuncType() {
-		// TODO Auto-generated method stub
-		return null;
+		return functionality;
 	}
 
 	@Override
 	public Set<LinkReader> getLinks() {
-		// TODO Auto-generated method stub
-		return null;
+		return outgoingLinks;
 	}
 
 }

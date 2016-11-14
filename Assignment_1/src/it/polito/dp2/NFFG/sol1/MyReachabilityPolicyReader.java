@@ -1,25 +1,26 @@
 package it.polito.dp2.NFFG.sol1;
 
-import it.polito.dp2.NFFG.NodeReader;
-import it.polito.dp2.NFFG.ReachabilityPolicyReader;
+import it.polito.dp2.NFFG.*;
 
 public class MyReachabilityPolicyReader extends MyPolicyReader implements ReachabilityPolicyReader {
 
-	public MyReachabilityPolicyReader(String name) {
-		// TODO Auto-generated constructor stub
-		super(name);
+	private NodeReader src;
+	private NodeReader dst;
+	
+	public MyReachabilityPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected, NodeReader src, NodeReader dst) {
+		super(name, nffg, result, expected);
+		this.src = src;
+		this.dst = dst;
 	}
 
 	@Override
 	public NodeReader getDestinationNode() {
-		// TODO Auto-generated method stub
-		return null;
+		return src;
 	}
 
 	@Override
 	public NodeReader getSourceNode() {
-		// TODO Auto-generated method stub
-		return null;
+		return dst;
 	}
 
 }
