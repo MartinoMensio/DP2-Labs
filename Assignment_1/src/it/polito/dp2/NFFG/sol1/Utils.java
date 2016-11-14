@@ -16,6 +16,7 @@ public class Utils {
 		XMLGregorianCalendar gc = null;
 		GregorianCalendar lastUpdate = new GregorianCalendar();
 		lastUpdate.setTime(c.getTime());
+		lastUpdate.setTimeZone(c.getTimeZone());
 		try {
 			gc = DatatypeFactory.newInstance().newXMLGregorianCalendar(lastUpdate);
 		} catch (DatatypeConfigurationException e) {
@@ -26,4 +27,7 @@ public class Utils {
 		return gc;
 	}
 
+	public static Calendar CalendarFromXMLGregorianCalendar(XMLGregorianCalendar c) {
+		return c.toGregorianCalendar();
+	}
 }
