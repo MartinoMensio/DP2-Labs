@@ -12,11 +12,14 @@ public class MyVerificationResultReader implements VerificationResultReader {
 	private String message;
 	private Calendar verificationTime;
 	
-	public MyVerificationResultReader(PolicyReader policy, Boolean result, String message, Calendar verificationTime) {
-		this.policy = policy;
+	public MyVerificationResultReader(Boolean result, String message, Calendar verificationTime) {
 		this.result = result;
 		this.message = message;
 		this.verificationTime = verificationTime;
+	}
+	
+	void setPolicy(PolicyReader policy) {
+		this.policy = policy;
 	}
 
 	@Override
