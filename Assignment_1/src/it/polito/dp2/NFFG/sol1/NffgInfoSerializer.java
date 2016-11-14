@@ -1,7 +1,6 @@
 package it.polito.dp2.NFFG.sol1;
 
 import java.util.*;
-import java.util.stream.*;
 
 import javax.xml.bind.*;
 import javax.xml.validation.*;
@@ -142,9 +141,9 @@ public class NffgInfoSerializer {
 		List<LinkT> link_list = links.getLink();
 		nffgR.getNodes().stream()
 				// from a stream of nodes to a stream of links
+				// NodeReader::getLinks provides links that have this node as
+				// the source node (no duplicated links)
 				.flatMap((NodeReader nr) -> nr.getLinks().stream())
-				// remove duplicates (using a map and reading the values set)
-				.collect(Collectors.toMap(LinkReader::getName, p -> p, (p, q) -> p)).values()
 				// create and add the links to the list of links
 				.forEach(linkR -> {
 					link_list.add(marshalLink(linkR));
