@@ -1,21 +1,22 @@
 package it.polito.dp2.NFFG.sol1;
 
-import java.util.Set;
+import java.util.*;
 
-import it.polito.dp2.NFFG.FunctionalType;
-import it.polito.dp2.NFFG.LinkReader;
-import it.polito.dp2.NFFG.NodeReader;
+import it.polito.dp2.NFFG.*;
 
 public class MyNodeReader extends MyNamedEntityReader implements NodeReader {
 
 	private FunctionalType functionality;
 	private Set<LinkReader> outgoingLinks;
 	
-	public MyNodeReader(String name, FunctionalType functionality, Set<LinkReader> outgoingLinks) {
-		// TODO Auto-generated constructor stub
+	public MyNodeReader(String name, FunctionalType functionality) {
 		super(name);
 		this.functionality = functionality;
-		this.outgoingLinks = outgoingLinks;
+		outgoingLinks = new HashSet<>();
+	}
+	
+	void addOutgoingLink(LinkReader link) {
+		outgoingLinks.add(link);
 	}
 
 	@Override
@@ -27,5 +28,5 @@ public class MyNodeReader extends MyNamedEntityReader implements NodeReader {
 	public Set<LinkReader> getLinks() {
 		return outgoingLinks;
 	}
-
+	
 }

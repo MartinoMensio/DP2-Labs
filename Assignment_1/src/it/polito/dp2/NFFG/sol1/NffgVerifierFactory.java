@@ -49,39 +49,45 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 	}
 	
 	NffgVerifier unmarshalVerifier(Verifier v) {
-		Map<String,NffgReader> nffgs = unmarshalNffgs(v.getNffg());
-		Map<String,Set<PolicyReader>> policies = unmarshalPolicies(v.getNffg());
-		return new MyNffgVerifier(nffgs, policies);
-	}
-
-	Map<String,NffgReader> unmarshalNffgs(List<NffgT> nffgs) {
-		return nffgs.stream().map(nffg_el -> {
-			return unmarshalNffg(nffg_el);
-		}).collect(Collectors.toMap(NffgReader::getName, n -> n));
+		MyNffgVerifier verifier = new MyNffgVerifier();
+		v.getNffg().forEach(nffg -> {
+			verifier.addNffg(unmarshalNffg(nffg));
+			nffg.getPolicies().getPolicy().forEach(p -> {
+				System.out.println("Policy: " + p.getName() + " on nffg " + nffg.getName());
+				verifier.addPolicy(nffg.getName(), unmarshalPolicy(p));
+				verifier.getPolicies().forEach(pol -> {
+					// TODO check
+					// Some NullPointerException there!!!
+					System.out.println("Policy for nffg " + nffg.getName() + " : " + pol.getName());
+				});
+			});
+		});
+		
+		return verifier;
 	}
 	
-	Map<String,Set<PolicyReader>> unmarshalPolicies(List<NffgT> nffg) {
+	PolicyReader unmarshalPolicy(PolicyT p) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	NffgReader unmarshalNffg(NffgT nffg_el) {
-		Map<String,NodeReader> nodes = unmarshalNodes(nffg_el.getNodes().getNode(), );
-		return new MyNffgReader(nffg_el.getName(), Utils.CalendarFromXMLGregorianCalendar(nffg_el.getUpdated()), nodes);
+		MyNffgReader nffgR = new MyNffgReader(nffg_el.getName(), Utils.CalendarFromXMLGregorianCalendar(nffg_el.getUpdated()));
+		nffg_el.getNodes().getNode().forEach(n -> {
+			nffgR.addNode(unmarshalNode(n));
+		});
+		nffg_el.getLinks().getLink().forEach(l -> {
+			MyNodeReader src = nffgR.getMyNode(l.getSrc().getRef());
+			NodeReader dst = nffgR.getNode(l.getDst().getRef());
+			LinkReader linkR = new MyLinkReader(l.getName(), src, dst);
+			src.addOutgoingLink(linkR);
+		});
+		
+		return nffgR;
 	}
-	
-	Map<String,NodeReader> unmarshalNodes(NffgT nffg) {
-		return nffg.getNodes().getNode().stream().map(node_el -> {
-			return unmarshalNode(node_el, nffg);
-		}).collect(Collectors.toMap(NodeReader::getName, n -> n));
+
+	NodeReader unmarshalNode(NodeT node) {
+		return new MyNodeReader(node.getName(),FunctionalType.fromValue(node.getFunctionality().value()));
 	}
-	
-	NodeReader unmarshalNode(NodeT node, NffgT nffg) {
-		Set<LinkReader> outgoingLinks = nffg.getLinks().getLink().stream().filter(l -> {
-			return l.getSrc().getRef() == node.getName();
-		}).map(l-> {
-			new MyLinkReader(l.getName(), l.getSrc().getRef(), l.getDst());
-		}).collect(Collectors.toSet());
-		return new MyNodeReader(node.getName(),FunctionalType.fromValue(node.getFunctionality().toString()), )
-	}
+
 }

@@ -1,25 +1,30 @@
 package it.polito.dp2.NFFG.sol1;
 
-import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.*;
-import javax.xml.validation.SchemaFactory;
-
-import org.xml.sax.SAXException;
+import java.util.stream.*;
 
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol1.jaxb.*;
 
 public class MyNffgVerifier implements NffgVerifier {
 	
 	private Map<String,NffgReader> nffgs;
+	// for each nffg, the corresponding set of policies
 	private Map<String,Set<PolicyReader>> policies;
 
-	public MyNffgVerifier(Map<String,NffgReader> nffgs, Map<String,Set<PolicyReader>> policies) {
-		this.nffgs = nffgs;
-		this.policies = policies;
+	public MyNffgVerifier() {
+		this.nffgs = new HashMap<>();
+		this.policies = new HashMap<>();
+	}
+	
+	void addNffg(NffgReader nffg) {
+		// TODO check return values
+		nffgs.put(nffg.getName(), nffg);
+		policies.put(nffg.getName(), new HashSet<>());
+	}
+	
+	void addPolicy(String nffgName, PolicyReader policy) {
+		// TODO check return value
+		policies.get(nffgName).add(policy);
 	}
 
 	@Override

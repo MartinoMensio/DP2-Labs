@@ -9,10 +9,22 @@ public class MyNffgReader extends MyNamedEntityReader implements NffgReader {
 	private Map<String,NodeReader> nodes;
 	private Calendar updateTime;
 
-	public MyNffgReader(String name, Calendar updateTime, Map<String,NodeReader> nodes) {
+	public MyNffgReader(String name, Calendar updateTime) {
 		super(name);
 		this.updateTime = updateTime;
-		this.nodes = nodes;
+		this.nodes = new HashMap<>();
+	}
+	
+	void addNode(NodeReader node) {
+		nodes.put(node.getName(), node);
+	}
+	
+	MyNodeReader getMyNode(String nodeName) {
+		NodeReader tmp = nodes.get(nodeName);
+		if(tmp != null && tmp instanceof MyNodeReader) {
+			return (MyNodeReader)tmp;
+		}
+		return null;
 	}
 
 	@Override
