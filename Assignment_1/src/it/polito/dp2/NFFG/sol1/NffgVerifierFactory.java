@@ -1,9 +1,6 @@
 package it.polito.dp2.NFFG.sol1;
 
 import java.io.*;
-import java.util.*;
-import java.util.stream.*;
-
 import javax.xml.bind.*;
 import javax.xml.validation.*;
 
@@ -36,15 +33,17 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 			}
 
 			verifier = (Verifier) u.unmarshal(new FileInputStream(fileName));
-			/*
-			 * verifier = v.getNffg().forEach(nffg_x -> {
-			 * System.out.println(nffg_x.getName()); // TODO nffg_x.get return
-			 * });
-			 */
+
+			return unmarshalVerifier(verifier);
+
 		} catch (Exception e) {
-			// TODO: handle exception
+			// basic exception handling
+			// if some exception (e.g. NullPointerException) occur, the
+			// exception is caught and the return value is null
+			System.err.println(e.getMessage());
+			return null;
 		}
-		return unmarshalVerifier(verifier);
+
 	}
 
 	NffgVerifier unmarshalVerifier(Verifier v) {

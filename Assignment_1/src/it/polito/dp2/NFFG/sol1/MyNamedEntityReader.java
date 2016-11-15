@@ -1,6 +1,6 @@
 package it.polito.dp2.NFFG.sol1;
 
-import it.polito.dp2.NFFG.NamedEntityReader;
+import it.polito.dp2.NFFG.*;
 
 public class MyNamedEntityReader implements NamedEntityReader {
 

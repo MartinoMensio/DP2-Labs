@@ -6,7 +6,7 @@ import it.polito.dp2.NFFG.*;
 
 public class MyNffgReader extends MyNamedEntityReader implements NffgReader {
 
-	private Map<String,NodeReader> nodes;
+	private Map<String, NodeReader> nodes;
 	private Calendar updateTime;
 
 	public MyNffgReader(String name, Calendar updateTime) {
@@ -14,15 +14,26 @@ public class MyNffgReader extends MyNamedEntityReader implements NffgReader {
 		this.updateTime = updateTime;
 		this.nodes = new HashMap<>();
 	}
-	
+
 	void addNode(NodeReader node) {
 		nodes.put(node.getName(), node);
 	}
-	
+
+	/**
+	 * 
+	 * @param nodeName
+	 *            the name of the node to retrieve
+	 * @return a MyNodeReader object with the corresponding name
+	 * 
+	 *         This method is similar to the getNode one, but it returns an
+	 *         object of type MyNodeReader instead of NodeReader. The visibility
+	 *         is only inside the package. This method allows other classes in
+	 *         the package to use the addOutgoingLink method
+	 */
 	MyNodeReader getMyNode(String nodeName) {
 		NodeReader tmp = nodes.get(nodeName);
-		if(tmp != null && tmp instanceof MyNodeReader) {
-			return (MyNodeReader)tmp;
+		if (tmp != null && tmp instanceof MyNodeReader) {
+			return (MyNodeReader) tmp;
 		}
 		return null;
 	}
