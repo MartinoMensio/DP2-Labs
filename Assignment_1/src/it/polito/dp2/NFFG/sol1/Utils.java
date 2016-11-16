@@ -22,7 +22,7 @@ public class Utils {
 		} catch (DatatypeConfigurationException e) {
 			System.err.println("Error in lastUpdate handling: lastUpdate = " + lastUpdate);
 			e.printStackTrace();
-			System.exit(1);
+			return null;
 		}
 		return gc;
 	}
