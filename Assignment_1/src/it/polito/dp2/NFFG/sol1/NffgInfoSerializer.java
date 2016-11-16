@@ -245,7 +245,7 @@ public class NffgInfoSerializer {
 		ResultT result = new ResultT();
 		result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
 		result.setSatisfied(resultR.getVerificationResult());
-		result.setMessage(resultR.getVerificationResultMsg());
+		result.setContent(resultR.getVerificationResultMsg());
 		return result;
 	}
 }

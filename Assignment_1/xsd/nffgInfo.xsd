@@ -143,10 +143,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="result_t">
-		<xs:sequence>
-			<xs:element name="message" type="xs:string" minOccurs="0" />
-		</xs:sequence>
+	<xs:complexType name="result_t" mixed="true">
 		<xs:attribute name="satisfied" type="xs:boolean" use="required" />
 		<xs:attribute name="verified" type="xs:dateTime" use="required" />
 	</xs:complexType>

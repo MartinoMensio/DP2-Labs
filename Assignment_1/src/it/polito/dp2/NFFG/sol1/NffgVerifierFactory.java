@@ -103,7 +103,7 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 	}
 
 	MyVerificationResultReader unmarshalResult(ResultT res) {
-		return new MyVerificationResultReader(res.isSatisfied(), res.getMessage(),
+		return new MyVerificationResultReader(res.isSatisfied(), res.getContent(),
 				Utils.CalendarFromXMLGregorianCalendar(res.getVerified()));
 	}
 

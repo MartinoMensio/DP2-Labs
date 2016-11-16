@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<verifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nffgInfo.xsd">
+<verifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="nffgInfo.xsd">
 	<nffg name="Example1" updated="2002-05-30T09:00:00">
 		<nodes>
 			<node name="WebClient1">
@@ -34,18 +35,14 @@
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					<message>
-						Ahahah
-					</message>
+					This is the message
 				</result>
 			</policy>
 			<policy name="Policy2" expected="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					<message>
-						Ahahah
-					</message>
+					This is the message
 				</result>
 			</policy>
 			<policy name="Policy3" expected="true">
@@ -53,9 +50,7 @@
 				<dst ref="WebServer1" />
 				<functionality>FW</functionality>
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					<message>
-						Ahahah
-					</message>
+					This is the message
 				</result>
 			</policy>
 		</policies>
@@ -107,18 +102,14 @@
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					<message>
-						Ahahah
-					</message>
+					This is the message
 				</result>
 			</policy>
 			<policy name="Policy2" expected="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					<message>
-						Ahahah
-					</message>
+					This is the message
 				</result>
 			</policy>
 			<policy name="Policy3" expected="true">
@@ -126,9 +117,7 @@
 				<dst ref="WebServer1" />
 				<functionality>FW</functionality>
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					<message>
-						Ahahah
-					</message>
+					This is the message
 				</result>
 			</policy>
 		</policies>
