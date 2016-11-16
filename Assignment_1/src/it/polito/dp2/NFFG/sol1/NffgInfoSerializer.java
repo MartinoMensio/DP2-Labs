@@ -103,7 +103,7 @@ public class NffgInfoSerializer {
 				m.marshal(v, System.out);
 			}
 
-		} catch (JAXBException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
