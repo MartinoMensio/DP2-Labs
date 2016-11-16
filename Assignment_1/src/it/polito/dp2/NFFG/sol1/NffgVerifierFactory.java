@@ -1,6 +1,9 @@
 package it.polito.dp2.NFFG.sol1;
 
 import java.io.*;
+import java.util.*;
+import java.util.stream.*;
+
 import javax.xml.bind.*;
 import javax.xml.validation.*;
 
@@ -86,7 +89,13 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 		if (p.getResult() != null) {
 			result = unmarshalResult(p.getResult());
 		}
-		MyPolicyReader policy = new MyReachabilityPolicyReader(p.getName(), nffgR, result, p.isExpected(), src, dst);
+		MyPolicyReader policy;
+		if (p.getFunctionality().isEmpty()) {
+			policy = new MyReachabilityPolicyReader(p.getName(), nffgR, result, p.isExpected(), src, dst);
+		} else {
+			policy = new MyTraversalPolicyReader(p.getName(), nffgR, result, p.isExpected(), src, dst,
+					unmarshalFunctionalities(p.getFunctionality()));
+		}
 		if (p.getResult() != null) {
 			result.setPolicy(policy);
 		}
@@ -96,6 +105,12 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 	MyVerificationResultReader unmarshalResult(ResultT res) {
 		return new MyVerificationResultReader(res.isSatisfied(), res.getMessage(),
 				Utils.CalendarFromXMLGregorianCalendar(res.getVerified()));
+	}
+
+	Set<FunctionalType> unmarshalFunctionalities(List<FunctionalityT> l) {
+		return l.stream().map(a -> {
+			return FunctionalType.fromValue(a.value());
+		}).collect(Collectors.toSet());
 	}
 
 }
