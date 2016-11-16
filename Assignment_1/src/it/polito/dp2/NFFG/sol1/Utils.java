@@ -14,13 +14,13 @@ public class Utils {
 	 */
 	public static XMLGregorianCalendar XMLGregorianCalendarFromCalendar(Calendar c) {
 		XMLGregorianCalendar gc = null;
-		GregorianCalendar lastUpdate = new GregorianCalendar();
-		lastUpdate.setTime(c.getTime());
-		lastUpdate.setTimeZone(c.getTimeZone());
+		GregorianCalendar gregorianCalendar = new GregorianCalendar();
+		gregorianCalendar.setTime(c.getTime());
+		gregorianCalendar.setTimeZone(c.getTimeZone());
 		try {
-			gc = DatatypeFactory.newInstance().newXMLGregorianCalendar(lastUpdate);
+			gc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
 		} catch (DatatypeConfigurationException e) {
-			System.err.println("Error in lastUpdate handling: lastUpdate = " + lastUpdate);
+			System.err.println("Error in gregorianCalendar handling: " + gregorianCalendar);
 			e.printStackTrace();
 			return null;
 		}
