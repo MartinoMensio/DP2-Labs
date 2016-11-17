@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Assignment1" default="makezip" basedir=".">
-	<target name="makejar" description="Create a jar for the HW project">
-		<jar jarfile="HelloWorld.jar" includes="*.class" basedir="bin" />
-	</target>
-	<target name="makezip" description="Create a zip with all the files for submission" depends="clean,wrap_doc">
-		<zip destfile="Assignment1.zip" update="false">
-			<zipfileset dir="dtd" prefix="dtd" excludes="README" />
-			<zipfileset dir="xsd" prefix="xsd" excludes="README" />
-			<zipfileset dir="." includes="doc_wrapped.txt" fullpath="doc.txt" />
-		</zip>
-	</target>
+<project name="Assignment1" default="wrap_doc" basedir=".">
 	<target name="clean" description="Deletes useless files">
-		<delete file="Assignment1.zip" />
-		<delete file="doc_wrapped.txt" />
+		<delete file="dtd/doc.txt" />
+		<delete file="xsd/doc.txt" />
 	</target>
-	<target name="wrap_doc" description="Wraps lines into file doc.txt, generating doc_wrapped.txt">
-		<delete file="doc_wrapped.txt" />
+	<target name="wrap_doc" description="Wraps lines into file doc.txt, generating doc_wrapped.txt" depends="clean">
 		<exec executable="python">
 			<arg value="../utils/line_wrapper.py" />
-			<arg value="doc.txt" />
-			<arg value="doc_wrapped.txt" />
+			<arg value="doc_dtd_unwrapped.txt" />
+			<arg value="dtd/doc.txt" />
+		</exec>
+		<exec executable="python">
+			<arg value="../utils/line_wrapper.py" />
+			<arg value="doc_xsd_unwrapped.txt" />
+			<arg value="xsd/doc.txt" />
 		</exec>
 	</target>
 </project>
