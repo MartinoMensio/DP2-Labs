@@ -1,8 +1,6 @@
 package it.polito.dp2.NFFG.sol1;
 
 import java.io.*;
-import java.util.*;
-import java.util.stream.*;
 
 import javax.xml.bind.*;
 import javax.xml.validation.*;
@@ -37,7 +35,7 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 
 			verifier = (Verifier) u.unmarshal(new FileInputStream(fileName));
 
-			return unmarshalVerifier(verifier);
+			return TransformFromGeneratedClass.newTransformer(verifier).transform();
 
 		} catch (Exception e) {
 			// basic exception handling
@@ -47,70 +45,6 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 			return null;
 		}
 
-	}
-
-	NffgVerifier unmarshalVerifier(Verifier v) {
-		MyNffgVerifier verifier = new MyNffgVerifier();
-		v.getNffg().forEach(nffg -> {
-			NffgReader nffgR = unmarshalNffg(nffg);
-			verifier.addNffg(nffgR);
-			nffg.getPolicies().getPolicy().forEach(p -> {
-				verifier.addPolicy(nffg.getName(), unmarshalPolicy(p, nffgR));
-			});
-		});
-
-		return verifier;
-	}
-
-	NffgReader unmarshalNffg(NffgT nffg_el) {
-		MyNffgReader nffgR = new MyNffgReader(nffg_el.getName(),
-				Utils.CalendarFromXMLGregorianCalendar(nffg_el.getUpdated()));
-		nffg_el.getNodes().getNode().forEach(n -> {
-			nffgR.addNode(unmarshalNode(n));
-		});
-		nffg_el.getLinks().getLink().forEach(l -> {
-			MyNodeReader src = nffgR.getMyNode(l.getSrc().getRef());
-			NodeReader dst = nffgR.getNode(l.getDst().getRef());
-			LinkReader linkR = new MyLinkReader(l.getName(), src, dst);
-			src.addOutgoingLink(linkR);
-		});
-
-		return nffgR;
-	}
-
-	NodeReader unmarshalNode(NodeT node) {
-		return new MyNodeReader(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
-	}
-
-	PolicyReader unmarshalPolicy(PolicyT p, NffgReader nffgR) {
-		NodeReader src = nffgR.getNode(p.getSrc().getRef());
-		NodeReader dst = nffgR.getNode(p.getDst().getRef());
-		MyVerificationResultReader result = null;
-		if (p.getResult() != null) {
-			result = unmarshalResult(p.getResult());
-		}
-		MyPolicyReader policy;
-		if (p.getFunctionality().isEmpty()) {
-			policy = new MyReachabilityPolicyReader(p.getName(), nffgR, result, p.isExpected(), src, dst);
-		} else {
-			policy = new MyTraversalPolicyReader(p.getName(), nffgR, result, p.isExpected(), src, dst,
-					unmarshalFunctionalities(p.getFunctionality()));
-		}
-		if (p.getResult() != null) {
-			result.setPolicy(policy);
-		}
-		return policy;
-	}
-
-	MyVerificationResultReader unmarshalResult(ResultT res) {
-		return new MyVerificationResultReader(res.isSatisfied(), res.getContent(),
-				Utils.CalendarFromXMLGregorianCalendar(res.getVerified()));
-	}
-
-	Set<FunctionalType> unmarshalFunctionalities(List<FunctionalityT> l) {
-		return l.stream().map(a -> {
-			return FunctionalType.fromValue(a.value());
-		}).collect(Collectors.toSet());
 	}
 
 }
