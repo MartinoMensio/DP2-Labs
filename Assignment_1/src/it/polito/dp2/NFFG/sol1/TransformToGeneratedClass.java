@@ -5,19 +5,43 @@ import java.util.*;
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol1.jaxb.*;
 
+/**
+ * This class implements the transformation for objects belonging to the class
+ * it.polito.dp2.NFFG.NffgVerifier and transforms them into objects belonging to
+ * the interface it.polito.dp2.NFFG.sol1.jaxb.Verifier
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class TransformToGeneratedClass implements Transformer<NffgVerifier, Verifier> {
 
 	private NffgVerifier input;
 
+	/**
+	 * The constructor is private, use instead the factory method
+	 * 
+	 * @param input
+	 *            the NffgVerifier object to be transformed
+	 */
 	private TransformToGeneratedClass(NffgVerifier input) {
 		this.input = input;
 	}
 
+	/**
+	 * The static factory method
+	 * 
+	 * @param input
+	 *            the NffgVerifier object to be transformed
+	 * @return an object belonging to the Transformer interface
+	 */
 	public static Transformer<NffgVerifier, Verifier> newTransformer(NffgVerifier input) {
 		// TODO Auto-generated method stub
 		return new TransformToGeneratedClass(input);
 	}
 
+	/**
+	 * implements the transformation of the root element (verifier)
+	 */
 	@Override
 	public Verifier transform() {
 		Verifier v = new Verifier();
@@ -114,12 +138,16 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		LinkT link = new LinkT();
 		// set the name
 		link.setName(linkR.getName());
+
 		NodeRefT src = new NodeRefT();
+		NodeRefT dst = new NodeRefT();
+		// build the source
 		src.setRef(linkR.getSourceNode().getName());
 		link.setSrc(src);
-		NodeRefT dst = new NodeRefT();
+		// and the destination
 		dst.setRef(linkR.getDestinationNode().getName());
 		link.setDst(dst);
+
 		return link;
 	}
 
@@ -136,20 +164,23 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		PolicyT policy = new PolicyT();
 		// set the name
 		policy.setName(policyR.getName());
+		// and the expected result
 		policy.setExpected(policyR.isPositive());
+		// and the actual result
 		policy.setResult(transformResult(policyR.getResult()));
-		/*
-		 * VerificationResultReader resultR = policyR.getResult(); if(resultR !=
-		 * null) { policy.set }
-		 */
+
 		NodeRefT src = new NodeRefT();
 		NodeRefT dst = new NodeRefT();
 		// TraversalPolicyReader is a subclass of ReachabilityPolicyReader
 		ReachabilityPolicyReader reach_p = (ReachabilityPolicyReader) policyR;
+		// set the source
 		src.setRef(reach_p.getSourceNode().getName());
 		policy.setSrc(src);
+		// and the destination
 		dst.setRef(reach_p.getDestinationNode().getName());
 		policy.setDst(dst);
+
+		// for traversal policies, also add the functionalities to be traversed
 		if (policyR instanceof TraversalPolicyReader) {
 			TraversalPolicyReader trav_p = (TraversalPolicyReader) policyR;
 			List<FunctionalityT> func_list = policy.getFunctionality();
@@ -157,17 +188,32 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 				func_list.add(FunctionalityT.fromValue(functionality.value()));
 			});
 		}
+
 		return policy;
 	}
 
+	/**
+	 * 
+	 * Performs the transformation from object belonging to the class
+	 * VerificationResultReader to the class ResultT
+	 * 
+	 * @param policyR
+	 *            the PolicyReader object
+	 * @return the PolicyT object for marshaling
+	 */
 	private ResultT transformResult(VerificationResultReader resultR) {
+		// the result is optional
 		if (resultR == null) {
 			return null;
 		}
 		ResultT result = new ResultT();
+		// set the last verification date
 		result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
+		// set the actual verification result
 		result.setSatisfied(resultR.getVerificationResult());
+		// and the message
 		result.setContent(resultR.getVerificationResultMsg());
+
 		return result;
 	}
 
