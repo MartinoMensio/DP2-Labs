@@ -11,7 +11,7 @@ fout = open(sys.argv[2], 'w')
 content = fin.readlines()
 
 for s in content:
-    line =  '\r\n'.join(line.strip() for line in re.findall(r'.{1,80}(?:\s+|$)', s))
-    fout.write(line + '\r\n')
+    line =  '\n'.join(line.strip() for line in re.findall(r'.{1,80}(?:\s+|$)', s))
+    fout.write(line + '\n')
 
 print ('file has been line-wrapped. Output in file ' + sys.argv[2])
