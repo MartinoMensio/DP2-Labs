@@ -1,0 +1,7 @@
+For the xsd, I tried to follow the structure of the dtd.
+
+The main diferences are the scopes of keys, that can be more restricted than the global scope. For this reason
+TODO
+- key and keyref placement
+- types
+- inheritance (starting from named_element)

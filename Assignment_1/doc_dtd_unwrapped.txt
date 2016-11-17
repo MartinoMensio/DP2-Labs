@@ -1,0 +1,21 @@
+The dtd has the following structure:
+
+The root element is named verifier, and contains the set of NFFGs.
+
+Each nffg has some attributes (the name and the last update time) and some child elements: the nodes, the links and the policies. Each of them is a list of the corresponding elements.
+
+These lists can contain from 0 to unbounded elements. I chose to put the policies inside the corresponding nffg in order to reduce data redundancy: if they were in the verifier, an attribute had to declare to which nffg they were attached; instead by putting them inside the nffg, there is no need to repeat the information. The father element of a policy states the scope of a policy.
+
+Each node has an attribute (the name) and a child element that identifies the functionality. I used an element for that because in this way I reused the functionality element for the traversal policies (see below) and the DTD is less repetitive. Since the functional types must belong to an enumeration, the functionality element has an attribute that declare the type of the functionality; the possible values can be listed only for an attribute.
+
+A link has the name attribute and two child elements that identify the source and destination. Each one of them has an attribute named "ref" that is a IDREF.
+
+For the policies I used a single element that has again a name plus a boolean that indicates the expected result (as attributes), and the child element are the following:
+- source and destination, which are compulsory. These two elements are the same at the child of a link. In this way I avoided repeating the same attributes for links and policies
+- a list of functionality elements, that can be empty. If the list is empty, this is a reachability policy; instead if there is at least one functionality, this is a traversal policy. The functionality elements are the same used inside a node
+- an optional result, that contains the actual verification status, the date and time of the verification and the message (as PCDATA, as the content of the element)
+
+All the named entities have the name as attribute, and its type is ID. Since the scope for IDs in DTD is unique and global, in the XML example file prepended to the name attribute of the nodes and link elements the name of the nffg they belong to. In this way it is like isolating different scopes for different NFFGs. If the name of a node is "Node1" and it belongs to "Nffg1", the resulting composed name will be "Nffg1_Node1" so that another nffg can have a node with the same conceptual name, but this time the composed name will be different. The name composition should be handled in Java.
+This is not applied to policies, because the requirements specify that a policy is identified by its name in a scope that is not bounded to a single nffg.
+
+Where possible, attributes have been used instead of elements. The elements were required in order to represent lists, and also for reducing redundancy (see above about the functionalities).
