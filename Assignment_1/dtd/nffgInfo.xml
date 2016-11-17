@@ -32,18 +32,18 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Example1_Policy1" expected="true">
+			<policy name="Policy11" expected="true">
 				<src ref="Example1_WebClient1" />
 				<dst ref="Example1_WebServer1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
 					Ahahah
 				</result>
 			</policy>
-			<policy name="Example1_Policy2" expected="false">
+			<policy name="Policy12" expected="false">
 				<src ref="Example1_WebServer1" />
 				<dst ref="Example1_WebClient1" />
 			</policy>
-			<policy name="Example1_Policy3" expected="true">
+			<policy name="Policy13" expected="true">
 				<src ref="Example1_WebClient1" />
 				<dst ref="Example1_WebServer1" />
 				<functionality type="FW" />
@@ -93,15 +93,15 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Example2_Policy1" expected="true">
+			<policy name="Policy21" expected="true">
 				<src ref="Example2_WebClient1" />
 				<dst ref="Example2_WebServer1" />
 			</policy>
-			<policy name="Example2_Policy2" expected="true">
+			<policy name="Policy22" expected="true">
 				<src ref="Example2_WebServer1" />
 				<dst ref="Example2_WebClient1" />
 			</policy>
-			<policy name="Example2_Policy3" expected="true">
+			<policy name="Policy23" expected="true">
 				<src ref="Example2_WebClient1" />
 				<dst ref="Example2_WebServer1" />
 				<functionality type="FW" />
