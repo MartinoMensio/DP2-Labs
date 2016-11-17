@@ -32,6 +32,10 @@
 			<xs:selector xpath="nffg" />
 			<xs:field xpath="@name" />
 		</xs:key>
+		<xs:key name="policy_key">
+			<xs:selector xpath="nffg/policies/policy" />
+			<xs:field xpath="@name" />
+		</xs:key>
 	</xs:element>
 
 	<xs:complexType name="named_element_t">
@@ -73,10 +77,6 @@
 									type="policy_t" />
 							</xs:sequence>
 						</xs:complexType>
-						<xs:key name="policy_key">
-							<xs:selector xpath="policy" />
-							<xs:field xpath="@name" />
-						</xs:key>
 					</xs:element>
 				</xs:sequence>
 				<xs:attribute name="updated" type="xs:dateTime" use="required" />

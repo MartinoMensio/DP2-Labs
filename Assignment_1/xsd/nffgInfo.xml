@@ -31,21 +31,21 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Policy1" expected="true">
+			<policy name="Policy11" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
 					This is the message
 				</result>
 			</policy>
-			<policy name="Policy2" expected="false">
+			<policy name="Policy12" expected="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
 					This is the message
 				</result>
 			</policy>
-			<policy name="Policy3" expected="true">
+			<policy name="Policy13" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<functionality>FW</functionality>
@@ -98,21 +98,21 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Policy1" expected="true">
+			<policy name="Policy21" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
 					This is the message
 				</result>
 			</policy>
-			<policy name="Policy2" expected="false">
+			<policy name="Policy22" expected="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
 				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
 					This is the message
 				</result>
 			</policy>
-			<policy name="Policy3" expected="true">
+			<policy name="Policy23" expected="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<functionality>FW</functionality>
