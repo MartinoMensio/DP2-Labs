@@ -1,15 +1,18 @@
 package it.polito.dp2.NFFG.sol1;
 
-import java.util.Set;
+import java.util.*;
 
-import it.polito.dp2.NFFG.FunctionalType;
-import it.polito.dp2.NFFG.NffgReader;
-import it.polito.dp2.NFFG.NodeReader;
-import it.polito.dp2.NFFG.TraversalPolicyReader;
-import it.polito.dp2.NFFG.VerificationResultReader;
+import it.polito.dp2.NFFG.*;
 
+/**
+ * Implementation of the TraversalPolicyReader interface
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class MyTraversalPolicyReader extends MyReachabilityPolicyReader implements TraversalPolicyReader {
 
+	// the set of functionalities to be traversed
 	private Set<FunctionalType> functionalities;
 
 	public MyTraversalPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected,

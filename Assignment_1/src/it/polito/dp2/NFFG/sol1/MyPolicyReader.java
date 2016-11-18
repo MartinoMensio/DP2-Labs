@@ -1,15 +1,19 @@
 package it.polito.dp2.NFFG.sol1;
 
-import it.polito.dp2.NFFG.NffgReader;
-import it.polito.dp2.NFFG.PolicyReader;
-import it.polito.dp2.NFFG.VerificationResultReader;
+import it.polito.dp2.NFFG.*;
 
+/**
+ * Implementation of the PolicyReader interface
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class MyPolicyReader extends MyNamedEntityReader implements PolicyReader {
 
 	private NffgReader nffg;
 	private VerificationResultReader result;
 	private boolean expected;
-	
+
 	public MyPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected) {
 		super(name);
 		this.nffg = nffg;
