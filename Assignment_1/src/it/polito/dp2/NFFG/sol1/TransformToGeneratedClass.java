@@ -1,6 +1,7 @@
 package it.polito.dp2.NFFG.sol1;
 
 import java.util.*;
+import java.util.stream.*;
 
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol1.jaxb.*;
@@ -47,11 +48,14 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		Verifier v = new Verifier();
 		// get the live list of nffgs
 		List<NffgT> nffg_list = v.getNffg();
-		input.getNffgs().forEach(nffgR -> {
-			// get the xml object for the nffg from the reader
-			// and add it to the live list
-			nffg_list.add(transformNffg(nffgR));
-		});
+		// add the nffgs to the live list
+		nffg_list.addAll(input.getNffgs()
+				// use parallel stream to perform parallel execution of
+				// transformation
+				.parallelStream()
+				// transform the nffg
+				.map(nffgR -> transformNffg(nffgR)).collect(Collectors.toList()));
+
 		return v;
 	}
 
@@ -75,25 +79,26 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		NffgT.Nodes nodes = new NffgT.Nodes();
 		// get the live list
 		List<NodeT> node_list = nodes.getNode();
-		nffgR.getNodes().forEach(nodeR -> {
-			// add to the live list the marshaled node
-			node_list.add(transformNode(nodeR));
-		});
+		// add to the live list the nodes
+		node_list.addAll(nffgR.getNodes()
+				// the transformation of nodes can be performed in parallel
+				.parallelStream()
+				// perform transformation of the node
+				.map(nodeR -> transformNode(nodeR)).collect(Collectors.toList()));
+
 		nffg.setNodes(nodes);
 
 		// links
 		NffgT.Links links = new NffgT.Links();
 		// get the live list
 		List<LinkT> link_list = links.getLink();
-		nffgR.getNodes().stream()
+		link_list.addAll(nffgR.getNodes().parallelStream()
 				// from a stream of nodes to a stream of links
 				// NodeReader::getLinks provides links that have this node as
 				// the source node (no duplicated links)
-				.flatMap((NodeReader nr) -> nr.getLinks().stream())
-				// create and add the links to the list of links
-				.forEach(linkR -> {
-					link_list.add(transformLink(linkR));
-				});
+				.flatMap(nodeR -> nodeR.getLinks().parallelStream())
+				// transform the link
+				.map(linkR -> transformLink(linkR)).collect(Collectors.toList()));
 		nffg.setLinks(links);
 
 		// policies
