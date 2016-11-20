@@ -96,7 +96,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 				// from a stream of nodes to a stream of links
 				// NodeReader::getLinks provides links that have this node as
 				// the source node (no duplicated links)
-				.flatMap(nodeR -> nodeR.getLinks().parallelStream())
+				.flatMap(nodeR -> nodeR.getLinks().stream())
 				// transform the link
 				.map(linkR -> transformLink(linkR)).collect(Collectors.toList()));
 		nffg.setLinks(links);
