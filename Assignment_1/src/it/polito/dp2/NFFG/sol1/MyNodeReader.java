@@ -14,12 +14,12 @@ public class MyNodeReader extends MyNamedEntityReader implements NodeReader {
 
 	private FunctionalType functionality;
 	// the Set of outgoing links
-	private Set<LinkReader> outgoingLinks;
+	private Map<String, LinkReader> outgoingLinks;
 
 	public MyNodeReader(String name, FunctionalType functionality) {
 		super(name);
 		this.functionality = functionality;
-		outgoingLinks = new HashSet<>();
+		outgoingLinks = new HashMap<>();
 	}
 
 	/**
@@ -27,9 +27,15 @@ public class MyNodeReader extends MyNamedEntityReader implements NodeReader {
 	 * the interface
 	 * 
 	 * @param link
+	 * @throws NffgVerifierException
+	 *             if a link with this name already exists
 	 */
-	void addOutgoingLink(LinkReader link) {
-		outgoingLinks.add(link);
+	void addOutgoingLink(LinkReader link) throws NffgVerifierException {
+		if (outgoingLinks.containsKey(link.getName())) {
+			throw new NffgVerifierException(
+					"a link with the name " + link.getName() + " already exists in the nffg " + getName());
+		}
+		outgoingLinks.put(link.getName(), link);
 	}
 
 	@Override
@@ -39,7 +45,7 @@ public class MyNodeReader extends MyNamedEntityReader implements NodeReader {
 
 	@Override
 	public Set<LinkReader> getLinks() {
-		return outgoingLinks;
+		return new HashSet<>(outgoingLinks.values());
 	}
 
 }

@@ -45,13 +45,31 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	@Override
 	public NffgVerifier transform() {
 		MyNffgVerifier verifier = new MyNffgVerifier();
-		input.getNffg().forEach(nffg -> {
-			NffgReader nffgR = transformNffg(nffg);
-			verifier.addNffg(nffgR);
-			nffg.getPolicies().getPolicy().forEach(p -> {
-				verifier.addPolicy(nffg.getName(), transformPolicy(p, nffgR));
+		try {
+			input.getNffg().forEach(nffg -> {
+				NffgReader nffgR = transformNffg(nffg);
+				try {
+					verifier.addNffg(nffgR);
+					nffg.getPolicies().getPolicy().forEach(p -> {
+						try {
+							verifier.addPolicy(nffg.getName(), transformPolicy(p, nffgR));
+						} catch (NffgVerifierException e) {
+							// to go through lambda must use an unchecked exception
+							throw new RuntimeException(e);
+						}
+					});
+				} catch (Exception e) {
+					// to go through lambda must use an unchecked exception
+					throw new RuntimeException(e);
+				}
+
 			});
-		});
+		} catch (Exception e2) {
+			// this catches all exceptions
+			System.err.println("Error in transformation:");
+			System.err.println(e2.getMessage());
+			return null;
+		}
 
 		return verifier;
 	}
@@ -69,7 +87,12 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 				Utils.CalendarFromXMLGregorianCalendar(nffg.getUpdated()));
 		// process nodes
 		nffg.getNodes().getNode().forEach(n -> {
-			nffgR.addNode(transformNode(n));
+			try {
+				nffgR.addNode(transformNode(n));
+			} catch (NffgVerifierException e) {
+				// to go through lambda must use an unchecked exception
+				throw new RuntimeException(e);
+			}
 		});
 		// and process links
 		nffg.getLinks().getLink().forEach(l -> {
@@ -81,7 +104,12 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 			// build the link
 			LinkReader linkR = new MyLinkReader(l.getName(), src, dst);
 			// add the circular reference to the getMyNode
-			src.addOutgoingLink(linkR);
+			try {
+				src.addOutgoingLink(linkR);
+			} catch (NffgVerifierException e) {
+				// to go through lambda must use an unchecked exception
+				throw new RuntimeException(e);
+			}
 		});
 
 		return nffgR;

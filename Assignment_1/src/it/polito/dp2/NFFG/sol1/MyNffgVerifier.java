@@ -28,19 +28,18 @@ public class MyNffgVerifier implements NffgVerifier {
 	 * to the interface
 	 * 
 	 * @param nffg
-	 * @return true if addition is OK. False if another nffg with this name is
-	 *         already there
+	 * @throws NffgVerifierException
+	 *             if another nffg with this name is already there
 	 */
-	boolean addNffg(NffgReader nffg) {
+	void addNffg(NffgReader nffg) throws NffgVerifierException {
 		if (nffgs.containsKey(nffg.getName())) {
 			// a duplicate nffg is found
-			return false;
+			throw new NffgVerifierException("A NFFG with the name " + nffg.getName() + " is already there");
 		}
 		// store the nffg
 		nffgs.put(nffg.getName(), nffg);
 		// and create a new Set for storing its policies
 		policies.put(nffg.getName(), new HashSet<>());
-		return true;
 	}
 
 	/**
@@ -50,15 +49,24 @@ public class MyNffgVerifier implements NffgVerifier {
 	 *            the name of the nffg this policy refers to
 	 * @param policy
 	 *            the policy to be added
-	 * @return true if addition is OK. False if there is no nffg with this name
-	 *         or if the addition to the set is not successful
+	 * @throws NffgVerifierException
+	 *             if there is no nffg with this name or if there is already a
+	 *             policy with this name
 	 */
-	boolean addPolicy(String nffgName, PolicyReader policy) {
+	void addPolicy(String nffgName, PolicyReader policy) throws NffgVerifierException {
 		if (!nffgs.containsKey(nffgName)) {
 			// no nffg with this name
-			return false;
+			throw new NffgVerifierException(
+					"The policy " + policy.getName() + "refers to the NFFG " + nffgName + " that does not exist");
 		}
-		return policies.get(nffgName).add(policy);
+		// get a flat map of policies mapped by their name
+		Map<String, PolicyReader> flatPolicies = policies.values().stream().flatMap(Set::stream)
+				.collect(Collectors.toMap(PolicyReader::getName, p -> p));
+		if (flatPolicies.containsKey(policy.getName())) {
+			// duplicate policy (the scope for policy name is global
+			throw new NffgVerifierException("A policy named " + policy.getName() + " already exists");
+		}
+		policies.get(nffgName).add(policy);
 	}
 
 	@Override
