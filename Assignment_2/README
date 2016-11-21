@@ -1,0 +1,16 @@
+Distributed Programming II A.Y. 2016-17
+=======================================
+
+Assignment n. 2
+------------------------
+
+This archive includes:
+
+- README            	This file
+- Assignment2.pdf   	The text of Assignment 2
+- neo4jxmlRESTapi.pdf   The documentation of the Neo4JXML service
+- war					The location of the .war file of the Neo4JXML service
+- lib					The location of the jar files necessary for this assignment
+- src					The location of source files
+- custom				The location of custom files
+- build.xml				The ant script for this assignment

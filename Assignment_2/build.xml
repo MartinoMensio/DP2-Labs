@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="buildClient" name="NFFG-2">
+	<description>
+			Script for NFFG Assignment 2
+	</description>
+
+	<!-- The "NffgVerifierFactory" used for NFFGInfo and as data generator for tests -->
+	<property name="NFFGInfo.NffgVerifierFactory" value="it.polito.dp2.NFFG.Random.NffgVerifierFactoryImpl" />
+
+	<!-- The "ReachabilityTesterFactory" of the solution -->
+	<property name="SolutionReachabilityTesterFactory" value="it.polito.dp2.NFFG.sol2.ReachabilityTesterFactory" />
+
+	<!-- The default test case -->
+	<property name="testcase" value="0" />
+	<!-- The default test class -->
+	<property name="test.class" value="it.polito.dp2.NFFG.lab2.tests.NFFGTests" />
+
+    <!-- The location of the ... web service -->
+	<property name="PORT" value="8080"/>
+	<property name="URL" value="http://localhost:${PORT}/Neo4JXML/rest"/>
+	<property name="WADL" value="${URL}/application.wadl"/>
+
+	<property name="lab2.location" location="." />
+
+	<property name="src.dir" location="${lab2.location}/src" />
+	<property name="build.dir" location="${lab2.location}/build" />
+	<property name="lib.dir" location="${lab2.location}/lib" />
+	<property name="gen.dir" location="${lab2.location}/gen-src" />
+	
+	<property name="debug" value="true" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.8" />
+	<property name="source" value="1.8" />
+	
+	<!-- The classpath to be used for compilation of the solution -->
+	<path id="sol.classpath">
+		<pathelement location="${lib.dir}/NFFG.jar"/>
+		<pathelement location="${lib.dir}/lab2.jar"/>
+		<pathelement location="${lib.dir}/javax.ws.rs-api-2.0.1.jar"/>
+	</path>
+
+	<!-- The classpath that includes only the NFFG.jar -->
+	<path id="NFFG.classpath">
+		<pathelement location="${lib.dir}/NFFG.jar"/>
+	</path>
+	
+	<!-- The classpath to be used for running the tests -->
+	<path id="test.classpath">
+		<pathelement location="${build.dir}" />
+		<fileset dir="${lib.dir}">
+		    <include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<!-- Target setseed	-->
+	<target name="setseed" unless="seed">
+		<tstamp>
+			<format property="seed" pattern="HHmmss" />
+		</tstamp>
+	</target>
+	
+	<!-- Target init	-->
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${gen.dir}" />
+	</target>
+	
+	<target name="buildNFFGInfo" depends="init">
+		<echo>Building NFFGInfo (if needed)...</echo>
+		<javac 
+			destdir="${build.dir}"
+			debug="${debug}"
+			debuglevel="${debuglevel}"
+			source="${source}"
+			target="${target}"
+			includeantruntime="false">
+				<src path="${src.dir}" />
+				<include name="it/polito/dp2/NFFG/lab1/NFFGInfo.java" />
+				<classpath>
+					<path refid="NFFG.classpath" />
+				</classpath>
+		</javac>
+		<echo>Done.</echo>
+	</target>
+
+	<target name="NFFGInfo" depends="buildNFFGInfo, setseed" description="Run NFFGInfo">
+		<java classname="it.polito.dp2.NFFG.lab1.NFFGInfo" failonerror="true" fork="yes">
+			<sysproperty key="it.polito.dp2.NFFG.Random.seed" value="${seed}"/>
+			<sysproperty key="it.polito.dp2.NFFG.Random.testcase" value="${testcase}"/>
+			<sysproperty key="it.polito.dp2.NFFG.NffgVerifierFactory" value="${NFFGInfo.NffgVerifierFactory}"/>
+			<classpath>
+				<path refid="NFFG.classpath" />
+				<pathelement location="${lib.dir}/NFFGRandom.jar"/>
+				<pathelement path="${build.dir}"/>
+			</classpath>
+		</java>
+	</target>
+	
+	<!-- Target buildClient -->
+	<target name="buildClient" depends="init" description="Build your solution">
+		<echo>Building the submitted solution (if needed)...</echo>
+		<ant antfile="sol_build.xml" target="generate-artifacts"></ant>
+		<javac destdir="${build.dir}" debug="${debug}" debuglevel="${debuglevel}" source="${source}" target="${target}" includeantruntime="false">
+			<src path="${src.dir}"/>
+			<src path="${gen.dir}"/>
+			<include name="it/polito/dp2/NFFG/sol2/**" />
+			<classpath>
+				<path refid="sol.classpath" />
+			</classpath>
+		</javac>
+		<echo>Done.</echo>
+	</target>
+
+	<!-- Target runFuncTest	-->
+	<target name="runFuncTest" depends="setseed" description="Run Functional tests">
+		<antcall target="runFuncTest.real">
+			<param name="test.class" value="${test.class}" />
+			<param name="exit.code" value="126" />
+		</antcall>
+	</target>
+
+	<!-- Target runTest.real	-->
+	<target name="runFuncTest.real" depends="buildClient, setseed">
+		<junit printsummary="on" dir="." fork="yes" haltonfailure="no" showoutput="no" filtertrace="true" timeout="120000">
+			<jvmarg value="-Djava.awt.headless=true" />
+			<sysproperty key="it.polito.dp2.NFFG.NffgVerifierFactory" value="${NFFGInfo.NffgVerifierFactory}" />
+			<sysproperty key="it.polito.dp2.NFFG.Random.testcase" value="${testcase}"/>
+			<sysproperty key="it.polito.dp2.NFFG.Random.seed" value="${seed}"/>
+			<sysproperty key="it.polito.dp2.NFFG.lab2.ReachabilityTesterFactory" value="${SolutionReachabilityTesterFactory}" />
+			<sysproperty key="it.polito.dp2.NFFG.lab2.URL" value="${URL}"/>
+			<formatter type="brief" usefile="false"/>
+			<test haltonfailure="no" failureproperty="test_failed" name="${test.class}"/>
+			<classpath>
+				<path refid="test.classpath" />
+			</classpath>
+		</junit>
+		<fail if="test_failed" status="${exit.code}" message="*** Some Tests FAILED ***"/>
+		<echo>*** All Tests PASSED  ***</echo>
+	</target>
+
+	<!-- Target clean	-->
+	<target name="clean" description="Clean generated files and class files">
+		<delete dir="${build.dir}" />
+		<delete dir="${gen.dir}" />
+	</target>
+	
+	<!--target for building the final zip containing the solution -->
+	<target name="make-final-zip" description="Make final zip to be submitted">
+		<zip destfile="lab2.zip"
+			basedir="${lab2.location}"
+		    includes="custom/* src/it/polito/dp2/NFFG/sol2/**/*.java sol_build.xml"
+		/>
+	</target>
+
+</project>
