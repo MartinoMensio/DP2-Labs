@@ -50,8 +50,11 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		List<NffgT> nffg_list = v.getNffg();
 		// add the nffgs to the live list
 		nffg_list.addAll(input.getNffgs()
-				// use parallel stream to perform parallel execution of
-				// transformation
+				// use parallel stream to possibly perform parallel execution of
+				// transformation. This can be done because the operations done
+				// have no side-effects and operate on different data (both
+				// input and output). This can lead to better utilization of
+				// resources and could fasten the transform operations.
 				.parallelStream()
 				// transform the nffg
 				.map(nffgR -> transformNffg(nffgR)).collect(Collectors.toList()));
@@ -82,6 +85,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		// add to the live list the nodes
 		node_list.addAll(nffgR.getNodes()
 				// the transformation of nodes can be performed in parallel
+				// (same motivation as above)
 				.parallelStream()
 				// perform transformation of the node
 				.map(nodeR -> transformNode(nodeR)).collect(Collectors.toList()));
@@ -99,6 +103,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 				.flatMap(nodeR -> nodeR.getLinks().stream())
 				// transform the link
 				.map(linkR -> transformLink(linkR)).collect(Collectors.toList()));
+
 		nffg.setLinks(links);
 
 		// policies
@@ -106,9 +111,10 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		// get the live list
 		List<PolicyT> policy_list = policies.getPolicy();
 		// get the policies for the specific nffg
-		input.getPolicies(nffgR.getName()).forEach(policyR -> {
-			policy_list.add(transformPolicy(policyR));
-		});
+		policy_list.addAll(input.getPolicies(nffgR.getName()).parallelStream()
+				// transform the policy
+				.map(policyR -> transformPolicy(policyR)).collect(Collectors.toList()));
+
 		nffg.setPolicies(policies);
 
 		return nffg;
@@ -189,9 +195,10 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		if (policyR instanceof TraversalPolicyReader) {
 			TraversalPolicyReader trav_p = (TraversalPolicyReader) policyR;
 			List<FunctionalityT> func_list = policy.getFunctionality();
-			trav_p.getTraversedFuctionalTypes().forEach(functionality -> {
-				func_list.add(FunctionalityT.fromValue(functionality.value()));
-			});
+			func_list.addAll(trav_p.getTraversedFuctionalTypes().parallelStream()
+					// transform the functionality
+					.map(functionality -> FunctionalityT.fromValue(functionality.value()))
+					.collect(Collectors.toList()));
 		}
 
 		return policy;
