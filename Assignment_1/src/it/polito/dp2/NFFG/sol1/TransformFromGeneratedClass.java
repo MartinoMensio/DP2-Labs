@@ -147,9 +147,9 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 		// if some functionality need to be traversed it is a traversal policy,
 		// otherwise this is a reachability policy
 		if (policy.getFunctionality().isEmpty()) {
-			policyR = new MyReachabilityPolicyReader(policy.getName(), nffgR, result, policy.isExpected(), src, dst);
+			policyR = new MyReachabilityPolicyReader(policy.getName(), nffgR, result, policy.isPositive(), src, dst);
 		} else {
-			policyR = new MyTraversalPolicyReader(policy.getName(), nffgR, result, policy.isExpected(), src, dst,
+			policyR = new MyTraversalPolicyReader(policy.getName(), nffgR, result, policy.isPositive(), src, dst,
 					transformFunctionalities(policy.getFunctionality()));
 		}
 		if (policy.getResult() != null) {

@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- A verifier contains a set of NFFGs -->
 <!ELEMENT verifier (nffg)*>
+<!-- An NFFG contains a list of nodes, a list of links and a list of policies -->
 <!ELEMENT nffg (nodes,links,policies)>
+<!-- The nodes element encapsulates the list of node elements -->
 <!ELEMENT nodes (node)*>
+<!-- The node has some attributes (see below) and a single functionality -->
 <!ELEMENT node (functionality)>
+<!-- The functionality element only has an attribute, no content model -->
 <!ELEMENT functionality EMPTY>
+<!-- The links element encapsulates the list of link elements -->
 <!ELEMENT links (link)*>
+<!-- Each link has some attributes (see below) and a src and a dst node -->
 <!ELEMENT link (src,dst)>
+<!-- src and dst elements are of the same type (not expressible in dtd) -->
 <!ELEMENT src EMPTY>
 <!ELEMENT dst EMPTY>
+<!-- The policies element encapsulates the list of policies -->
 <!ELEMENT policies (policy)*>
+<!-- Each policy has a src and dst link (reused the same as the link ones), a list of functionalities to be traversed (if this is a traversal policy) and an optional result -->
 <!ELEMENT policy (src,dst,functionality*,result?)>
+<!-- the result element has the message as content and some attributes (see below) -->
 <!ELEMENT result (#PCDATA)>
 
+<!-- Attributes named "name" are always required and are of type ID -->
 
+<!-- updated: The last time the nffg has been updated (the checking of the format is delegated to application code) -->
 <!ATTLIST nffg
 	name ID #REQUIRED
 	updated CDATA #REQUIRED>
 <!ATTLIST node
 	name ID #REQUIRED>
+<!-- This is an enumeration of fixed functionalities, used both in node definition and in traversal policies -->
 <!ATTLIST functionality
 	type (CACHE | DPI | FW | MAIL_CLIENT | MAIL_SERVER | NAT | SPAM | VPN | WEB_CLIENT | WEB_SERVER) #REQUIRED>
 <!ATTLIST link
 	name ID #REQUIRED>
+<!-- src and dst are used both in links and in policies; their ref attribute specifies the IDREF to the corresponding node -->
 <!ATTLIST src
 	ref IDREF #REQUIRED>
 <!ATTLIST dst
 	ref IDREF #REQUIRED>
+<!-- positive: The expected result for this policy (isPositive) -->
 <!ATTLIST policy
 	name ID #REQUIRED
-	expected (true|false) "true">
+	positive (true|false) "true">
+<!-- satisfied: Actual value of verification result -->
+<!-- verified: The time of verification; as for the other date, in dtd it's impossible to check the format, this is delegated to application code -->
 <!ATTLIST result
 	satisfied (true|false) #REQUIRED
 	verified CDATA #REQUIRED>

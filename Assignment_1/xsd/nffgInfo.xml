@@ -31,26 +31,29 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Policy11" expected="true">
+			<policy name="Policy11" positive="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					This is the message
+				<result satisfied="true" verified="2016-11-21T23:23:00+01:00">
+					This policy has been
+					verified successfully
 				</result>
 			</policy>
-			<policy name="Policy12" expected="false">
+			<policy name="Policy12" positive="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
-				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					This is the message
+				<result satisfied="true" verified="2016-11-21T23:23:00+01:00">
+					This policy has been
+					verified successfully
 				</result>
 			</policy>
-			<policy name="Policy13" expected="true">
+			<policy name="Policy13" positive="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<functionality>FW</functionality>
-				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					This is the message
+				<result satisfied="true" verified="2016-11-21T23:23:00+01:00">
+					This policy has been
+					verified successfully
 				</result>
 			</policy>
 		</policies>
@@ -98,26 +101,30 @@
 			</link>
 		</links>
 		<policies>
-			<policy name="Policy21" expected="true">
+			<policy name="Policy21" positive="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
-				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					This is the message
+				<result satisfied="true" verified="2016-11-21T23:23:00+01:00">
+					This policy has been
+					verified successfully
 				</result>
 			</policy>
-			<policy name="Policy22" expected="false">
+			<policy name="Policy22" positive="false">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
-				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					This is the message
+				<result satisfied="false" verified="2016-11-21T23:23:00+01:00">
+					This policy has not been
+					verified successfully, because it is a negative policy but the
+					property was satisfied
 				</result>
 			</policy>
-			<policy name="Policy23" expected="true">
+			<policy name="Policy23" positive="true">
 				<src ref="WebClient1" />
 				<dst ref="WebServer1" />
 				<functionality>FW</functionality>
-				<result satisfied="true" verified="2016-11-10T15:40:00+01:00">
-					This is the message
+				<result satisfied="true" verified="2016-11-21T23:23:00+01:00">
+					This policy has been
+					verified successfully
 				</result>
 			</policy>
 		</policies>

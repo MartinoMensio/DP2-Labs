@@ -176,7 +176,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		// set the name
 		policy.setName(policyR.getName());
 		// and the expected result
-		policy.setExpected(policyR.isPositive());
+		policy.setPositive(policyR.isPositive());
 		// and the actual result
 		policy.setResult(transformResult(policyR.getResult()));
 

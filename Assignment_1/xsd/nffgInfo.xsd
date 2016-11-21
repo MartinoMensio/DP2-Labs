@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:annotation>
 		<xs:documentation>
-			This is the schema for NFFG
+			This is the schema for NFFG verifier
 		</xs:documentation>
 	</xs:annotation>
 	<xs:element name="verifier">
@@ -113,7 +113,7 @@
 						maxOccurs="unbounded" type="functionality_t" />
 					<xs:element name="result" type="result_t" minOccurs="0" />
 				</xs:sequence>
-				<xs:attribute name="expected" type="xs:boolean" />
+				<xs:attribute name="positive" type="xs:boolean" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
