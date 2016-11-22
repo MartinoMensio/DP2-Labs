@@ -15,3 +15,5 @@ The "node_ref_t" is a type that represents an element without content and with a
 The "name_t" is a type that represent the constraint on names. In the specifications given, the string must be composed of an alphabetic letter followed by alphanumeric characters, but running the tests I discovered that also the character '_' had to be allowed, so I included it into the pattern.
 
 As for the DTD, I considedered a single type of policy, and depending on its content (the number of functionalities to be traversed) the application will determine if it is a reachability or a traversal one.
+
+The attribute "positive" is optional with the default value "true". This means that if it is not specified, the policy is a positive one by default.

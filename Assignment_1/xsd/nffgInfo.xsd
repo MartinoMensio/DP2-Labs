@@ -113,7 +113,7 @@
 						maxOccurs="unbounded" type="functionality_t" />
 					<xs:element name="result" type="result_t" minOccurs="0" />
 				</xs:sequence>
-				<xs:attribute name="positive" type="xs:boolean" />
+				<xs:attribute name="positive" type="xs:boolean" use="optional" default="true" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
