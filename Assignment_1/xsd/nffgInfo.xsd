@@ -134,7 +134,7 @@
 	</xs:simpleType>
 
 	<xs:complexType name="node_ref_t">
-		<xs:attribute name="ref" type="name_t" />
+		<xs:attribute name="ref" type="name_t" use="required" />
 	</xs:complexType>
 
 	<xs:simpleType name="name_t">
