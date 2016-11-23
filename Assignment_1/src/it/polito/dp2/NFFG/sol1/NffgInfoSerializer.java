@@ -10,6 +10,17 @@ import it.polito.dp2.NFFG.sol1.jaxb.*;
 
 import java.io.*;
 
+/**
+ * The serializer class takes the data from the monitor and serializes them
+ * using the generated classes and marshaling the root element. The output is an
+ * XML file whose name (path) is passed as a parameter on the command line. For
+ * testing purposes, if the parameter is not provided, i use the standard output
+ * to print the XML file
+ * 
+ * @author Martino Mensio
+ *
+ */
+
 public class NffgInfoSerializer {
 	private NffgVerifier monitor;
 	private String outFile = null;
@@ -69,7 +80,8 @@ public class NffgInfoSerializer {
 	 */
 	public void serialize() {
 
-		// create root element
+		// apply the transformation from data from interfaces to objects of the
+		// generated classes
 		Verifier v = TransformToGeneratedClass.newTransformer(monitor).transform();
 
 		// serialize (+schema)
@@ -77,26 +89,27 @@ public class NffgInfoSerializer {
 		try {
 			JAXBContext jc = JAXBContext.newInstance("it.polito.dp2.NFFG.sol1.jaxb");
 			Marshaller m = jc.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
 			SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-			try {
-				m.setSchema(sf.newSchema(new File("xsd/nffgInfo.xsd")));
-			} catch (SAXException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			m.setSchema(sf.newSchema(new File("xsd/nffgInfo.xsd")));
 
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			if (outFile != null) {
 				m.marshal(v, new File(outFile));
 			} else {
 				m.marshal(v, System.out);
 			}
 
+		} catch (SAXException e) {
+			// schema problem
+			System.err.println("invalid schema: " + e.getMessage());
+		} catch (JAXBException e) {
+			// marshaling problem
+			System.err.println("unexpected problem occurs during the marshalling: " + e.getMessage());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// last chance
+			System.err.println(e.getMessage());
 		}
 	}
 }
