@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Generator of classes for assignment 2" default="generate-artifacts" basedir=".">
+
+    <property name="gen.dir" location="$./gen-src" />
+
+	<target name="generate-artifacts" description="Generator of classes for assignment 2">
+		<echo>I must generate artifacts by getting the xsd from the WADL</echo>
+	</target>
+</project>
