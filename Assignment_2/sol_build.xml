@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Generator of classes for assignment 2" default="generate-artifacts" basedir=".">
 
-    <property name="gen.dir" location="$./gen-src" />
+	<!-- The location of the ... web service -->
+	<property name="PORT" value="8080" />
+	<property name="URL" value="http://localhost:${PORT}/Neo4JXML/rest" />
+	<property name="WADL" value="${URL}/application.wadl" />
 
-	<target name="generate-artifacts" description="Generator of classes for assignment 2">
-		<echo>I must generate artifacts by getting the xsd from the WADL</echo>
+	<property name="root.location" location="." />
+	<property name="gen.dir" location="${root.location}/gen-src" />
+	
+	
+	<property name="lib.dir" location="${root.location}/lib" />
+
+	<!-- define wjc task (WADL to Java) -->
+	<taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask">
+		<classpath>
+			<fileset dir="${lib.dir}" includes="*.jar" />
+		</classpath>
+	</taskdef>
+
+	<!-- define the client artifacts generation target -->
+	<target name="generate-artifacts">
+		<mkdir dir="${gen.dir}" />
+		<echo message="Compiling the descriptions..." />
+		<wjc target="${gen.dir}" autoSchemaPackage="true" package="it.polito.dp2.NFFG.lab2" description="${WADL}">
+			<customizations dir="${root.location}" includes="binding.xjc" />
+			<produces dir="${gen.dir}/it/polito/dp2/NFFG/Lab2" includes="*.java" />
+			<depends dir="${root.location}" includes="build.xml" />
+		</wjc>
 	</target>
 </project>
