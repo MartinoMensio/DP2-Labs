@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
@@ -58,7 +59,11 @@ public class MyReachabilityTester implements ReachabilityTester {
 
 				nodeIds.put(nodeR.getName(), res.getId());
 			} catch (ResponseProcessingException e) {
-				throw new ServiceException("impossible to upload the node named " + nodeR.getName());
+				throw new ServiceException("response processing error with node named " + nodeR.getName());
+			} catch (ProcessingException e) {
+				throw new ServiceException("processing error with node named " + nodeR.getName());
+			} catch (WebApplicationException e) {
+				throw new ServiceException("webapp error on node " + nodeR.getName() + " because of " + e.getMessage());
 			}
 
 		}
@@ -74,13 +79,18 @@ public class MyReachabilityTester implements ReachabilityTester {
 
 			try {
 				Relationship res = client.target(uri.toString()).path("resource").path("node")
-						.path(nodeIds.get(linkR.getSourceNode().getName())).path("relationship").request(MediaType.TEXT_XML)
-						.accept("*/*").post(Entity.entity(relation, MediaType.APPLICATION_XML), Relationship.class);
+						.path(nodeIds.get(linkR.getSourceNode().getName())).path("relationship")
+						.request(MediaType.TEXT_XML).accept("*/*")
+						.post(Entity.entity(relation, MediaType.APPLICATION_XML), Relationship.class);
 
 				linkIds.put(linkR, res.getId());
-				//System.out.println(res.getId());
+				// System.out.println(res.getId());
 			} catch (ResponseProcessingException e) {
-				throw new ServiceException("impossible to upload the link named " + linkR.getName());
+				throw new ServiceException("response processing error with link named " + linkR.getName());
+			} catch (ProcessingException e) {
+				throw new ServiceException("processing error with link named " + linkR.getName());
+			} catch (WebApplicationException e) {
+				throw new ServiceException("webapp error on link " + linkR.getName() + " because of " + e.getMessage());
 			}
 		}
 
@@ -96,23 +106,20 @@ public class MyReachabilityTester implements ReachabilityTester {
 		}
 		String srcId = nodeIds.get(srcName);
 		String dstId = nodeIds.get(destName);
-		
-		if(srcId == null) {
+
+		if (srcId == null) {
 			throw new UnknownNameException("no node with name " + srcName);
 		}
-		if(dstId == null) {
+		if (dstId == null) {
 			throw new UnknownNameException("no node with name " + destName);
 		}
-		
+
 		// TODO refactor
 		try {
-			Paths res = client.target(uri.toString()).path("resource").path("node")
-					.path(srcId).path("paths")
-					.queryParam("dst", dstId)
-					.request(MediaType.TEXT_XML)
-					.accept("*/*").get(Paths.class);
-			//System.out.println("found " + res.getPath().size() + "paths");
-			
+			Paths res = client.target(uri.toString()).path("resource").path("node").path(srcId).path("paths")
+					.queryParam("dst", dstId).request(MediaType.TEXT_XML).accept("*/*").get(Paths.class);
+			// System.out.println("found " + res.getPath().size() + "paths");
+
 			return res.getPath().size() > 0;
 		} catch (ResponseProcessingException e) {
 			throw new ServiceException("impossible to process the Paths response");
