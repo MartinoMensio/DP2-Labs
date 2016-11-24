@@ -15,11 +15,15 @@ public class MyReachabilityTester implements ReachabilityTester {
 	private NffgVerifier monitor;
 	private URI uri;
 	private String graphName;
+	private Client client;
+	private Map<String, String> nodeIds;
+	private Map<LinkReader, String> linkIds;
 
 	public MyReachabilityTester(NffgVerifier nffgR, URI uri) {
 		this.monitor = nffgR;
 		this.uri = uri;
 		graphName = null;
+		client = ClientBuilder.newClient();
 	}
 
 	@Override
@@ -32,8 +36,6 @@ public class MyReachabilityTester implements ReachabilityTester {
 		// clean the graphName (for failures)
 		graphName = null;
 
-		Client client = ClientBuilder.newClient();
-
 		// TODO refactor deletion previous graph
 		Response resdel = client.target(uri.toString()).path("resource").path("nodes").request(MediaType.TEXT_XML)
 				.accept("*/*").delete();
@@ -42,7 +44,7 @@ public class MyReachabilityTester implements ReachabilityTester {
 		}
 
 		// TODO refactor node uploading
-		Map<NodeReader, String> nodeIds = new HashMap<>();
+		nodeIds = new HashMap<>();
 
 		for (NodeReader nodeR : nffgR.getNodes()) {
 			Node node = new Node();
@@ -54,37 +56,31 @@ public class MyReachabilityTester implements ReachabilityTester {
 				Node res = client.target(uri.toString()).path("resource").path("node").request(MediaType.TEXT_XML)
 						.accept("*/*").post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
 
-				nodeIds.put(nodeR, res.getId());
+				nodeIds.put(nodeR.getName(), res.getId());
 			} catch (ResponseProcessingException e) {
 				throw new ServiceException("impossible to upload the node named " + nodeR.getName());
 			}
 
 		}
 
-		Map<LinkReader, String> linkIds = new HashMap<>();
+		linkIds = new HashMap<>();
 
 		// TODO refactor links uploading
 		for (LinkReader linkR : nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream())
 				.collect(Collectors.toList())) {
 			Relationship relation = new Relationship();
-			relation.setDstNode(nodeIds.get(linkR.getDestinationNode()));
+			relation.setDstNode(nodeIds.get(linkR.getDestinationNode().getName()));
 			relation.setType("Connection");
-			
-			
 
 			try {
-				System.out.println("Trying to get id of node " + linkR.getSourceNode().getName());
-				System.out.println(nodeIds.get(linkR.getSourceNode()));
 				Relationship res = client.target(uri.toString()).path("resource").path("node")
-						.path(nodeIds.get(linkR.getSourceNode()))
-						.path("relationship")
-						.request(MediaType.TEXT_XML).accept("*/*")
-						.post(Entity.entity(relation, MediaType.APPLICATION_XML), Relationship.class);
+						.path(nodeIds.get(linkR.getSourceNode().getName())).path("relationship").request(MediaType.TEXT_XML)
+						.accept("*/*").post(Entity.entity(relation, MediaType.APPLICATION_XML), Relationship.class);
 
 				linkIds.put(linkR, res.getId());
-				System.out.println(res.getId());
+				//System.out.println(res.getId());
 			} catch (ResponseProcessingException e) {
-				throw new ServiceException("impossible to upload the node named " + linkR.getName());
+				throw new ServiceException("impossible to upload the link named " + linkR.getName());
 			}
 		}
 
@@ -98,8 +94,29 @@ public class MyReachabilityTester implements ReachabilityTester {
 		if (graphName == null) {
 			throw new NoGraphException("no graph is currently loaded, please call loadNFFG");
 		}
-		// TODO Auto-generated method stub
-		return false;
+		String srcId = nodeIds.get(srcName);
+		String dstId = nodeIds.get(destName);
+		
+		if(srcId == null) {
+			throw new UnknownNameException("no node with name " + srcName);
+		}
+		if(dstId == null) {
+			throw new UnknownNameException("no node with name " + destName);
+		}
+		
+		// TODO refactor
+		try {
+			Paths res = client.target(uri.toString()).path("resource").path("node")
+					.path(srcId).path("paths")
+					.queryParam("dst", dstId)
+					.request(MediaType.TEXT_XML)
+					.accept("*/*").get(Paths.class);
+			//System.out.println("found " + res.getPath().size() + "paths");
+			
+			return res.getPath().size() > 0;
+		} catch (ResponseProcessingException e) {
+			throw new ServiceException("impossible to process the Paths response");
+		}
 	}
 
 	@Override
