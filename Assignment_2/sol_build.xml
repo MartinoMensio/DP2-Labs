@@ -23,10 +23,12 @@
 	<target name="generate-artifacts">
 		<mkdir dir="${gen.dir}" />
 		<echo message="Compiling the descriptions..." />
-		<wjc target="${gen.dir}" autoSchemaPackage="true" package="it.polito.dp2.NFFG.lab2" description="${WADL}">
+		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.lab2"
+		 description="${WADL}">
 			<customizations dir="${root.location}" includes="binding.xjc" />
 			<produces dir="${gen.dir}/it/polito/dp2/NFFG/Lab2" includes="*.java" />
 			<depends dir="${root.location}" includes="build.xml" />
+			<!-- <customClassName uri="http://example.org/Neo4J" classname="it.polito.dp2.NFFG.lab2" /> -->
 		</wjc>
 	</target>
 </project>
