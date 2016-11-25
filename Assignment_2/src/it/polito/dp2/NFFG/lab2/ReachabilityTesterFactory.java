@@ -21,13 +21,13 @@ public abstract class ReachabilityTesterFactory {
 	 * 
 	 * <p>
 	 * This static method creates a new factory instance. This method uses the
-	 * <tt>it.polito.dp2.NFFG.NffgVerifierFactory</tt> system property to
+	 * <tt>it.polito.dp2.NFFG.lab2.ReachabilityTesterFactory</tt> system property to
 	 * determine the ReachabilityTesterFactory implementation class to load.
 	 * </p>
 	 * <p>
 	 * Once an application has obtained a reference to a
 	 * <tt>ReachabilityTesterFactory</tt> it can use the factory to obtain a new
-	 * {@link NffgVerifier} instance.
+	 * {@link ReachabilityTester} instance.
 	 * </p>
 	 * 
 	 * @return a new instance of a <tt>ReachabilityTesterFactory</tt>.
@@ -60,10 +60,10 @@ public abstract class ReachabilityTesterFactory {
 	
 	
 	/**
-	 * Creates a new instance of a {@link NffgVerifier} implementation.
+	 * Creates a new instance of a {@link ReachabilityTester} implementation.
 	 * 
-	 * @return a new instance of a {@link NffgVerifier} implementation.
-	 * @throws ReachabilityTesterException if an implementation of {@link NffgVerifier} cannot be created.
+	 * @return a new instance of a {@link ReachabilityTester} implementation.
+	 * @throws ReachabilityTesterException if an implementation of {@link ReachabilityTester} cannot be created.
 	 */
 	public abstract ReachabilityTester newReachabilityTester() throws ReachabilityTesterException;
 }
