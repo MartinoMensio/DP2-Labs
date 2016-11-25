@@ -122,7 +122,11 @@ public class MyReachabilityTester implements ReachabilityTester {
 
 			return res.getPath().size() > 0;
 		} catch (ResponseProcessingException e) {
-			throw new ServiceException("impossible to process the Paths response");
+			throw new ServiceException("impossible to process the Paths response: response processing error");
+		} catch (ProcessingException e) {
+			throw new ServiceException("impossible to process the Paths response: processing error");
+		} catch (WebApplicationException e) {
+			throw new ServiceException("impossible to process the Paths response: webapp error");
 		}
 	}
 
