@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Generator of classes for assignment 2" default="generate-artifacts" basedir=".">
 
-	<!-- The location of the ... web service -->
+	<!-- These properties are repeated only in case this ant file is executed directly.
+	The names of the properties match the names of the properties in the build.xml file,
+	so that the caller build.xml can override them -->
 	<property name="PORT" value="8080" />
 	<property name="URL" value="http://localhost:${PORT}/Neo4JXML/rest" />
 	<property name="WADL" value="${URL}/application.wadl" />
-
-	<property name="root.location" location="." />
-	<property name="gen.dir" location="${root.location}/gen-src" />
-	
-	
-	<property name="lib.dir" location="${root.location}/lib" />
+	<property name="lab2.location" location="." />
+	<property name="gen.dir" location="${lab2.location}/gen-src" />
+	<property name="lib.dir" location="${lab2.location}/lib" />
 
 	<!-- define wjc task (WADL to Java) -->
 	<taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask">
@@ -22,13 +21,11 @@
 	<!-- define the client artifacts generation target -->
 	<target name="generate-artifacts">
 		<mkdir dir="${gen.dir}" />
-		<echo message="Compiling the descriptions..." />
-		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.lab2"
-		 description="${WADL}">
-			<customizations dir="${root.location}" includes="binding.xjc" />
+		<echo message="Compiling the WADL descriptions..." />
+		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.lab2" description="${WADL}">
 			<produces dir="${gen.dir}/it/polito/dp2/NFFG/Lab2" includes="*.java" />
-			<depends dir="${root.location}" includes="build.xml" />
-			<!-- <customClassName uri="http://example.org/Neo4J" classname="it.polito.dp2.NFFG.lab2" /> -->
+			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
+			<depends dir="${lab2.location}" includes="sol_build.xml" />
 		</wjc>
 	</target>
 </project>
