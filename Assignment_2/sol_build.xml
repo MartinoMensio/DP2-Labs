@@ -10,6 +10,7 @@
 	<property name="lab2.location" location="." />
 	<property name="gen.dir" location="${lab2.location}/gen-src" />
 	<property name="lib.dir" location="${lab2.location}/lib" />
+	<property name="custom.dir" location="${lab2.location}/custom" />
 
 	<!-- define wjc task (WADL to Java) -->
 	<taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask">
@@ -18,14 +19,27 @@
 		</classpath>
 	</taskdef>
 
+	<!-- Target chk-artifacts -->
+	<target name="-chk-artifacts">
+		<uptodate property="generate-artifacts.notRequired" targetfile="${gen.dir}/.flagfile">
+			<!-- regenerate artifacts if this build file is modified (or if the flagfile is removed) -->
+			<srcfiles dir="${lab2.location}" includes="sol_build.xml" />
+			<!-- update also in case some customization files are updated -->
+			<srcfiles dir="${custom.dir}" includes="*.xjb" />
+		</uptodate>
+	</target>
+
 	<!-- define the client artifacts generation target -->
-	<target name="generate-artifacts">
+	<target name="generate-artifacts" depends="-chk-artifacts" unless="generate-artifacts.notRequired">
 		<mkdir dir="${gen.dir}" />
 		<echo message="Compiling the WADL descriptions..." />
 		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol2" description="${WADL}">
 			<produces dir="${gen.dir}/it/polito/dp2/NFFG/Lab2" includes="*.java" />
 			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
 			<depends dir="${lab2.location}" includes="sol_build.xml" />
+			<!-- use customizations -->
+			<customizations dir="${custom.dir}" includes="*.xjb" />
 		</wjc>
+		<touch file="${gen.dir}/.flagfile" />
 	</target>
 </project>
