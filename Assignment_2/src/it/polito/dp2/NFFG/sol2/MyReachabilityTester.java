@@ -41,71 +41,20 @@ public class MyReachabilityTester implements ReachabilityTester {
 		// clean the graphName (for failures)
 		graphName = null;
 
-		// deletion of previous graph (nodes and links)
-		try {
-			Response resdel = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
-
-			if (resdel.getStatus() != 200) {
-				// not successful
-				throw new ServiceException("impossible to delete the previous graph: HTTP " + resdel.getStatus());
-			}
-		} catch (ResponseProcessingException e) {
-			// e.g. if the MediaType is wrong
-			throw new ServiceException("impossible to delete the previous graph because of response processing error"
-					+ ", status: HTTP " + e.getResponse().getStatus());
-		} catch (ProcessingException e) {
-			throw new ServiceException("impossible to delete the previous graph because of process exception");
-		}
+		deleteAllNodes();
 
 		// create new map of node ids
 		nodeIds = new HashMap<>();
 
 		// node uploading
 		for (NodeReader nodeR : nffgR.getNodes()) {
-			Node node = factory.createNode();
-			Property nameP = factory.createProperty();
-			nameP.setName("name");
-			nameP.setValue(nodeR.getName());
-			node.getProperty().add(nameP);
-			try {
-				Node res = target.path("node").request(MediaType.APPLICATION_XML)
-						.post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
-
-				nodeIds.put(nodeR.getName(), res.getId());
-			} catch (ResponseProcessingException e) {
-				throw new ServiceException("response processing error with node named " + nodeR.getName()
-						+ ", status: HTTP " + e.getResponse().getStatus());
-			} catch (ProcessingException e) {
-				throw new ServiceException("processing error with node named " + nodeR.getName());
-			} catch (WebApplicationException e) {
-				throw new ServiceException("webapp error on node " + nodeR.getName() + " because of error  HTTP "
-						+ e.getResponse().getStatus());
-			}
-
+			nodeIds.put(nodeR.getName(), uploadNode(nodeR));
 		}
 
-		// TODO refactor links uploading
+		// links uploading
 		for (LinkReader linkR : nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream())
 				.collect(Collectors.toList())) {
-			Relationship relation = factory.createRelationship();
-			relation.setDstNode(nodeIds.get(linkR.getDestinationNode().getName()));
-			relation.setType("Connection");
-
-			try {
-				Response res = target.path("node").path(nodeIds.get(linkR.getSourceNode().getName()))
-						.path("relationship").request(MediaType.APPLICATION_XML)
-						.post(Entity.entity(relation, MediaType.APPLICATION_XML));
-
-				if (res.getStatus() != 200) {
-					throw new ServiceException(
-							"error on link " + linkR.getName() + " because of error HTTP " + res.getStatus());
-				}
-			} catch (ResponseProcessingException e) {
-				throw new ServiceException("response processing error with link named " + linkR.getName()
-						+ ", status: HTTP " + e.getResponse().getStatus());
-			} catch (ProcessingException e) {
-				throw new ServiceException("processing error with link named " + linkR.getName());
-			}
+			uploadLink(linkR);
 		}
 
 		// on success, overwrite the graphName
@@ -149,6 +98,65 @@ public class MyReachabilityTester implements ReachabilityTester {
 	@Override
 	public String getCurrentGraphName() {
 		return graphName;
+	}
+
+	private void deleteAllNodes() throws ServiceException {
+		// deletion of previous graph (nodes and links)
+		try {
+			Response resdel = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
+
+			if (resdel.getStatus() != 200) {
+				// not successful
+				throw new ServiceException("impossible to delete the previous graph: HTTP " + resdel.getStatus());
+			}
+		} catch (ResponseProcessingException e) {
+			// e.g. if the MediaType is wrong
+			throw new ServiceException("impossible to delete the previous graph because of response processing error"
+					+ ", status: HTTP " + e.getResponse().getStatus());
+		}
+	}
+
+	private String uploadNode(NodeReader nodeR) throws ServiceException {
+		Node node = factory.createNode();
+		Property nameP = factory.createProperty();
+		nameP.setName("name");
+		nameP.setValue(nodeR.getName());
+		node.getProperty().add(nameP);
+		try {
+			Node res = target.path("node").request(MediaType.APPLICATION_XML)
+					.post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
+
+			return res.getId();
+		} catch (ResponseProcessingException e) {
+			throw new ServiceException("response processing error with node named " + nodeR.getName()
+					+ ", status: HTTP " + e.getResponse().getStatus());
+		} catch (ProcessingException e) {
+			throw new ServiceException("processing error with node named " + nodeR.getName());
+		} catch (WebApplicationException e) {
+			throw new ServiceException("webapp error on node " + nodeR.getName() + " because of error  HTTP "
+					+ e.getResponse().getStatus());
+		}
+	}
+
+	private void uploadLink(LinkReader linkR) throws ServiceException {
+		Relationship relation = factory.createRelationship();
+		relation.setDstNode(nodeIds.get(linkR.getDestinationNode().getName()));
+		relation.setType("Connection");
+
+		try {
+			Response res = target.path("node").path(nodeIds.get(linkR.getSourceNode().getName())).path("relationship")
+					.request(MediaType.APPLICATION_XML).post(Entity.entity(relation, MediaType.APPLICATION_XML));
+
+			if (res.getStatus() != 200) {
+				throw new ServiceException(
+						"error on link " + linkR.getName() + " because of error HTTP " + res.getStatus());
+			}
+		} catch (ResponseProcessingException e) {
+			throw new ServiceException("response processing error with link named " + linkR.getName()
+					+ ", status: HTTP " + e.getResponse().getStatus());
+		} catch (ProcessingException e) {
+			throw new ServiceException("processing error with link named " + linkR.getName());
+		}
 	}
 
 }
