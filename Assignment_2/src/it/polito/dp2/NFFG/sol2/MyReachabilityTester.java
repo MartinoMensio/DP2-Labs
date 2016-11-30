@@ -16,7 +16,7 @@ public class MyReachabilityTester implements ReachabilityTester {
 	private NffgVerifier monitor;
 	private URI uri;
 	private String graphName;
-	private Client client;
+	private WebTarget target;
 	private Map<String, String> nodeIds;
 	private Map<LinkReader, String> linkIds;
 
@@ -24,12 +24,11 @@ public class MyReachabilityTester implements ReachabilityTester {
 		this.monitor = nffgR;
 		this.uri = uri;
 		graphName = null;
-		client = ClientBuilder.newClient();
+		target = ClientBuilder.newClient().target(uri.toString()).path("resource");
 	}
 
 	@Override
 	public void loadNFFG(String name) throws UnknownNameException, ServiceException {
-		// TODO Auto-generated method stub
 		NffgReader nffgR = monitor.getNffg(name);
 		if (nffgR == null) {
 			throw new UnknownNameException("no nffg with name " + name);
@@ -37,16 +36,24 @@ public class MyReachabilityTester implements ReachabilityTester {
 		// clean the graphName (for failures)
 		graphName = null;
 
-		// TODO refactor deletion previous graph
-		Response resdel = client.target(uri.toString()).path("resource").path("nodes").request(MediaType.TEXT_XML)
-				.accept("*/*").delete();
-		if (resdel.getStatus() != 200) {
-			throw new ServiceException("impossible to delete the previous graph");
+		// deletion of previous graph (nodes and links)
+		try {
+			Response resdel = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
+
+			if (resdel.getStatus() != 200) {
+				// not successful
+				throw new ServiceException("impossible to delete the previous graph: HTTP " + resdel.getStatus());
+			}
+		} catch (ResponseProcessingException e) {
+			// e.g. if the MediaType is wrong
+			throw new ServiceException("impossible to delete the previous graph because of response processing error"
+					+ ", status: HTTP " + e.getResponse().getStatus());
 		}
 
-		// TODO refactor node uploading
+		// create new map of node ids
 		nodeIds = new HashMap<>();
 
+		// node uploading
 		for (NodeReader nodeR : nffgR.getNodes()) {
 			Node node = new Node();
 			Property nameP = new Property();
@@ -54,20 +61,23 @@ public class MyReachabilityTester implements ReachabilityTester {
 			nameP.setValue(nodeR.getName());
 			node.getProperty().add(nameP);
 			try {
-				Node res = client.target(uri.toString()).path("resource").path("node").request(MediaType.TEXT_XML)
-						.accept("*/*").post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
+				Node res = target.path("node").request(MediaType.APPLICATION_XML)
+						.post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
 
 				nodeIds.put(nodeR.getName(), res.getId());
 			} catch (ResponseProcessingException e) {
-				throw new ServiceException("response processing error with node named " + nodeR.getName());
+				throw new ServiceException("response processing error with node named " + nodeR.getName()
+						+ ", status: HTTP " + e.getResponse().getStatus());
 			} catch (ProcessingException e) {
 				throw new ServiceException("processing error with node named " + nodeR.getName());
 			} catch (WebApplicationException e) {
-				throw new ServiceException("webapp error on node " + nodeR.getName() + " because of " + e.getMessage());
+				throw new ServiceException("webapp error on node " + nodeR.getName() + " because of error  HTTP "
+						+ e.getResponse().getStatus());
 			}
 
 		}
 
+		// create new map of link id
 		linkIds = new HashMap<>();
 
 		// TODO refactor links uploading
@@ -78,19 +88,20 @@ public class MyReachabilityTester implements ReachabilityTester {
 			relation.setType("Connection");
 
 			try {
-				Relationship res = client.target(uri.toString()).path("resource").path("node")
-						.path(nodeIds.get(linkR.getSourceNode().getName())).path("relationship")
-						.request(MediaType.TEXT_XML).accept("*/*")
+				Relationship res = target.path("node").path(nodeIds.get(linkR.getSourceNode().getName()))
+						.path("relationship").request(MediaType.APPLICATION_XML)
 						.post(Entity.entity(relation, MediaType.APPLICATION_XML), Relationship.class);
 
 				linkIds.put(linkR, res.getId());
 				// System.out.println(res.getId());
 			} catch (ResponseProcessingException e) {
-				throw new ServiceException("response processing error with link named " + linkR.getName());
+				throw new ServiceException("response processing error with link named " + linkR.getName()
+						+ ", status: HTTP " + e.getResponse().getStatus());
 			} catch (ProcessingException e) {
 				throw new ServiceException("processing error with link named " + linkR.getName());
 			} catch (WebApplicationException e) {
-				throw new ServiceException("webapp error on link " + linkR.getName() + " because of " + e.getMessage());
+				throw new ServiceException("webapp error on link " + linkR.getName() + " because of error HTTP "
+						+ e.getResponse().getStatus());
 			}
 		}
 
@@ -114,19 +125,21 @@ public class MyReachabilityTester implements ReachabilityTester {
 			throw new UnknownNameException("no node with name " + destName);
 		}
 
-		// TODO refactor
+		// request the paths from source to destination
 		try {
-			Paths res = client.target(uri.toString()).path("resource").path("node").path(srcId).path("paths")
-					.queryParam("dst", dstId).request(MediaType.TEXT_XML).accept("*/*").get(Paths.class);
+			Paths res = target.path("node").path(srcId).path("paths").queryParam("dst", dstId)
+					.request(MediaType.APPLICATION_XML).get(Paths.class);
 			// System.out.println("found " + res.getPath().size() + "paths");
-
 			return res.getPath().size() > 0;
 		} catch (ResponseProcessingException e) {
-			throw new ServiceException("impossible to process the Paths response: response processing error");
+			throw new ServiceException(
+					"impossible to process the Paths response: response processing error, status: HTTP "
+							+ e.getResponse().getStatus());
 		} catch (ProcessingException e) {
 			throw new ServiceException("impossible to process the Paths response: processing error");
 		} catch (WebApplicationException e) {
-			throw new ServiceException("impossible to process the Paths response: webapp error");
+			throw new ServiceException(
+					"impossible to process the Paths response: webapp error HTTP " + e.getResponse().getStatus());
 		}
 	}
 
