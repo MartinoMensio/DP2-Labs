@@ -12,8 +12,8 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.lab2.*;
 
 /**
- * Implementation of the ReachabilityTester interface.
- * The loadNffg method exploits the functionality of parallelStream
+ * Implementation of the ReachabilityTester interface. The loadNffg method
+ * exploits the functionality of parallelStream
  * 
  * @author Martino Mensio
  *
@@ -33,6 +33,21 @@ public class MyReachabilityTester implements ReachabilityTester {
 		target = ClientBuilder.newClient().target(uri.toString()).path("resource");
 	}
 
+	/**
+	 * The main operations are (strictly ordered):
+	 * <ol>
+	 * <li>Delete the previous informations: calling DELETE on the nodes
+	 * resource; this also removes all the links because they are nested
+	 * resources inside nodes</li>
+	 * <li>Upload nodes: calling POST on the node resource; these calls can be
+	 * performed in parallel, and this will give benefits in terms of execution
+	 * time, since the network operations are order of magnitude slower than
+	 * local operations</li>
+	 * <li>Upload links: calling POST on the node/{src_id}/relationship
+	 * resource; these calls can also be performed in parallel, giving the same
+	 * benefits as above</li>
+	 * </ol>
+	 */
 	@Override
 	public void loadNFFG(String name) throws UnknownNameException, ServiceException {
 		NffgReader nffgR = monitor.getNffg(name);
@@ -87,8 +102,8 @@ public class MyReachabilityTester implements ReachabilityTester {
 		if (graphName == null) {
 			throw new NoGraphException("no graph is currently loaded, please call loadNFFG");
 		}
-		String srcId = (nodeIds == null)? null : nodeIds.get(srcName);
-		String dstId = (nodeIds == null)? null : nodeIds.get(destName);
+		String srcId = (nodeIds == null) ? null : nodeIds.get(srcName);
+		String dstId = (nodeIds == null) ? null : nodeIds.get(destName);
 
 		if (srcId == null) {
 			throw new UnknownNameException("no node with name " + srcName);
