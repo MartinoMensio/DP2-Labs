@@ -19,6 +19,8 @@ public class MyReachabilityTester implements ReachabilityTester {
 	private WebTarget target;
 	private Map<String, String> nodeIds;
 	private Map<LinkReader, String> linkIds;
+	
+	private ObjectFactory factory = new ObjectFactory();
 
 	public MyReachabilityTester(NffgVerifier nffgR, URI uri) {
 		this.monitor = nffgR;
@@ -55,8 +57,8 @@ public class MyReachabilityTester implements ReachabilityTester {
 
 		// node uploading
 		for (NodeReader nodeR : nffgR.getNodes()) {
-			Node node = new Node();
-			Property nameP = new Property();
+			Node node = factory.createNode();
+			Property nameP = factory.createProperty();
 			nameP.setName("name");
 			nameP.setValue(nodeR.getName());
 			node.getProperty().add(nameP);
@@ -83,7 +85,7 @@ public class MyReachabilityTester implements ReachabilityTester {
 		// TODO refactor links uploading
 		for (LinkReader linkR : nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream())
 				.collect(Collectors.toList())) {
-			Relationship relation = new Relationship();
+			Relationship relation = factory.createRelationship();
 			relation.setDstNode(nodeIds.get(linkR.getDestinationNode().getName()));
 			relation.setType("Connection");
 
