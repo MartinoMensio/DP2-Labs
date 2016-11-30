@@ -18,6 +18,8 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 
 	private NffgVerifier input;
 
+	private ObjectFactory factory = new ObjectFactory();
+
 	/**
 	 * The constructor is private, use instead the factory method
 	 * 
@@ -45,7 +47,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 */
 	@Override
 	public Verifier transform() {
-		Verifier v = new Verifier();
+		Verifier v = factory.createVerifier();
 		// get the live list of nffgs
 		List<NffgT> nffg_list = v.getNffg();
 		// add the nffgs to the live list
@@ -72,14 +74,14 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 */
 	private NffgT transformNffg(NffgReader nffgR) {
 		// create an empty nffg element
-		NffgT nffg = new NffgT();
+		NffgT nffg = factory.createNffgT();
 		// set the name
 		nffg.setName(nffgR.getName());
 		// set the time
 		nffg.setUpdated(Utils.XMLGregorianCalendarFromCalendar(nffgR.getUpdateTime()));
 
 		// nodes
-		NffgT.Nodes nodes = new NffgT.Nodes();
+		NffgT.Nodes nodes = factory.createNffgTNodes();
 		// get the live list
 		List<NodeT> node_list = nodes.getNode();
 		// add to the live list the nodes
@@ -93,7 +95,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		nffg.setNodes(nodes);
 
 		// links
-		NffgT.Links links = new NffgT.Links();
+		NffgT.Links links = factory.createNffgTLinks();
 		// get the live list
 		List<LinkT> link_list = links.getLink();
 		link_list.addAll(nffgR.getNodes().parallelStream()
@@ -107,7 +109,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		nffg.setLinks(links);
 
 		// policies
-		NffgT.Policies policies = new NffgT.Policies();
+		NffgT.Policies policies = factory.createNffgTPolicies();
 		// get the live list
 		List<PolicyT> policy_list = policies.getPolicy();
 		// get the policies for the specific nffg
@@ -129,7 +131,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 * @return the NodeT object for marshaling
 	 */
 	private NodeT transformNode(NodeReader nodeR) {
-		NodeT node = new NodeT();
+		NodeT node = factory.createNodeT();
 		// set the name
 		node.setName(nodeR.getName());
 		// and the functionality
@@ -146,12 +148,12 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 * @return the LinkT object for marshaling
 	 */
 	private LinkT transformLink(LinkReader linkR) {
-		LinkT link = new LinkT();
+		LinkT link = factory.createLinkT();
 		// set the name
 		link.setName(linkR.getName());
 
-		NodeRefT src = new NodeRefT();
-		NodeRefT dst = new NodeRefT();
+		NodeRefT src = factory.createNodeRefT();
+		NodeRefT dst = factory.createNodeRefT();
 		// build the source
 		src.setRef(linkR.getSourceNode().getName());
 		link.setSrc(src);
@@ -172,7 +174,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 * @return the PolicyT object for marshaling
 	 */
 	private PolicyT transformPolicy(PolicyReader policyR) {
-		PolicyT policy = new PolicyT();
+		PolicyT policy = factory.createPolicyT();
 		// set the name
 		policy.setName(policyR.getName());
 		// and the expected result
@@ -180,8 +182,8 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		// and the actual result
 		policy.setResult(transformResult(policyR.getResult()));
 
-		NodeRefT src = new NodeRefT();
-		NodeRefT dst = new NodeRefT();
+		NodeRefT src = factory.createNodeRefT();
+		NodeRefT dst = factory.createNodeRefT();
 		// TraversalPolicyReader is a subclass of ReachabilityPolicyReader
 		ReachabilityPolicyReader reach_p = (ReachabilityPolicyReader) policyR;
 		// set the source
@@ -218,7 +220,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		if (resultR == null) {
 			return null;
 		}
-		ResultT result = new ResultT();
+		ResultT result = factory.createResultT();
 		// set the last verification date
 		result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
 		// set the actual verification result
