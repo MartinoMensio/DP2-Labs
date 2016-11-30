@@ -23,7 +23,6 @@ public class MyReachabilityTester implements ReachabilityTester {
 	private String graphName;
 	private WebTarget target;
 	private Map<String, String> nodeIds;
-	private Map<LinkReader, String> linkIds;
 
 	private ObjectFactory factory = new ObjectFactory();
 
@@ -54,6 +53,8 @@ public class MyReachabilityTester implements ReachabilityTester {
 			// e.g. if the MediaType is wrong
 			throw new ServiceException("impossible to delete the previous graph because of response processing error"
 					+ ", status: HTTP " + e.getResponse().getStatus());
+		} catch (ProcessingException e) {
+			throw new ServiceException("impossible to delete the previous graph because of process exception");
 		}
 
 		// create new map of node ids
@@ -83,9 +84,6 @@ public class MyReachabilityTester implements ReachabilityTester {
 
 		}
 
-		// create new map of link id
-		linkIds = new HashMap<>();
-
 		// TODO refactor links uploading
 		for (LinkReader linkR : nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream())
 				.collect(Collectors.toList())) {
@@ -94,20 +92,19 @@ public class MyReachabilityTester implements ReachabilityTester {
 			relation.setType("Connection");
 
 			try {
-				Relationship res = target.path("node").path(nodeIds.get(linkR.getSourceNode().getName()))
+				Response res = target.path("node").path(nodeIds.get(linkR.getSourceNode().getName()))
 						.path("relationship").request(MediaType.APPLICATION_XML)
-						.post(Entity.entity(relation, MediaType.APPLICATION_XML), Relationship.class);
+						.post(Entity.entity(relation, MediaType.APPLICATION_XML));
 
-				linkIds.put(linkR, res.getId());
-				// System.out.println(res.getId());
+				if (res.getStatus() != 200) {
+					throw new ServiceException(
+							"error on link " + linkR.getName() + " because of error HTTP " + res.getStatus());
+				}
 			} catch (ResponseProcessingException e) {
 				throw new ServiceException("response processing error with link named " + linkR.getName()
 						+ ", status: HTTP " + e.getResponse().getStatus());
 			} catch (ProcessingException e) {
 				throw new ServiceException("processing error with link named " + linkR.getName());
-			} catch (WebApplicationException e) {
-				throw new ServiceException("webapp error on link " + linkR.getName() + " because of error HTTP "
-						+ e.getResponse().getStatus());
 			}
 		}
 
