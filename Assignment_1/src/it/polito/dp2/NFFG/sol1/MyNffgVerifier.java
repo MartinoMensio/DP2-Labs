@@ -1,6 +1,7 @@
 package it.polito.dp2.NFFG.sol1;
 
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import it.polito.dp2.NFFG.*;
@@ -61,7 +62,7 @@ public class MyNffgVerifier implements NffgVerifier {
 		}
 		// get a flat map of policies mapped by their name
 		Map<String, PolicyReader> flatPolicies = policies.values().stream().flatMap(Set::stream)
-				.collect(Collectors.toMap(PolicyReader::getName, p -> p));
+				.collect(Collectors.toMap(PolicyReader::getName, Function.identity()));
 		if (flatPolicies.containsKey(policy.getName())) {
 			// duplicate policy (the scope for policy name is global
 			throw new NffgVerifierException("A policy named " + policy.getName() + " already exists");
