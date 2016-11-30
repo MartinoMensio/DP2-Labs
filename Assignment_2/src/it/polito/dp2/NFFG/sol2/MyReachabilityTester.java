@@ -12,7 +12,8 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.lab2.*;
 
 /**
- * Implementation of the ReachabilityTester interface
+ * Implementation of the ReachabilityTester interface.
+ * The loadNffg method exploits the functionality of parallelStream
  * 
  * @author Martino Mensio
  *
@@ -43,18 +44,37 @@ public class MyReachabilityTester implements ReachabilityTester {
 
 		deleteAllNodes();
 
-		// create new map of node ids
-		nodeIds = new HashMap<>();
+		// clear map of node ids (in case of failures)
+		nodeIds = null;
 
 		// node uploading
-		for (NodeReader nodeR : nffgR.getNodes()) {
-			nodeIds.put(nodeR.getName(), uploadNode(nodeR));
+		try {
+			nodeIds = nffgR.getNodes().parallelStream().collect(Collectors.toConcurrentMap(NodeReader::getName, n -> {
+				try {
+					return uploadNode(n);
+				} catch (ServiceException e) {
+					// go out of lambda with unchecked exception
+					throw new RuntimeException(e);
+				}
+			}));
+		} catch (Exception e) {
+			// transform again Exception to ServiceException
+			throw new ServiceException(e);
 		}
 
 		// links uploading
-		for (LinkReader linkR : nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream())
-				.collect(Collectors.toList())) {
-			uploadLink(linkR);
+		try {
+			nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream()).parallel().forEach(l -> {
+				try {
+					uploadLink(l);
+				} catch (ServiceException e) {
+					// go out of lambda with unchecked exception
+					throw new RuntimeException(e);
+				}
+			});
+		} catch (Exception e) {
+			// transform again Exception to ServiceException
+			throw new ServiceException(e);
 		}
 
 		// on success, overwrite the graphName
@@ -67,8 +87,8 @@ public class MyReachabilityTester implements ReachabilityTester {
 		if (graphName == null) {
 			throw new NoGraphException("no graph is currently loaded, please call loadNFFG");
 		}
-		String srcId = nodeIds.get(srcName);
-		String dstId = nodeIds.get(destName);
+		String srcId = (nodeIds == null)? null : nodeIds.get(srcName);
+		String dstId = (nodeIds == null)? null : nodeIds.get(destName);
 
 		if (srcId == null) {
 			throw new UnknownNameException("no node with name " + srcName);
