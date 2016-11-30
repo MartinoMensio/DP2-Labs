@@ -5,6 +5,15 @@ import java.net.*;
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.lab2.*;
 
+/**
+ * This is a factory class that extends
+ * it.polito.dp2.NFFG.lab2.ReachabilityTesterFactory The URL is checked by using
+ * the URI and URL classes, and is then passed to the constructor of the
+ * {@link MyReachabilityTester} class together with the NffgVerifier data
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class ReachabilityTesterFactory extends it.polito.dp2.NFFG.lab2.ReachabilityTesterFactory {
 
 	@Override

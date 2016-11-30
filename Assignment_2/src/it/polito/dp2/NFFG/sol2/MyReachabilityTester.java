@@ -11,20 +11,24 @@ import javax.ws.rs.core.*;
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.lab2.*;
 
+/**
+ * Implementation of the ReachabilityTester interface
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class MyReachabilityTester implements ReachabilityTester {
 
 	private NffgVerifier monitor;
-	private URI uri;
 	private String graphName;
 	private WebTarget target;
 	private Map<String, String> nodeIds;
 	private Map<LinkReader, String> linkIds;
-	
+
 	private ObjectFactory factory = new ObjectFactory();
 
 	public MyReachabilityTester(NffgVerifier nffgR, URI uri) {
 		this.monitor = nffgR;
-		this.uri = uri;
 		graphName = null;
 		target = ClientBuilder.newClient().target(uri.toString()).path("resource");
 	}
