@@ -176,7 +176,7 @@ public class MyReachabilityTester implements ReachabilityTester {
 	private void uploadLink(LinkReader linkR) throws ServiceException {
 		Relationship relation = factory.createRelationship();
 		relation.setDstNode(nodeIds.get(linkR.getDestinationNode().getName()));
-		relation.setType("Connection");
+		relation.setType("Link");
 
 		try {
 			Response res = target.path("node").path(nodeIds.get(linkR.getSourceNode().getName())).path("relationship")
