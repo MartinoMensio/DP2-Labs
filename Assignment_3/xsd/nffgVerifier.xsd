@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/nffgVerifier"
+	xmlns:tns="http://www.example.org/nffgVerifier" elementFormDefault="qualified">
+	<element name="nffg">
+		<complexType>
+			<sequence>
+				<element name="node" maxOccurs="unbounded" type="tns:node_t" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="policy">
+		<complexType>
+			<!-- TODO -->
+		</complexType>
+	</element>
+
+
+
+
+	<complexType name="node_t">
+		<!-- TODO -->
+	</complexType>
+</schema>
