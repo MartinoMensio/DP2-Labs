@@ -1,32 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/nffgVerifier"
-	xmlns:tns="http://www.example.org/nffgVerifier" elementFormDefault="qualified">
-	<element name="verifier">
-		<complexType>
-			<sequence>
-				<element ref="tns:nffg" minOccurs="0" maxOccurs="unbounded" />
-				<element ref="tns:policy" minOccurs="0" maxOccurs="unbounded" />
-				<!-- TODO where are policies? inside nffg? -->
-			</sequence>
-		</complexType>
-	</element>
-	<element name="nffg">
-		<complexType>
-			<sequence>
-				<element name="node" maxOccurs="unbounded" type="tns:node_t" />
-			</sequence>
-		</complexType>
-	</element>
-	<element name="policy">
-		<complexType>
-			<!-- TODO -->
-		</complexType>
-	</element>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/nffgVerifier" xmlns:tns="http://www.example.org/nffgVerifier" elementFormDefault="qualified">
+	<!-- root elements for visibility ?? -->
+	<element name="verifier" type="tns:verifier_t" />
+	<element name="nffg" type="tns:nffg_t" />
+	<element name="policy" type="tns:policy_t" />
+	<element name="result" type="tns:result_t" />
 
+	<complexType name="verifier_t">
+		<sequence>
+			<element ref="tns:nffg" minOccurs="0" maxOccurs="unbounded" />
+			<!-- <element ref="tns:policy" minOccurs="0" maxOccurs="unbounded" /> -->
+			<!-- TODO where are policies? inside nffg? -->
+		</sequence>
+	</complexType>
 
-
+	<complexType name="nffg_t">
+		<complexContent>
+			<extension base="tns:named_element_t">
+				<sequence>
+					<element name="node" minOccurs="0" maxOccurs="unbounded" type="tns:node_t" />
+					<element name="link" minOccurs="0" maxOccurs="unbounded" type="tns:link_t" />
+					<element ref="tns:policy" minOccurs="0" maxOccurs="unbounded" />
+				</sequence>
+				<attribute name="updated" type="dateTime" use="required" />
+				<!-- TODO this is required only in responses -->
+			</extension>
+		</complexContent>
+	</complexType>
 
 	<complexType name="node_t">
-		<!-- TODO -->
+		<complexContent>
+			<extension base="tns:named_element_t">
+				<sequence>
+					<element name="functionality" type="tns:functionality_t" />
+				</sequence>
+			</extension>
+		</complexContent>
 	</complexType>
+
+	<complexType name="policy_t">
+		<complexContent>
+			<extension base="tns:link_t">
+				<sequence>
+					<element name="functionality" minOccurs="0" maxOccurs="unbounded" type="tns:functionality_t" />
+					<element ref="tns:result" minOccurs="0" />
+				</sequence>
+				<attribute name="positive" type="boolean" use="optional" default="true" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="link_t">
+		<complexContent>
+			<extension base="tns:named_element_t">
+				<sequence>
+					<element name="src" type="tns:node_ref_t" />
+					<element name="dst" type="tns:node_ref_t" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="result_t" mixed="true">
+		<attribute name="satisfied" type="boolean" use="required" />
+		<attribute name="verified" type="dateTime" use="required" />
+	</complexType>
+
+	<complexType name="named_element_t">
+		<attribute name="name" type="tns:name_t" use="required" />
+	</complexType>
+
+	<complexType name="node_ref_t">
+		<attribute name="ref" type="tns:name_t" use="required" />
+	</complexType>
+
+	<simpleType name="functionality_t">
+		<restriction base="string">
+			<enumeration value="CACHE" />
+			<enumeration value="DPI" />
+			<enumeration value="FW" />
+			<enumeration value="MAIL_CLIENT" />
+			<enumeration value="MAIL_SERVER" />
+			<enumeration value="NAT" />
+			<enumeration value="SPAM" />
+			<enumeration value="VPN" />
+			<enumeration value="WEB_CLIENT" />
+			<enumeration value="WEB_SERVER" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="name_t">
+		<restriction base="string">
+			<pattern value="[a-zA-Z_][a-zA-Z\d_]*" />
+		</restriction>
+	</simpleType>
 </schema>
