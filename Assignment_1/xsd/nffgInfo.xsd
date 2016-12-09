@@ -49,8 +49,7 @@
 					<xs:element name="nodes">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="node" minOccurs="0" maxOccurs="unbounded"
-									type="node_t" />
+								<xs:element name="node" minOccurs="0" maxOccurs="unbounded" type="node_t" />
 							</xs:sequence>
 						</xs:complexType>
 						<xs:key name="node_key">
@@ -61,8 +60,7 @@
 					<xs:element name="links">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="link" minOccurs="0" maxOccurs="unbounded"
-									type="link_t" />
+								<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link_t" />
 							</xs:sequence>
 						</xs:complexType>
 						<xs:key name="link_key">
@@ -73,8 +71,7 @@
 					<xs:element name="policies">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="policy" minOccurs="0" maxOccurs="unbounded"
-									type="policy_t" />
+								<xs:element name="policy" minOccurs="0" maxOccurs="unbounded" type="policy_t" />
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
@@ -109,8 +106,7 @@
 		<xs:complexContent>
 			<xs:extension base="link_t">
 				<xs:sequence>
-					<xs:element name="functionality" minOccurs="0"
-						maxOccurs="unbounded" type="functionality_t" />
+					<xs:element name="functionality" minOccurs="0" maxOccurs="unbounded" type="functionality_t" />
 					<xs:element name="result" type="result_t" minOccurs="0" />
 				</xs:sequence>
 				<xs:attribute name="positive" type="xs:boolean" use="optional" default="true" />
