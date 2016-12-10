@@ -34,7 +34,7 @@
 		<mkdir dir="${gen.dir}" />
 		<echo message="Compiling the WADL descriptions..." />
 		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol2" description="${WADL}">
-			<produces dir="${gen.dir}/it/polito/dp2/NFFG/Lab2" includes="*.java" />
+			<produces dir="${gen.dir}/it/polito/dp2/NFFG/sol2" includes="*.java" />
 			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
 			<depends dir="${lab2.location}" includes="sol_build.xml" />
 			<!-- use customizations -->
