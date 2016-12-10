@@ -1,147 +1,142 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:annotation>
-		<xs:documentation>
-			This is the schema for NFFG verifier
-		</xs:documentation>
-	</xs:annotation>
-	<xs:element name="verifier">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="nffg" maxOccurs="unbounded" type="nffg_t">
-					<xs:keyref name="link_src_keyref" refer="node_key">
-						<xs:selector xpath="links/link/src" />
-						<xs:field xpath="@ref" />
-					</xs:keyref>
-					<xs:keyref name="link_dst_keyref" refer="node_key">
-						<xs:selector xpath="links/link/dst" />
-						<xs:field xpath="@ref" />
-					</xs:keyref>
-					<xs:keyref name="policy_src_keyref" refer="node_key">
-						<xs:selector xpath="policies/policy/src" />
-						<xs:field xpath="@ref" />
-					</xs:keyref>
-					<xs:keyref name="policy_dst_keyref" refer="node_key">
-						<xs:selector xpath="policies/policy/dst" />
-						<xs:field xpath="@ref" />
-					</xs:keyref>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-		<xs:key name="nffg_key">
-			<xs:selector xpath="nffg" />
-			<xs:field xpath="@name" />
-		</xs:key>
-		<xs:key name="policy_key">
-			<xs:selector xpath="nffg/policies/policy" />
-			<xs:field xpath="@name" />
-		</xs:key>
-	</xs:element>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://dp2.polito.it/nffgInfo" xmlns:tns="http://dp2.polito.it/nffgInfo" elementFormDefault="qualified">
+	<element name="verifier">
+		<complexType>
+			<sequence>
+				<element name="nffg" maxOccurs="unbounded" type="tns:nffg_t">
+					<keyref name="link_src_keyref" refer="tns:node_key">
+						<selector xpath="tns:links/tns:link/tns:src" />
+						<field xpath="@ref" />
+					</keyref>
+					<keyref name="link_dst_keyref" refer="tns:node_key">
+						<selector xpath="tns:links/tns:link/tns:dst" />
+						<field xpath="@ref" />
+					</keyref>
+					<keyref name="policy_src_keyref" refer="tns:node_key">
+						<selector xpath="tns:policies/tns:policy/tns:src" />
+						<field xpath="@ref" />
+					</keyref>
+					<keyref name="policy_dst_keyref" refer="tns:node_key">
+						<selector xpath="tns:policies/tns:policy/tns:dst" />
+						<field xpath="@ref" />
+					</keyref>
+				</element>
+			</sequence>
+		</complexType>
+		<key name="nffg_key">
+			<selector xpath="tns:nffg" />
+			<field xpath="@name" />
+		</key>
+		<key name="policy_key">
+			<selector xpath="tns:nffg/tns:policies/tns:policy" />
+			<field xpath="@name" />
+		</key>
+	</element>
 
-	<xs:complexType name="named_element_t">
-		<xs:attribute name="name" type="name_t" use="required" />
-	</xs:complexType>
+	<complexType name="named_element_t">
+		<attribute name="name" type="tns:name_t" use="required" />
+	</complexType>
 
-	<xs:complexType name="nffg_t">
-		<xs:complexContent>
-			<xs:extension base="named_element_t">
-				<xs:sequence>
-					<xs:element name="nodes">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="node" minOccurs="0" maxOccurs="unbounded" type="node_t" />
-							</xs:sequence>
-						</xs:complexType>
-						<xs:key name="node_key">
-							<xs:selector xpath="node" />
-							<xs:field xpath="@name" />
-						</xs:key>
-					</xs:element>
-					<xs:element name="links">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="link" minOccurs="0" maxOccurs="unbounded" type="link_t" />
-							</xs:sequence>
-						</xs:complexType>
-						<xs:key name="link_key">
-							<xs:selector xpath="link" />
-							<xs:field xpath="@name" />
-						</xs:key>
-					</xs:element>
-					<xs:element name="policies">
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="policy" minOccurs="0" maxOccurs="unbounded" type="policy_t" />
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
-				</xs:sequence>
-				<xs:attribute name="updated" type="xs:dateTime" use="required" />
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+	<complexType name="nffg_t">
+		<complexContent>
+			<extension base="tns:named_element_t">
+				<sequence>
+					<element name="nodes">
+						<complexType>
+							<sequence>
+								<element name="node" minOccurs="0" maxOccurs="unbounded" type="tns:node_t" />
+							</sequence>
+						</complexType>
+						<key name="node_key">
+							<selector xpath="tns:node" />
+							<field xpath="@name" />
+						</key>
+					</element>
+					<element name="links">
+						<complexType>
+							<sequence>
+								<element name="link" minOccurs="0" maxOccurs="unbounded" type="tns:link_t" />
+							</sequence>
+						</complexType>
+						<key name="link_key">
+							<selector xpath="tns:link" />
+							<field xpath="@name" />
+						</key>
+					</element>
+					<element name="policies">
+						<complexType>
+							<sequence>
+								<element name="policy" minOccurs="0" maxOccurs="unbounded" type="tns:policy_t" />
+							</sequence>
+						</complexType>
+					</element>
+				</sequence>
+				<attribute name="updated" type="dateTime" use="required" />
+			</extension>
+		</complexContent>
+	</complexType>
 
-	<xs:complexType name="node_t">
-		<xs:complexContent>
-			<xs:extension base="named_element_t">
-				<xs:sequence>
-					<xs:element name="functionality" type="functionality_t" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+	<complexType name="node_t">
+		<complexContent>
+			<extension base="tns:named_element_t">
+				<sequence>
+					<element name="functionality" type="tns:functionality_t" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
 
-	<xs:complexType name="link_t">
-		<xs:complexContent>
-			<xs:extension base="named_element_t">
-				<xs:sequence>
-					<xs:element name="src" type="node_ref_t" />
-					<xs:element name="dst" type="node_ref_t" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+	<complexType name="link_t">
+		<complexContent>
+			<extension base="tns:named_element_t">
+				<sequence>
+					<element name="src" type="tns:node_ref_t" />
+					<element name="dst" type="tns:node_ref_t" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
 
-	<xs:complexType name="policy_t">
-		<xs:complexContent>
-			<xs:extension base="link_t">
-				<xs:sequence>
-					<xs:element name="functionality" minOccurs="0" maxOccurs="unbounded" type="functionality_t" />
-					<xs:element name="result" type="result_t" minOccurs="0" />
-				</xs:sequence>
-				<xs:attribute name="positive" type="xs:boolean" use="optional" default="true" />
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
+	<complexType name="policy_t">
+		<complexContent>
+			<extension base="tns:link_t">
+				<sequence>
+					<element name="functionality" minOccurs="0" maxOccurs="unbounded" type="tns:functionality_t" />
+					<element name="result" type="tns:result_t" minOccurs="0" />
+				</sequence>
+				<attribute name="positive" type="boolean" use="optional" default="true" />
+			</extension>
+		</complexContent>
+	</complexType>
 
-	<xs:simpleType name="functionality_t">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="CACHE" />
-			<xs:enumeration value="DPI" />
-			<xs:enumeration value="FW" />
-			<xs:enumeration value="MAIL_CLIENT" />
-			<xs:enumeration value="MAIL_SERVER" />
-			<xs:enumeration value="NAT" />
-			<xs:enumeration value="SPAM" />
-			<xs:enumeration value="VPN" />
-			<xs:enumeration value="WEB_CLIENT" />
-			<xs:enumeration value="WEB_SERVER" />
-		</xs:restriction>
-	</xs:simpleType>
+	<simpleType name="functionality_t">
+		<restriction base="string">
+			<enumeration value="CACHE" />
+			<enumeration value="DPI" />
+			<enumeration value="FW" />
+			<enumeration value="MAIL_CLIENT" />
+			<enumeration value="MAIL_SERVER" />
+			<enumeration value="NAT" />
+			<enumeration value="SPAM" />
+			<enumeration value="VPN" />
+			<enumeration value="WEB_CLIENT" />
+			<enumeration value="WEB_SERVER" />
+		</restriction>
+	</simpleType>
 
-	<xs:complexType name="node_ref_t">
-		<xs:attribute name="ref" type="name_t" use="required" />
-	</xs:complexType>
+	<complexType name="node_ref_t">
+		<attribute name="ref" type="tns:name_t" use="required" />
+	</complexType>
 
-	<xs:simpleType name="name_t">
-		<xs:restriction base="xs:string">
-			<xs:pattern value="[a-zA-Z_][a-zA-Z\d_]*" />
-		</xs:restriction>
-	</xs:simpleType>
+	<simpleType name="name_t">
+		<restriction base="string">
+			<pattern value="[a-zA-Z_][a-zA-Z\d_]*" />
+		</restriction>
+	</simpleType>
 
-	<xs:complexType name="result_t" mixed="true">
-		<xs:attribute name="satisfied" type="xs:boolean" use="required" />
-		<xs:attribute name="verified" type="xs:dateTime" use="required" />
-	</xs:complexType>
+	<complexType name="result_t" mixed="true">
+		<attribute name="satisfied" type="boolean" use="required" />
+		<attribute name="verified" type="dateTime" use="required" />
+	</complexType>
 
-</xs:schema>
+</schema>
