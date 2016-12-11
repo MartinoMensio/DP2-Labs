@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="NFFG-3 build service" default="build-service" basedir=".">
+	<description>
+		Script for building service for NFFG Assignment 3
+	</description>
+	<target name="build-service">
+		<!-- TODO -->
+	</target>
+	<target name="build-client">
+		<!-- TODO -->
+	</target>
+</project>
