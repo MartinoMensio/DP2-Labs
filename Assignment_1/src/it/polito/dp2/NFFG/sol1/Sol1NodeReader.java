@@ -10,13 +10,13 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class MyNodeReader extends MyNamedEntityReader implements NodeReader {
+public class Sol1NodeReader extends Sol1NamedEntityReader implements NodeReader {
 
 	private FunctionalType functionality;
 	// the Set of outgoing links
 	private Map<String, LinkReader> outgoingLinks;
 
-	public MyNodeReader(String name, FunctionalType functionality) {
+	public Sol1NodeReader(String name, FunctionalType functionality) {
 		super(name);
 		this.functionality = functionality;
 		outgoingLinks = new HashMap<>();

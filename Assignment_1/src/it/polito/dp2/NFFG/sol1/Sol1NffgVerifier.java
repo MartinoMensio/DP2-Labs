@@ -12,14 +12,14 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class MyNffgVerifier implements NffgVerifier {
+public class Sol1NffgVerifier implements NffgVerifier {
 
 	// the nffgs mapped by their name
 	private Map<String, NffgReader> nffgs;
 	// set of policies mapped by the name of the nffg they belong to
 	private Map<String, Set<PolicyReader>> policies;
 
-	public MyNffgVerifier() {
+	public Sol1NffgVerifier() {
 		this.nffgs = new HashMap<>();
 		this.policies = new HashMap<>();
 	}

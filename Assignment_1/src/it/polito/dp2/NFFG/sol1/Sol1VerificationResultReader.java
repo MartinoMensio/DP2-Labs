@@ -10,14 +10,14 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class MyVerificationResultReader implements VerificationResultReader {
+public class Sol1VerificationResultReader implements VerificationResultReader {
 
 	private PolicyReader policy;
 	private boolean result;
 	private String message;
 	private Calendar verificationTime;
 
-	public MyVerificationResultReader(Boolean result, String message, Calendar verificationTime) {
+	public Sol1VerificationResultReader(Boolean result, String message, Calendar verificationTime) {
 		this.result = result;
 		this.message = message;
 		this.verificationTime = verificationTime;

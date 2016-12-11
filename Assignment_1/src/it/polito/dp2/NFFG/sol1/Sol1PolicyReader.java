@@ -8,13 +8,13 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class MyPolicyReader extends MyNamedEntityReader implements PolicyReader {
+public class Sol1PolicyReader extends Sol1NamedEntityReader implements PolicyReader {
 
 	private NffgReader nffg;
 	private VerificationResultReader result;
 	private boolean expected;
 
-	public MyPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected) {
+	public Sol1PolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected) {
 		super(name);
 		this.nffg = nffg;
 		this.result = result;
