@@ -41,6 +41,7 @@ TODO
 ## Operations by resource
 
 Methods summary:
+
 ```text
 /                                                      GET, DELETE
     nffgs/                                             GET, POST
