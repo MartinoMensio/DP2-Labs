@@ -17,7 +17,7 @@
 	<!-- The location for source files -->
 	<property name="src.dir" location="${lab3.location}/src" />
 	<!-- The location for solutions -->
-	<property name="sol3.dir" location="${src.dir}/it/polito/dp2/NFFG/sol3" />
+	<property name="sol3.dir" value="src/it/polito/dp2/NFFG/sol3" />
 	<!-- The location for jar files -->
 	<property name="lib.dir" location="${lab3.location}/lib" />
 	<!-- The location for custom files -->
@@ -65,7 +65,7 @@
 		<pathelement location="${lab3.location}/lib/NFFGRandom.jar" />
 		<pathelement location="${lab3.location}/lib/junit-4.5.jar" />
 		<pathelement path="${build.dir}" />
-		<fileset dir="${lab3.location}/WebContent/WEB-INF/lib">
+		<fileset dir="${lab3.location}/lib">
 		    <include name="*.jar" />
 		</fileset>
 	</path>
@@ -235,6 +235,6 @@
 	<target name="make-final-zip">
 		<zip destfile="${sol.zip}" 
 			basedir="${lab3.location}" 
-			includes="${sol.build.file} ${custom}/* ${sol3.dir}/service/**/*.java ${sol3.dir}/client1/**/*.java ${sol3.dir}/client2/**/*.java" />
+			includes="${sol.build.file} custom/* xsd/* doc/* WebContent/**/* ${sol3.dir}/service/**/*.java ${sol3.dir}/client1/**/*.java ${sol3.dir}/client2/**/*.java" />
 	</target>
 </project>
