@@ -30,7 +30,7 @@ public class Sol2ReachabilityTester implements ReachabilityTester {
 	public Sol2ReachabilityTester(NffgVerifier nffgR, URI uri) {
 		this.monitor = nffgR;
 		graphName = null;
-		target = ClientBuilder.newClient().target(uri.toString()).path("resource");
+		target = ClientBuilder.newClient().target(uri).path("resource");
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class Sol2ReachabilityTester implements ReachabilityTester {
 			Paths res = target.path("node").path(srcId).path("paths").queryParam("dst", dstId)
 					.request(MediaType.APPLICATION_XML).get(Paths.class);
 			// System.out.println("found " + res.getPath().size() + "paths");
-			return res.getPath().size() > 0;
+			return !res.getPath().isEmpty();
 		} catch (ResponseProcessingException e) {
 			throw new ServiceException(
 					"impossible to process the Paths response: response processing error, status: HTTP "
