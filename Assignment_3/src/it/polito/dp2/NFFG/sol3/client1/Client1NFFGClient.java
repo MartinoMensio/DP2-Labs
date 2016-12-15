@@ -1,16 +1,35 @@
 package it.polito.dp2.NFFG.sol3.client1;
 
-import it.polito.dp2.NFFG.lab3.AlreadyLoadedException;
-import it.polito.dp2.NFFG.lab3.NFFGClient;
-import it.polito.dp2.NFFG.lab3.ServiceException;
-import it.polito.dp2.NFFG.lab3.UnknownNameException;
+import java.net.URI;
+
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+
+import it.polito.dp2.NFFG.*;
+import it.polito.dp2.NFFG.lab3.*;
+import it.polito.dp2.NFFG.sol3.jaxb.*;
 
 public class Client1NFFGClient implements NFFGClient {
 
+	private NffgVerifier verifier;
+	private WebTarget target;
+	private ObjectFactory factory;
+
+	public Client1NFFGClient(NffgVerifier verifier, URI uri) {
+		this.verifier = verifier;
+		target = ClientBuilder.newClient().target(uri);
+		factory = new ObjectFactory();
+	}
+
 	@Override
 	public void loadNFFG(String name) throws UnknownNameException, AlreadyLoadedException, ServiceException {
-		// TODO Auto-generated method stub
-
+		NffgReader nffgR = verifier.getNffg(name);
+		if(nffgR == null) {
+			throw new UnknownNameException("No NFFG with name " + name);
+		}
+		NffgT nffg = factory.createNffgT();
+		// TODO: call transformer from NffgReader to NffgT
+		// TODO: POST nffg
 	}
 
 	@Override

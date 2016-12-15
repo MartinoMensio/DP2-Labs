@@ -12,6 +12,7 @@ public class Client2NFFGVerifier implements NffgVerifier {
 	@Override
 	public NffgReader getNffg(String arg0) {
 		// TODO Auto-generated method stub
+		// GET 
 		return null;
 	}
 

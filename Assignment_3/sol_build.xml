@@ -23,6 +23,7 @@
 		<delete dir="${gen.dir}" />
 	</target>
 
+	<!-- TODO split in two directories the wjc and jaxb artifacts -->
 	<target name="compile-artifacts" depends="generate-wjc,generate-jaxb">
 		<!-- Removing the file that has problems -->
 		<delete>

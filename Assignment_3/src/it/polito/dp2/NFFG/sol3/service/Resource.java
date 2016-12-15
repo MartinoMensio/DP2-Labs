@@ -3,6 +3,7 @@ package it.polito.dp2.NFFG.sol3.service;
 import java.util.*;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.sol3.jaxb.*;
 
@@ -12,6 +13,9 @@ import it.polito.dp2.NFFG.sol3.jaxb.*;
  * @author Martino Mensio
  *
  */
+
+@Produces(MediaType.APPLICATION_XML)
+@Consumes(MediaType.APPLICATION_XML)
 public class Resource {
 
 	@Path("test")
@@ -23,6 +27,14 @@ public class Resource {
 	@Path("nffgs")
 	@GET
 	public List<NffgT> getNffgs() {
-
+		// TODO
+		return null;
 	}
+
+	@Path("nffgs")
+	public Response postNffg(NffgT nffg) {
+		// TODO: call Service.storeNffg(nffg)
+		return null;
+	}
+	
 }
