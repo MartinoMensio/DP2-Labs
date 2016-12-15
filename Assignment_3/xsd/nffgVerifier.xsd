@@ -11,6 +11,7 @@
 			<element ref="tns:nffg" minOccurs="0" maxOccurs="unbounded" />
 			<!-- <element ref="tns:policy" minOccurs="0" maxOccurs="unbounded" /> -->
 			<!-- TODO where are policies? inside nffg? -->
+			<element ref="tns:policy" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 	</complexType>
 
@@ -20,7 +21,7 @@
 				<sequence>
 					<element name="node" minOccurs="0" maxOccurs="unbounded" type="tns:node_t" />
 					<element name="link" minOccurs="0" maxOccurs="unbounded" type="tns:link_t" />
-					<element ref="tns:policy" minOccurs="0" maxOccurs="unbounded" />
+					<!-- <element ref="tns:policy" minOccurs="0" maxOccurs="unbounded" /> -->
 				</sequence>
 				<attribute name="updated" type="dateTime" use="required" />
 				<!-- TODO this is required only in responses -->
@@ -45,6 +46,7 @@
 					<element name="functionality" minOccurs="0" maxOccurs="unbounded" type="tns:functionality_t" />
 					<element ref="tns:result" minOccurs="0" />
 				</sequence>
+				<attribute name="nffg" type="tns:name_t" use="required" />
 				<attribute name="positive" type="boolean" use="optional" default="true" />
 			</extension>
 		</complexContent>
