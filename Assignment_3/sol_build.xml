@@ -3,10 +3,82 @@
 	<description>
 		Script for building service for NFFG Assignment 3
 	</description>
-	<target name="build-service">
+
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="schema.dir" value="${basedir}/xsd" />
+	<property name="gen.dir" value="${basedir}/gen-src" />
+	<property name="jaxb.dir" value="${gen.dir}" />
+	<property name="wjc.dir" value="${gen.dir}" />
+	<property name="lib.dir" location="${basedir}/lib" />
+	<property name="NEO4JURL" value="http://localhost:8080/Neo4JXML/rest" />
+	<property name="WADL" value="${NEO4JURL}/application.wadl" />
+
+	<target name="build-service" depends="compile-artifacts">
 		<!-- TODO -->
 	</target>
-	<target name="build-client">
+	<target name="build-client" depends="compile-artifacts">
 		<!-- TODO -->
+	</target>
+	<target name="clean">
+		<delete dir="${gen.dir}" />
+	</target>
+
+	<target name="compile-artifacts" depends="generate-wjc,generate-jaxb">
+		<!-- Removing the file that has problems -->
+		<delete>
+			<fileset dir="${gen.dir}/it/polito/dp2/NFFG/sol3/service">
+				<include name="Localhost_Neo4JXMLRest.java" />
+			</fileset>
+		</delete>
+		<javac srcdir="${gen.dir}" destdir="${build.dir}" />
+	</target>
+
+
+	<!-- Target chk-bindings -->
+	<target name="-chk-bindings">
+		<uptodate property="generate-bindings.notRequired" targetfile="${gen.dir}/.flagfile">
+			<srcfiles dir="${schema.dir}" includes="**/*.xsd" />
+		</uptodate>
+	</target>
+	<!-- Target generate-bindings -->
+	<target name="generate-jaxb" unless="generate-bindings.notRequired" depends="-chk-bindings" description="Generate bindings from schema">
+		<mkdir dir="${gen.dir}" />
+		<exec executable="xjc" failonerror="true">
+			<arg value="-d" />
+			<arg value="${gen.dir}" />
+			<arg value="-p" />
+			<arg value="it.polito.dp2.NFFG.sol3.jaxb" />
+			<arg value="${schema.dir}/nffgVerifier.xsd" />
+		</exec>
+		<touch file="${gen.dir}/.flagfile" />
+	</target>
+
+	<taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask">
+		<classpath>
+			<fileset dir="${lib.dir}" includes="*.jar" />
+		</classpath>
+	</taskdef>
+	<!-- Target chk-artifacts -->
+	<target name="-chk-artifacts">
+		<uptodate property="generate-artifacts.notRequired" targetfile="${custom.dir}/.flagfile2">
+			<!-- regenerate artifacts if this build file is modified (or if the flagfile is removed) -->
+			<srcfiles dir="${basedir}" includes="sol_build.xml" />
+			<!-- update also in case some customization files are updated -->
+			<srcfiles dir="${custom.dir}" includes="*.*" />
+		</uptodate>
+	</target>
+
+	<!-- define the client artifacts generation target -->
+	<target name="generate-wjc" depends="-chk-artifacts" unless="generate-artifacts.notRequired">
+		<mkdir dir="${gen.dir}" />
+		<echo message="Compiling the WADL descriptions..." />
+		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service" description="${WADL}">
+			<produces dir="${gen.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
+			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
+			<depends dir="${basedir}" includes="sol_build.xml" />
+			<!-- use customizations -->
+			<customizations dir="${custom.dir}" includes="*.xjb" />
+		</wjc>
+		<touch file="${gen.dir}/.flagfile2" />
 	</target>
 </project>
