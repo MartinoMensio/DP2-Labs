@@ -13,10 +13,10 @@
 	<property name="NEO4JURL" value="http://localhost:8080/Neo4JXML/rest" />
 	<property name="WADL" value="${NEO4JURL}/application.wadl" />
 
-	<target name="build-service" depends="compile-artifacts">
+	<target name="build-service" depends="compile-wjc,compile-jaxb">
 		<!-- TODO -->
 	</target>
-	<target name="build-client" depends="compile-artifacts">
+	<target name="build-client" depends="compile-jaxb">
 		<!-- TODO -->
 	</target>
 	<target name="clean">
@@ -24,14 +24,17 @@
 	</target>
 
 	<!-- TODO split in two directories the wjc and jaxb artifacts -->
-	<target name="compile-artifacts" depends="generate-wjc,generate-jaxb">
+	<target name="compile-wjc" depends="generate-wjc,generate-jaxb">
 		<!-- Removing the file that has problems -->
 		<delete>
 			<fileset dir="${gen.dir}/it/polito/dp2/NFFG/sol3/service">
 				<include name="Localhost_Neo4JXMLRest.java" />
 			</fileset>
 		</delete>
-		<javac srcdir="${gen.dir}" destdir="${build.dir}" />
+		<javac srcdir="${wjc.dir}" destdir="${build.dir}" />
+	</target>
+	<target name="compile-jaxb" depends="generate-jaxb">
+		<javac srcdir="${jaxb.dir}" destdir="${build.dir}" />
 	</target>
 
 
@@ -43,7 +46,7 @@
 	</target>
 	<!-- Target generate-bindings -->
 	<target name="generate-jaxb" unless="generate-bindings.notRequired" depends="-chk-bindings" description="Generate bindings from schema">
-		<mkdir dir="${gen.dir}" />
+		<mkdir dir="${jaxb.dir}" />
 		<exec executable="xjc" failonerror="true">
 			<arg value="-d" />
 			<arg value="${gen.dir}" />
@@ -71,7 +74,7 @@
 
 	<!-- define the client artifacts generation target -->
 	<target name="generate-wjc" depends="-chk-artifacts" unless="generate-artifacts.notRequired">
-		<mkdir dir="${gen.dir}" />
+		<mkdir dir="${wjc.dir}" />
 		<echo message="Compiling the WADL descriptions..." />
 		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service" description="${WADL}">
 			<produces dir="${gen.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
