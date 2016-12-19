@@ -12,33 +12,37 @@ import it.polito.dp2.NFFG.*;
 public class Client2NFFGVerifier implements NffgVerifier {
 
 	@Override
-	public NffgReader getNffg(String arg0) {
+	public NffgReader getNffg(String nffgName) {
 		// TODO Auto-generated method stub
-		// GET
+		// GET /nffgs/{nffgName}
 		return null;
 	}
 
 	@Override
 	public Set<NffgReader> getNffgs() {
 		// TODO Auto-generated method stub
+		// GET /nffgs
 		return null;
 	}
 
 	@Override
 	public Set<PolicyReader> getPolicies() {
 		// TODO Auto-generated method stub
+		// GET /policies
 		return null;
 	}
 
 	@Override
-	public Set<PolicyReader> getPolicies(String arg0) {
+	public Set<PolicyReader> getPolicies(String policyName) {
 		// TODO Auto-generated method stub
+		// GET /policies/{policyName}
 		return null;
 	}
 
 	@Override
-	public Set<PolicyReader> getPolicies(Calendar arg0) {
+	public Set<PolicyReader> getPolicies(Calendar verificationTime) {
 		// TODO Auto-generated method stub
+		// GET /policies?from={verificationTime}
 		return null;
 	}
 

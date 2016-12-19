@@ -46,13 +46,23 @@ Methods summary:
 /                                                      GET, DELETE
     nffgs/                                             GET, POST
           {nffg_id}/                                   GET, DELETE
+                   nodes/                              GET
+                            {node_id}/                 GET
+                                        links/         GET
+                   links/                              GET
+                            {link_id}/                 GET
+                                        src/           GET
+                                        dst/           GET
                    policies/                           GET, POST
                             {policy_id}/               GET, DELETE, PUT/PATCH
                                         result/        GET
                    online_result/                      POST (because need body request)
     policies/                                          GET (flat view. readonly??)
           {policy_id}/                                 GET ??
+                   nffg/                               GET
                    result/                             GET ??
+                   src/                                GET
+                   dst/                                GET
 ```
 
 ### `/` verifier root
@@ -83,6 +93,40 @@ A single nffg identified by its id
 | ------ | ------------ | ------------- | ------------           | ------
 | GET    | -            | nffg          | get the NFFG           | 404: wrong nffg_id
 | DELETE | -            | OK            | delete the NFFG        | 404: wrong nffg_id
+
+### `/nffgs/{nffg_id}/nodes`
+
+Nodes collection for this NFFG
+
+| method | request type | response type | explaination           | errors
+| ------ | ------------ | ------------- | ------------           | ------
+| GET    | -            | nodes         | get the nodes          | 404: wrong nffg_id
+
+### `/nffgs/{nffg_id}/nodes/{node_id}`
+
+A node identified by its id
+
+| method | request type | response type | explaination           | errors
+| ------ | ------------ | ------------- | ------------           | ------
+| GET    | -            | node          | get the node           | 404: wrong nffg_id/node_id
+
+
+### `/nffgs/{nffg_id}/links`
+
+Links collection for this NFFG
+
+| method | request type | response type | explaination           | errors
+| ------ | ------------ | ------------- | ------------           | ------
+| GET    | -            | links         | get the links          | 404: wrong nffg_id
+
+### `/nffgs/{nffg_id}/links/{link_id}`
+
+A link identified by its id
+
+| method | request type | response type | explaination           | errors
+| ------ | ------------ | ------------- | ------------           | ------
+| GET    | -            | link          | get the link           | 404: wrong nffg_id/link_id
+
 
 ### `/nffgs/{nffg_id}/policies`
 
@@ -122,4 +166,26 @@ Verification endpoint for client policies, not stored on the service
 
 This is a flat view on the policies. But should be readonly: POST requests should also contain the NFFG name/id and another type should be created.
 
+There is a queryParam named `from` that can be used to get policies only from a certain time.
+
 ??? TODO: replication of subtree about policies
+
+### `/policies/{policy_id}`
+
+A single policy identified by its id.
+
+### `/policies/{policy_id}/nffg`
+
+The nffg this policy belongs to
+
+### `/policies/{policy_id}/src`
+
+The src node if this is a reachability policy (always)
+
+### `/policies/{policy_id}/dst`
+
+The dst node if this is a reachability policy (always)
+
+### `/policies/{policy_id}/result`
+
+The corresponding result for this policy

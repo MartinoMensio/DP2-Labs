@@ -5,6 +5,8 @@
 	<element name="nffg" type="tns:nffg_t" />
 	<element name="policy" type="tns:policy_t" />
 	<element name="result" type="tns:result_t" />
+	<element name="node" type="tns:node_t" />
+	<element name="link" type="tns:link_t" />
 
 	<complexType name="verifier_t">
 		<sequence>

@@ -9,10 +9,15 @@ import it.polito.dp2.NFFG.*;
  */
 public class Client2NamedEntityReader implements NamedEntityReader {
 
+	private String name;
+	
+	Client2NamedEntityReader(String name) {
+		this.name = name;
+	}
+	
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 }

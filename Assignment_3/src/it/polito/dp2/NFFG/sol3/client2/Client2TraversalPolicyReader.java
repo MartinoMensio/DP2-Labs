@@ -11,9 +11,16 @@ import it.polito.dp2.NFFG.*;
  */
 public class Client2TraversalPolicyReader extends Client2ReachabilityPolicyReader implements TraversalPolicyReader {
 
+	Client2TraversalPolicyReader(String name) {
+		super(name);
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public Set<FunctionalType> getTraversedFuctionalTypes() {
 		// TODO Auto-generated method stub
+		// GET /policies/{policyName} to have fresh data
+		// return policy.functionalTypes
 		return null;
 	}
 
