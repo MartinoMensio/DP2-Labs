@@ -54,11 +54,10 @@ Methods summary:
                                         src/           GET
                                         dst/           GET
                    policies/                           GET, POST
-                            {policy_id}/               GET, DELETE, PUT/PATCH
-                                        result/        GET
+                            {policy_id}/               GET, PUT/PATCH
                    online_result/                      POST (because need body request)
     policies/                                          GET (flat view. readonly??)
-          {policy_id}/                                 GET ??
+          {policy_id}/                                 GET, DELETE
                    nffg/                               GET
                    result/                             GET ??
                    src/                                GET
@@ -81,7 +80,7 @@ NFFGs collection
 | method | request type | response type | explaination           | errors
 | ------ | ------------ | ------------- | ------------           | ------
 | GET    | -            | nffgs         | get the collection of NFFGs (pagination) |
-| POST   | nffg_req     | nffg          | create a new NFFG      | 4xx wrong request
+| POST   | nffg_req     | nffg          | create a new NFFG      | 4xx wrong request, 403 already existing
 
 TODO: the id of nffg (named entities) is the name? PROs: same type in POST request and in response, no duplicated unique attribute, no need to store name mappings to ids. CONs: the name is always a valid URL?
 
@@ -135,7 +134,7 @@ Policies collection for this NFFG
 | method | request type | response type | explaination           | errors
 | ------ | ------------ | ------------- | ------------           | ------
 | GET    | -            | policies      | get the collection of policies (pagination)  | 404: wrong nffg_id
-| POST   | policy_req   | policy        | create a new policy    | 404: wrong nffg_id, 4xx: wrong request
+| POST   | policy_req   | policy        | create a new policy    | 404: wrong nffg_id, 4xx: wrong request; always replace
 
 ### `/nffgs/{nffg_id}/policies/{policy_id}`
 
