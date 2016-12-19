@@ -5,6 +5,11 @@ import java.net.*;
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.lab3.*;
 
+/**
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class NFFGClientFactory extends it.polito.dp2.NFFG.lab3.NFFGClientFactory {
 
 	@Override
@@ -13,7 +18,7 @@ public class NFFGClientFactory extends it.polito.dp2.NFFG.lab3.NFFGClientFactory
 		it.polito.dp2.NFFG.NffgVerifierFactory factory = it.polito.dp2.NFFG.NffgVerifierFactory.newInstance();
 		try {
 			String url = System.getProperty("it.polito.dp2.NFFG.lab3.URL");
-			if(url == null) {
+			if (url == null) {
 				url = "http://localhost:8080/NffgService/rest/";
 			}
 			URI uri = new URL(url).toURI();

@@ -9,6 +9,11 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.jaxb.*;
 
+/**
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class Client1NFFGClient implements NFFGClient {
 
 	private NffgVerifier verifier;
@@ -24,7 +29,7 @@ public class Client1NFFGClient implements NFFGClient {
 	@Override
 	public void loadNFFG(String name) throws UnknownNameException, AlreadyLoadedException, ServiceException {
 		NffgReader nffgR = verifier.getNffg(name);
-		if(nffgR == null) {
+		if (nffgR == null) {
 			throw new UnknownNameException("No NFFG with name " + name);
 		}
 		NffgT nffg = factory.createNffgT();

@@ -9,35 +9,28 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Client2NFFGVerifier implements NffgVerifier {
+public class Client2VerificationResultReader implements VerificationResultReader {
 
 	@Override
-	public NffgReader getNffg(String arg0) {
-		// TODO Auto-generated method stub
-		// GET
-		return null;
-	}
-
-	@Override
-	public Set<NffgReader> getNffgs() {
+	public PolicyReader getPolicy() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<PolicyReader> getPolicies() {
+	public Boolean getVerificationResult() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<PolicyReader> getPolicies(String arg0) {
+	public String getVerificationResultMsg() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<PolicyReader> getPolicies(Calendar arg0) {
+	public Calendar getVerificationTime() {
 		// TODO Auto-generated method stub
 		return null;
 	}
