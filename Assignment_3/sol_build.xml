@@ -27,7 +27,7 @@
 	<target name="compile-wjc" depends="generate-wjc,generate-jaxb">
 		<!-- Removing the file that has problems -->
 		<delete>
-			<fileset dir="${gen.dir}/it/polito/dp2/NFFG/sol3/service">
+			<fileset dir="${gen.dir}/it/polito/dp2/NFFG/sol3/service/wjc">
 				<include name="Localhost_Neo4JXMLRest.java" />
 			</fileset>
 		</delete>
@@ -51,7 +51,7 @@
 			<arg value="-d" />
 			<arg value="${gen.dir}" />
 			<arg value="-p" />
-			<arg value="it.polito.dp2.NFFG.sol3.jaxb" />
+			<arg value="it.polito.dp2.NFFG.sol3.service.jaxb" />
 			<arg value="${schema.dir}/nffgVerifier.xsd" />
 		</exec>
 		<touch file="${gen.dir}/.flagfile" />
@@ -76,7 +76,7 @@
 	<target name="generate-wjc" depends="-chk-artifacts" unless="generate-artifacts.notRequired">
 		<mkdir dir="${wjc.dir}" />
 		<echo message="Compiling the WADL descriptions..." />
-		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service" description="${WADL}">
+		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service.wjc" description="${WADL}">
 			<produces dir="${gen.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
 			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
 			<depends dir="${basedir}" includes="sol_build.xml" />

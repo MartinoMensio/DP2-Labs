@@ -5,7 +5,7 @@ import java.util.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import it.polito.dp2.NFFG.sol3.jaxb.*;
+import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
  * This class is the web interface
@@ -17,6 +17,8 @@ import it.polito.dp2.NFFG.sol3.jaxb.*;
 @Produces(MediaType.APPLICATION_XML)
 @Consumes(MediaType.APPLICATION_XML)
 public class Resource {
+	
+	private Service service = new Service();
 
 	@Path("test")
 	@GET
@@ -28,13 +30,13 @@ public class Resource {
 	@GET
 	public List<NffgT> getNffgs() {
 		// TODO
-		return null;
+		return service.getNffgs();
 	}
 
 	@Path("nffgs")
 	public Response postNffg(NffgT nffg) {
 		// TODO: call Service.storeNffg(nffg)
-		return null;
+		return service.getNffg();
 	}
 	
 }

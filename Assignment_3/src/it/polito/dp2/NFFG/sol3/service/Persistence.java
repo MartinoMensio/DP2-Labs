@@ -2,7 +2,7 @@ package it.polito.dp2.NFFG.sol3.service;
 
 import java.util.*;
 
-import it.polito.dp2.NFFG.sol3.jaxb.*;
+import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
  * Class for persistence
