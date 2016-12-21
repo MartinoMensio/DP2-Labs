@@ -1,7 +1,9 @@
 package it.polito.dp2.NFFG.sol3.service;
 
+import java.net.*;
 import java.util.*;
 
+import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 import it.polito.dp2.NFFG.sol3.service.wjc.*;
 
@@ -14,10 +16,27 @@ import it.polito.dp2.NFFG.sol3.service.wjc.*;
  */
 public class Service {
 
-	private Neo4JXMLClient neoClient = new Neo4JXMLClient();
+	private Neo4JXMLClient neoClient;
 
 	// retrieve data from persistence
-	private Persistence data = Persistence.getPersistence();
+	private Persistence data;
+
+	private Service(URI neo4jLocation) {
+		neoClient = new Neo4JXMLClient(neo4jLocation);
+		data = Persistence.getPersistence();
+	}
+
+	public static Service createService() throws ServiceException {
+		String url = System.getProperty("it.polito.dp2.NFFG.lab3.NEO4JURL");
+		if (url == null) {
+			url = "http://localhost:8080/Neo4JXML/rest";
+		}
+		try {
+			return new Service(URI.create(url));
+		} catch (IllegalArgumentException e) {
+			throw new ServiceException(e);
+		}
+	}
 
 	public List<NffgT> getNffgs() {
 		List<Node> neoNodes = neoClient.getNodes();
@@ -42,7 +61,7 @@ public class Service {
 					if(neoClient.testReachability(data.nodesId.get(nffg.getName()), data.nodesId.get(neoNode.getProperty().stream().filter(p -> p.getName().equals("name")).findFirst().get().getValue()))) {
 						// this node belongs to this nffg
 						// TODO create NodeT
-						nffg.getNode().add(e)
+						//nffg.getNode().add(e)
 					}
 				}
 			}
@@ -53,5 +72,28 @@ public class Service {
 	public NffgT getNffg(String name) {
 		// TODO
 		return null;
+	}
+	
+	public NffgT postNffg(NffgT nffg) {
+		Node nffgNode = new Node();
+		Property nameProp = new Property();
+		nameProp.setName("name");
+		nameProp.setValue(nffg.getName());
+		nffgNode.getProperty().add(nameProp);
+		Node nffgNodeRes = neoClient.addNode(nffgNode);
+		neoClient.addNffgLabelToNode(nffgNodeRes.getId());
+		
+		// adding all the nodes
+		for(NodeT node : nffg.getNode()) {
+			Node nodeNode = new Node();
+			Property nodeNameProp = new Property();
+			nodeNameProp.setName("name");
+			nodeNameProp.setValue(node.getName());
+			Node nodeNodeRes = neoClient.addNode(nodeNode);
+			neoClient.addBelongsToNffg(nffgNode.getId(), nodeNodeRes.getId());
+		}
+		
+		// TODO continue this shit
+		return nffg;
 	}
 }
