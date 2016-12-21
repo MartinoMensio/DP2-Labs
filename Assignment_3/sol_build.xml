@@ -4,6 +4,15 @@
 		Script for building service for NFFG Assignment 3
 	</description>
 
+	<!-- The classpath to be used for compilation of the solution -->
+	<path id="sol.classpath">
+		<pathelement location="${lib.dir}/NFFG.jar" />
+		<pathelement location="${lib.dir}/lab3.jar" />
+		<pathelement location="${lib.dir}/javax.ws.rs-api-2.0.1.jar" />
+		<pathelement location="${lib.dir}/jersey-client-1.19.1.jar" />
+		<pathelement location="${lib.dir}/jersey-core-1.19.1.jar" />
+	</path>
+
 	<property name="build.dir" value="${basedir}/build" />
 	<property name="schema.dir" value="${basedir}/xsd" />
 	<property name="gen.dir" value="${basedir}/gen-src" />
@@ -12,12 +21,18 @@
 	<property name="lib.dir" location="${basedir}/lib" />
 	<property name="NEO4JURL" value="http://localhost:8080/Neo4JXML/rest" />
 	<property name="WADL" value="${NEO4JURL}/application.wadl" />
+	<property name="service.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/service" />
+	<property name="client1.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client1" />
+	<property name="client2.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client2" />
 
 	<target name="build-service" depends="compile-wjc,compile-jaxb">
 		<!-- TODO -->
+		<javac srcdir="${service.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
 	<target name="build-client" depends="compile-jaxb">
 		<!-- TODO -->
+		<javac srcdir="${client1.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath"  />
+		<javac srcdir="${client2.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath"  />
 	</target>
 	<target name="clean">
 		<delete dir="${gen.dir}" />
@@ -31,10 +46,10 @@
 				<include name="Localhost_Neo4JXMLRest.java" />
 			</fileset>
 		</delete>
-		<javac srcdir="${wjc.dir}" destdir="${build.dir}" />
+		<javac srcdir="${wjc.dir}" destdir="${build.dir}" includeantruntime="false" />
 	</target>
 	<target name="compile-jaxb" depends="generate-jaxb">
-		<javac srcdir="${jaxb.dir}" destdir="${build.dir}" />
+		<javac srcdir="${jaxb.dir}" destdir="${build.dir}" includeantruntime="false" />
 	</target>
 
 
