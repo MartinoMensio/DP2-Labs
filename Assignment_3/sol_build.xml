@@ -13,11 +13,12 @@
 		<pathelement location="${lib.dir}/jersey-core-1.19.1.jar" />
 	</path>
 
+	<property name="custom.dir" value="${basedir}/custom" />
 	<property name="build.dir" value="${basedir}/build" />
 	<property name="schema.dir" value="${basedir}/xsd" />
 	<property name="gen.dir" value="${basedir}/gen-src" />
-	<property name="jaxb.dir" value="${gen.dir}" />
-	<property name="wjc.dir" value="${gen.dir}" />
+	<property name="jaxb.dir" value="${gen.dir}/jaxb" />
+	<property name="wjc.dir" value="${gen.dir}/wjc" />
 	<property name="lib.dir" location="${basedir}/lib" />
 	<property name="NEO4JURL" value="http://localhost:8080/Neo4JXML/rest" />
 	<property name="WADL" value="${NEO4JURL}/application.wadl" />
@@ -35,14 +36,15 @@
 		<javac srcdir="${client2.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath"  />
 	</target>
 	<target name="clean">
-		<delete dir="${gen.dir}" />
+		<delete dir="${jaxb.dir}" />
+		<delete dir="${wjc.dir}" />
 	</target>
 
 	<!-- TODO split in two directories the wjc and jaxb artifacts -->
 	<target name="compile-wjc" depends="generate-wjc,generate-jaxb">
 		<!-- Removing the file that has problems -->
 		<delete>
-			<fileset dir="${gen.dir}/it/polito/dp2/NFFG/sol3/service/wjc">
+			<fileset dir="${wjc.dir}/it/polito/dp2/NFFG/sol3/service/wjc">
 				<include name="Localhost_Neo4JXMLRest.java" />
 			</fileset>
 		</delete>
@@ -54,22 +56,22 @@
 
 
 	<!-- Target chk-bindings -->
-	<target name="-chk-bindings">
-		<uptodate property="generate-bindings.notRequired" targetfile="${gen.dir}/.flagfile">
+	<target name="-chk-jaxb">
+		<uptodate property="generate-jaxb.notRequired" targetfile="${jaxb.dir}/.jaxb_flagfile">
 			<srcfiles dir="${schema.dir}" includes="**/*.xsd" />
 		</uptodate>
 	</target>
 	<!-- Target generate-bindings -->
-	<target name="generate-jaxb" unless="generate-bindings.notRequired" depends="-chk-bindings" description="Generate bindings from schema">
+	<target name="generate-jaxb" unless="generate-jaxb.notRequired" depends="-chk-jaxb" description="Generate bindings from schema">
 		<mkdir dir="${jaxb.dir}" />
 		<exec executable="xjc" failonerror="true">
 			<arg value="-d" />
-			<arg value="${gen.dir}" />
+			<arg value="${jaxb.dir}" />
 			<arg value="-p" />
 			<arg value="it.polito.dp2.NFFG.sol3.service.jaxb" />
 			<arg value="${schema.dir}/nffgVerifier.xsd" />
 		</exec>
-		<touch file="${gen.dir}/.flagfile" />
+		<touch file="${jaxb.dir}/.jaxb_flagfile" />
 	</target>
 
 	<taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask">
@@ -78,8 +80,8 @@
 		</classpath>
 	</taskdef>
 	<!-- Target chk-artifacts -->
-	<target name="-chk-artifacts">
-		<uptodate property="generate-artifacts.notRequired" targetfile="${custom.dir}/.flagfile2">
+	<target name="-chk-wjc">
+		<uptodate property="generate-wjc.notRequired" targetfile="${wjc.dir}/.wjc_flagfile">
 			<!-- regenerate artifacts if this build file is modified (or if the flagfile is removed) -->
 			<srcfiles dir="${basedir}" includes="sol_build.xml" />
 			<!-- update also in case some customization files are updated -->
@@ -88,16 +90,16 @@
 	</target>
 
 	<!-- define the client artifacts generation target -->
-	<target name="generate-wjc" depends="-chk-artifacts" unless="generate-artifacts.notRequired">
+	<target name="generate-wjc" depends="-chk-wjc" unless="generate-wjc.notRequired">
 		<mkdir dir="${wjc.dir}" />
 		<echo message="Compiling the WADL descriptions..." />
-		<wjc target="${gen.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service.wjc" description="${WADL}">
-			<produces dir="${gen.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
+		<wjc target="${wjc.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service.wjc" description="${WADL}">
+			<produces dir="${wjc.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
 			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
 			<depends dir="${basedir}" includes="sol_build.xml" />
 			<!-- use customizations -->
 			<customizations dir="${custom.dir}" includes="*.xjb" />
 		</wjc>
-		<touch file="${gen.dir}/.flagfile2" />
+		<touch file="${wjc.dir}/.wjc_flagfile" />
 	</target>
 </project>
