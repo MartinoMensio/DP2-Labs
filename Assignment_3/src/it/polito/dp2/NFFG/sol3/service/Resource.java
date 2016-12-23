@@ -49,8 +49,7 @@ public class Resource {
 	@POST
 	@Path("nffgs")
 	public Response postNffg(NffgT nffg, @Context UriInfo uriInfo) {
-		// TODO: call Service.storeNffg(nffg)
-		NffgT response = service.postNffg(nffg);
+		NffgT response = service.storeNffg(nffg);
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
         	URI u = builder.path(response.getName()).build();

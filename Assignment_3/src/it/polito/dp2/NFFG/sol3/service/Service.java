@@ -74,26 +74,31 @@ public class Service {
 		return null;
 	}
 	
-	public NffgT postNffg(NffgT nffg) {
-		Node nffgNode = new Node();
-		Property nameProp = new Property();
-		nameProp.setName("name");
-		nameProp.setValue(nffg.getName());
-		nffgNode.getProperty().add(nameProp);
-		Node nffgNodeRes = neoClient.addNode(nffgNode);
-		neoClient.addNffgLabelToNode(nffgNodeRes.getId());
+	public NffgT storeNffg(NffgT nffg) {
 		
-		// adding all the nodes
+		// Add the nffg fake node to neo4j
+		Node nffgN = addNamedNode(nffg.getName());
+		neoClient.addNffgLabelToNode(nffgN.getId());
+		
+		// adding all the nodes to neo4j
 		for(NodeT node : nffg.getNode()) {
-			Node nodeNode = new Node();
-			Property nodeNameProp = new Property();
-			nodeNameProp.setName("name");
-			nodeNameProp.setValue(node.getName());
-			Node nodeNodeRes = neoClient.addNode(nodeNode);
-			neoClient.addBelongsToNffg(nffgNode.getId(), nodeNodeRes.getId());
+			Node nodeN = addNamedNode(node.getName());
+			neoClient.addBelongsToNffg(nffgN.getId(), nodeN.getId());
 		}
 		
-		// TODO continue this shit
+		// store the Nffg in the persistence
+		data.nffgsMap.put(nffg.getName(), nffg);
 		return nffg;
+	}
+	
+	Node addNamedNode(String nodeName) {
+		Node nodeReq = new Node();
+		Property nameProp = new Property();
+		nameProp.setName("name");
+		nameProp.setValue(nodeName);
+		nodeReq.getProperty().add(nameProp);
+		// TODO exceptions
+		Node nodeRes = neoClient.addNode(nodeReq);
+		return nodeRes;
 	}
 }

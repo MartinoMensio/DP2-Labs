@@ -7,7 +7,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol3.jaxb.ObjectFactory;
+import it.polito.dp2.NFFG.sol3.service.jaxb.ObjectFactory;
 
 /**
  * 
