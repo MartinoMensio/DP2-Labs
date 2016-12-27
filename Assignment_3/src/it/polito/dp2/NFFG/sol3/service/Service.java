@@ -2,6 +2,7 @@ package it.polito.dp2.NFFG.sol3.service;
 
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 
 import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
@@ -39,42 +40,19 @@ public class Service {
 	}
 
 	public List<NffgT> getNffgs() {
-		List<Node> neoNodes = neoClient.getNodes();
-		List<NffgT> nffgs = new ArrayList<>();
-		for(Node neoNode : neoNodes) {
-			if(neoNode.getLabels().getValue().contains("NFFG")) {
-				// this is an nffg
-				// TODO use factory
-				NffgT nffg = new NffgT();
-				nffg.setName(neoNode.getProperty().stream().filter(p -> p.getName().equals("name")).findFirst().get().getValue());
-				// TODO check note some lines after (about nodes processing
-				nffgs.add(nffg);
-			}
-		}
-		for(Node neoNode : neoNodes) {
-			if(!neoNode.getLabels().getValue().contains("NFFG")) {
-				// this is not an NFFG
-				List<Node> neoNodesForThisNffg = new ArrayList<>();
-				// test reachability to understand if this node belongs to some nffg
-				// TODO looping: nodes,nffg could be done also inside the previous loop, but maybe this can be made parallelized
-				for(NffgT nffg : nffgs) {
-					if(neoClient.testReachability(data.nodesId.get(nffg.getName()), data.nodesId.get(neoNode.getProperty().stream().filter(p -> p.getName().equals("name")).findFirst().get().getValue()))) {
-						// this node belongs to this nffg
-						// TODO create NodeT
-						//nffg.getNode().add(e)
-					}
-				}
-			}
-		}
-		return nffgs;
+		return data.nffgsMap.values().stream().collect(Collectors.toList());
 	}
 
 	public NffgT getNffg(String name) {
-		// TODO
-		return null;
+		return data.nffgsMap.get(name);
 	}
 	
 	public NffgT storeNffg(NffgT nffg) {
+		
+		// check the uniqueness of the nffg name
+		if(data.nffgsMap.containsKey(nffg.getName())) {
+			return null;
+		}
 		
 		// Add the nffg fake node to neo4j
 		Node nffgN = addNamedNode(nffg.getName());

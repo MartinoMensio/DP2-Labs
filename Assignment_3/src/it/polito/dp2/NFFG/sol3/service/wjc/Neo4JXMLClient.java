@@ -38,8 +38,8 @@ public class Neo4JXMLClient {
 
 	public Node addNode(Node node) {
 		// TODO
-		// POST /resource/nodes
-		Node result = target.path("nodes").request(MediaType.APPLICATION_XML)
+		// POST /resource/node
+		Node result = target.path("node").request(MediaType.APPLICATION_XML)
 				.post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
 		// TODO check exceptions
 		return result;
@@ -53,6 +53,18 @@ public class Neo4JXMLClient {
 	public void deleteAllNodes() {
 		// TODO
 		// DELETE /resource/nodes
+		try {
+			Response resdel = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
+
+			if (resdel.getStatus() != 200) {
+				// not successful
+				throw new RuntimeException("impossible to clear neo4j: HTTP " + resdel.getStatus());
+			}
+		} catch (ResponseProcessingException e) {
+			// e.g. if the MediaType is wrong
+			throw new RuntimeException("impossible to clear neo4j because of response processing error"
+					+ ", status: HTTP " + e.getResponse().getStatus());
+		}
 	}
 
 	public void addNffgLabelToNode(String nodeId) {
@@ -93,7 +105,7 @@ public class Neo4JXMLClient {
 	public Relationship addRelationshipToNode(String nodeId, Relationship rel) {
 		// TODO
 		// used by addBelongs and addLink
-		Relationship result = target.path("nodes").path(nodeId).path("relationship").request(MediaType.APPLICATION_XML)
+		Relationship result = target.path("node").path(nodeId).path("relationship").request(MediaType.APPLICATION_XML)
 				.post(Entity.entity(rel, MediaType.APPLICATION_XML), Relationship.class);
 		// TODO check exceptions
 		return result;

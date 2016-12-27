@@ -17,18 +17,19 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
  */
 
 @Path("/")
-@Produces(MediaType.APPLICATION_XML)
-@Consumes(MediaType.APPLICATION_XML)
+@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 public class Resource {
-	
+
 	private Service service;
-	
+
 	public Resource() {
 		try {
 			service = Service.createService();
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException(e);
 			// What the hell
 		}
 	}
@@ -52,10 +53,20 @@ public class Resource {
 		NffgT response = service.storeNffg(nffg);
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-        	URI u = builder.path(response.getName()).build();
-        	return Response.created(u).entity(response).build();
-		}
-		else throw new ForbiddenException("something wrong");
+			URI u = builder.path(response.getName()).build();
+			return Response.created(u).entity(response).build();
+		} else
+			throw new ForbiddenException("something wrong");
 	}
 	
+	@GET
+	@Path("nffgs/{nffg_name}")
+	public NffgT getNffg(@PathParam("nffg_name") String nffgName) throws NotFoundException {
+		NffgT result = service.getNffg(nffgName);
+		if (result == null) {
+			throw new NotFoundException(nffgName);
+		}
+		return result;
+	}
+
 }
