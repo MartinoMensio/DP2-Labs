@@ -26,32 +26,40 @@
 	<property name="client1.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client1" />
 	<property name="client2.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client2" />
 
-	<target name="build-service" depends="compile-wjc,compile-jaxb">
+	<target name="build-service" depends="compile-wjc,compile-jaxb,build-lab3">
 		<!-- TODO -->
 		<javac srcdir="${service.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
-	<target name="build-client" depends="compile-jaxb">
+	<target name="build-client" depends="compile-jaxb,build-lab3">
 		<!-- TODO -->
-		<javac srcdir="${client1.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath"  />
-		<javac srcdir="${client2.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath"  />
+		<javac srcdir="${client1.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
+		<javac srcdir="${client2.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
 	<target name="clean">
 		<delete dir="${jaxb.dir}" />
 		<delete dir="${wjc.dir}" />
 	</target>
 
+	<target name="build-lab3">
+		<javac destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath">
+			<src path="${basedir}/src/" />
+			<include name="it/polito/dp2/NFFG/lab3/**" />
+			<exclude name="it/polito/dp2/NFFG/lab3/tests/**" />
+		</javac>
+	</target>
+
 	<!-- TODO split in two directories the wjc and jaxb artifacts -->
 	<target name="compile-wjc" depends="generate-wjc,generate-jaxb">
 		<!-- Removing the file that has problems -->
-		<delete>
+		<!--<delete>
 			<fileset dir="${wjc.dir}/it/polito/dp2/NFFG/sol3/service/wjc">
 				<include name="Localhost_Neo4JXMLRest.java" />
 			</fileset>
-		</delete>
-		<javac srcdir="${wjc.dir}" destdir="${build.dir}" includeantruntime="false" />
+		</delete>-->
+		<javac srcdir="${wjc.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
 	<target name="compile-jaxb" depends="generate-jaxb">
-		<javac srcdir="${jaxb.dir}" destdir="${build.dir}" includeantruntime="false" />
+		<javac srcdir="${jaxb.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
 
 
