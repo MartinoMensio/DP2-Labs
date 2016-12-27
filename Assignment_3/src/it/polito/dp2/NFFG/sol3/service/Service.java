@@ -69,6 +69,12 @@ public class Service {
 		return nffg;
 	}
 	
+	public PolicyT storePolicy(PolicyT policy) {
+		// TODO check all the constraints
+		data.policiesMap.put(policy.getName(), policy);
+		return policy;
+	}
+	
 	Node addNamedNode(String nodeName) {
 		Node nodeReq = new Node();
 		Property nameProp = new Property();

@@ -68,5 +68,27 @@ public class Resource {
 		}
 		return result;
 	}
+	
+	@GET
+	@Path("nffgs/{nffg_name}/nodes")
+	public List<NodeT> getNodes(@PathParam("nffg_name") String nffgName) throws NotFoundException {
+		NffgT nffg = service.getNffg(nffgName);
+		if (nffg == null) {
+			throw new NotFoundException(nffgName);
+		}
+		return nffg.getNode();
+	}
 
+	@POST
+	@Path("nffgs/{nffg_name}/policies")
+	public Response postPolicy(PolicyT policy, @PathParam("nffg_name") String nffgName, @Context UriInfo uriInfo) {
+		PolicyT response = service.storePolicy(policy);
+		// TODO distinguish if already stored or not ??
+		if (response != null) {
+			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+			URI u = builder.path(response.getName()).build();
+			return Response.created(u).entity(response).build();
+		} else
+			throw new ForbiddenException("something wrong");
+	}
 }
