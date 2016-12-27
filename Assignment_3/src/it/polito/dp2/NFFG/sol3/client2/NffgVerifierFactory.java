@@ -30,13 +30,10 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 			return new Client2NffgVerifier(uri);
 		} catch (URISyntaxException e) {
 			// TODO: Auto-generated catch block
-			throw new NFFGClientException("Invalid URI: " + e.getMessage());
+			throw new NffgVerifierException("Invalid URI: " + e.getMessage());
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
-			throw new NFFGClientException("Invalid URL: " + e.getMessage());
-		} catch (NffgVerifierException e) {
-			// TODO Auto-generated catch block
-			throw new NFFGClientException("Impossible to generate data" + e.getMessage());
+			throw new NffgVerifierException("Invalid URL: " + e.getMessage());
 		}
 	}
 

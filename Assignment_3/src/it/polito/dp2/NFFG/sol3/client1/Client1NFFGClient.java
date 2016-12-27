@@ -7,7 +7,7 @@ import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.lab3.*;
-import it.polito.dp2.NFFG.sol3.jaxb.*;
+import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
  * 
