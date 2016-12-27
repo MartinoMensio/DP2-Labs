@@ -13,7 +13,7 @@ public class Client2NodeReader extends Client2NamedEntityReader implements NodeR
 
 	private String nffgName;
 	
-	Client2NodeReader(String name) {
+	Client2NodeReader(Client2NffgReader client2NffgReader, String name) {
 		super(name);
 		// TODO Auto-generated constructor stub
 	}

@@ -1,8 +1,13 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
 import java.util.*;
+import java.util.stream.*;
+
+import javax.ws.rs.client.*;
+import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.*;
+import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
  * 
@@ -10,10 +15,15 @@ import it.polito.dp2.NFFG.*;
  *
  */
 public class Client2NffgReader extends Client2NamedEntityReader implements NffgReader {
+	
+	private WebTarget target;
+	private ObjectFactory factory;
 
-	Client2NffgReader(String name) {
+	Client2NffgReader(Client2NffgVerifier verifier, String name) {
 		super(name);
 		// TODO Auto-generated constructor stub
+		target = verifier.getTarget();
+		factory = new ObjectFactory();
 	}
 
 	@Override
@@ -27,7 +37,9 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 	public Set<NodeReader> getNodes() {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes
-		return null;
+		List<NodeT> nodes = target.path("nffgs").path(getName()).request(MediaType.APPLICATION_JSON).get(new GenericType<List<NodeT>>() {});
+		
+		return nodes.stream().map(n -> new Client2NodeReader(this, n.getName())).collect(Collectors.toSet());
 	}
 
 	@Override

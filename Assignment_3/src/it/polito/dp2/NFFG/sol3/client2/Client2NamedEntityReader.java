@@ -19,5 +19,14 @@ public class Client2NamedEntityReader implements NamedEntityReader {
 	public String getName() {
 		return name;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other instanceof Client2NamedEntityReader) {
+			return name.equals(((Client2NamedEntityReader) other).getName());
+		}
+		return false;
+		
+	}
 
 }

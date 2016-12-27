@@ -40,8 +40,8 @@ public class Client1NFFGClient implements NFFGClient {
 		// can call it. In this way a centralized management of exceptions will
 		// be applied
 		try {
-			Response res = target.path("nffgs").request(MediaType.APPLICATION_XML)
-					.post(Entity.entity(nffg, MediaType.APPLICATION_XML));
+			Response res = target.path("nffgs").request(MediaType.APPLICATION_JSON)
+					.post(Entity.entity(nffg, MediaType.APPLICATION_JSON));
 			if (res.getStatus() == 403) {
 				// if already loaded throw AlreadyLoadedException
 				throw new AlreadyLoadedException("nffg with name " + nffg.getName() + "already exists");
