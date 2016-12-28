@@ -32,6 +32,9 @@ public class Client2PolicyReader extends Client2NamedEntityReader implements Pol
 		// TODO Auto-generated method stub
 		// GET /policies/{policyId}/result
 		ResultT result = target.path("policies").path(getName()).path("result").request(MediaType.APPLICATION_JSON).get(ResultT.class);
+		if (result == null) {
+			return null;
+		}
 		return new Client2VerificationResultReader(getName(), result.isSatisfied(), result.getContent(), result.getVerified());
 	}
 
@@ -40,7 +43,8 @@ public class Client2PolicyReader extends Client2NamedEntityReader implements Pol
 		// TODO Auto-generated method stub
 		// GET /policies/{policyId} to get fresh data
 		// return policy.isPositive
-		return null;
+		PolicyT policy = target.path("policies").path(getName()).request(MediaType.APPLICATION_JSON).get(PolicyT.class);
+		return policy.isPositive();
 	}
 
 }

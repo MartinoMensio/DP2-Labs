@@ -113,6 +113,9 @@ public class Neo4JXMLClient {
 
 	public boolean testReachability(String srcNodeId, String dstNodeId) {
 		// TODO
-		return false;
+		Paths res = target.path("node").path(srcNodeId).path("paths").queryParam("dst", dstNodeId)
+				.request(MediaType.APPLICATION_XML).get(Paths.class);
+		// TODO exceptions
+		return !res.getPath().isEmpty();
 	}
 }

@@ -152,7 +152,7 @@ public class Resource {
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
 			URI u = builder.path(response.getName()).build();
-			return Response.created(u).entity(service.verifyPolicy(response)).build();
+			return Response.created(u).entity(response).build();
 		} else
 			throw new ForbiddenException("something wrong");
 	}
@@ -162,4 +162,36 @@ public class Resource {
 	public List<PolicyT> getPolicies() {
 		return service.getPolicies();
 	}
+	
+	@GET
+	@Path("policies/{policy_name}")
+	public PolicyT getPolicy(@PathParam("policy_name") String policyName) {
+		PolicyT policy = service.getPolicy(policyName);
+		if(policy == null) {
+			throw new NotFoundException(policyName);
+		}
+		return policy;
+	}
+	
+	@GET
+	@Path("policies/{policy_name}/result")
+	public ResultT getPolicyResult(@PathParam("policy_name") String policyName) {
+		PolicyT policy = service.getPolicy(policyName);
+		if(policy == null) {
+			throw new NotFoundException(policyName);
+		}
+		return policy.getResult();
+	}
+	
+	// TODO get is the best option?
+	@GET
+	@Path("policies/{policy_name}/result/update")
+	public ResultT updatePolicyResult(@PathParam("policy_name") String policyName) {
+		PolicyT policy = service.getPolicy(policyName);
+		if(policy == null) {
+			throw new NotFoundException(policyName);
+		}
+		return service.verifyPolicy(policy).getResult();
+	}
+	
 }

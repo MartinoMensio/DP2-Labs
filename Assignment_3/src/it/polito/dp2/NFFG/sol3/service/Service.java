@@ -63,6 +63,9 @@ public class Service {
 		// adding all the nodes to neo4j
 		for(NodeT node : nffg.getNode()) {
 			Node nodeN = addNamedNode(node.getName());
+			// store the ID of the node
+			data.nodesId.put(node.getName(), nodeN.getId());
+			// add the belongs relationship
 			neoClient.addBelongsToNffg(nffgN.getId(), nodeN.getId());
 		}
 		
@@ -95,7 +98,13 @@ public class Service {
 
 	public PolicyT verifyPolicy(PolicyT policy) {
 		// TODO Auto-generated method stub
-		boolean reachabilityStatus = neoClient.testReachability(policy.getSrc().getRef(), policy.getDst().getRef());
+		String srcId = data.nodesId.get(policy.getSrc().getRef());
+		String dstId = data.nodesId.get(policy.getDst().getRef());
+		if(srcId == null || dstId == null) {
+			// TODO
+			return null;
+		}
+		boolean reachabilityStatus = neoClient.testReachability(srcId, dstId);
 		ResultT result = new ResultT();
 		boolean satisfied = reachabilityStatus == policy.isPositive();
 		result.setSatisfied(satisfied);
@@ -110,5 +119,11 @@ public class Service {
 		}
 		policy.setResult(result);
 		return policy;
+	}
+
+	public PolicyT getPolicy(String policyName) {
+		// TODO Auto-generated method stub
+		return data.policiesMap.get(policyName);
+		// TODO verify again?
 	}
 }

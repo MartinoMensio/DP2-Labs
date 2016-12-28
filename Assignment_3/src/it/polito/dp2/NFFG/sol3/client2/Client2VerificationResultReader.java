@@ -30,7 +30,7 @@ public class Client2VerificationResultReader implements VerificationResultReader
 	public PolicyReader getPolicy() {
 		// TODO Auto-generated method stub
 		// GET /policies/{policyName}
-		return null;
+		return new Client2PolicyReader(null, policyName);
 	}
 
 	@Override

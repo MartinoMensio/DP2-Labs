@@ -71,6 +71,8 @@ public class Client1NFFGClient implements NFFGClient {
 		for (PolicyReader policyR : verifier.getPolicies()) {
 			ReachabilityPolicyReader reachPolicyR = (ReachabilityPolicyReader)policyR;
 			try {
+				// TODO fix:
+				// if a policy has a result, must upload it on the service. Therefore this method call does not work
 				loadReachabilityPolicy(policyR.getName(), policyR.getNffg().getName(), policyR.isPositive(), reachPolicyR.getSourceNode().getName(), reachPolicyR.getDestinationNode().getName());
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -98,6 +100,10 @@ public class Client1NFFGClient implements NFFGClient {
 		if(dst == null) {
 			throw new UnknownNameException(dstNodeName);
 		}
+		// TODO remove this:
+		// this is only a workaround to make things work
+		VerificationResultReader rpR = verifier.getPolicies().stream().filter(p -> p.getName().equals(name)).findAny().get().getResult();
+		
 		PolicyT policy = new PolicyT();
 		policy.setName(name);
 		NodeRefT srcRef = new NodeRefT();
@@ -108,6 +114,17 @@ public class Client1NFFGClient implements NFFGClient {
 		policy.setDst(dstRef);
 		policy.setNffg(nffgName);
 		policy.setPositive(isPositive);
+		
+		// TODO remove this
+		if(rpR != null) {
+			ResultT result = new ResultT();
+			result.setContent(rpR.getVerificationResultMsg());
+			result.setSatisfied(rpR.getVerificationResult());
+			result.setVerified(Utils.XMLGregorianCalendarFromCalendar(rpR.getVerificationTime()));
+			policy.setResult(result);
+		}
+		
+		
 		// POST /nffgs/{nffgName}/policies
 		// if some errors with communication with server, throw ServiceException
 		// TODO catch 404, ...
