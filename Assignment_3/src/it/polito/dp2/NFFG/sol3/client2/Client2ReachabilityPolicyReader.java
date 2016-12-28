@@ -9,8 +9,8 @@ import it.polito.dp2.NFFG.*;
  */
 public class Client2ReachabilityPolicyReader extends Client2PolicyReader implements ReachabilityPolicyReader {
 
-	Client2ReachabilityPolicyReader(String name) {
-		super(name);
+	Client2ReachabilityPolicyReader(Client2NffgVerifier verifier, String name) {
+		super(verifier, name);
 		// TODO Auto-generated constructor stub
 	}
 

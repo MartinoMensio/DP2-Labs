@@ -68,6 +68,16 @@ public class Client1NFFGClient implements NFFGClient {
 		}
 		// TODO
 		// foreach policy (from verifier): POST /nffgs/{nffgName}/policies
+		for (PolicyReader policyR : verifier.getPolicies()) {
+			ReachabilityPolicyReader reachPolicyR = (ReachabilityPolicyReader)policyR;
+			try {
+				loadReachabilityPolicy(policyR.getName(), policyR.getNffg().getName(), policyR.isPositive(), reachPolicyR.getSourceNode().getName(), reachPolicyR.getDestinationNode().getName());
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.err.println("this is impossible");
+				System.exit(1);
+			}
+		}
 	}
 
 	@Override
@@ -76,9 +86,32 @@ public class Client1NFFGClient implements NFFGClient {
 		// TODO Auto-generated method stub
 		// build a PolicyT from the values
 		// if nffgName or srcNodeName or dstNodeName don't correspond to local info, throw UnknownNameException
+		NffgReader nffgR = verifier.getNffg(nffgName);
+		if(nffgR == null) {
+			throw new UnknownNameException(nffgName);
+		}
+		NodeReader src = nffgR.getNode(srcNodeName);
+		if(src == null) {
+			throw new UnknownNameException(srcNodeName);
+		}
+		NodeReader dst = nffgR.getNode(dstNodeName);
+		if(dst == null) {
+			throw new UnknownNameException(dstNodeName);
+		}
+		PolicyT policy = new PolicyT();
+		policy.setName(name);
+		NodeRefT srcRef = new NodeRefT();
+		NodeRefT dstRef = new NodeRefT();
+		srcRef.setRef(srcNodeName);
+		dstRef.setRef(dstNodeName);
+		policy.setSrc(srcRef);
+		policy.setDst(dstRef);
+		policy.setNffg(nffgName);
+		policy.setPositive(isPositive);
 		// POST /nffgs/{nffgName}/policies
 		// if some errors with communication with server, throw ServiceException
-
+		// TODO catch 404, ...
+		PolicyT res = target.path("nffgs").path(nffgName).path("policies").request(MediaType.APPLICATION_JSON).post(Entity.entity(policy, MediaType.APPLICATION_JSON), PolicyT.class);
 	}
 
 	@Override

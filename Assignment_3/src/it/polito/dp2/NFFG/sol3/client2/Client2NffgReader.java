@@ -25,6 +25,10 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 		target = verifier.getTarget();
 		factory = new ObjectFactory();
 	}
+	
+	WebTarget getTarget() {
+		return target;
+	}
 
 	@Override
 	public NodeReader getNode(String nodeName) {
@@ -37,7 +41,7 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 	public Set<NodeReader> getNodes() {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes
-		List<NodeT> nodes = target.path("nffgs").path(getName()).request(MediaType.APPLICATION_JSON).get(new GenericType<List<NodeT>>() {});
+		List<NodeT> nodes = target.path("nffgs").path(getName()).path("nodes").request(MediaType.APPLICATION_JSON).get(new GenericType<List<NodeT>>() {});
 		
 		return nodes.stream().map(n -> new Client2NodeReader(this, n.getName())).collect(Collectors.toSet());
 	}

@@ -11,8 +11,8 @@ import it.polito.dp2.NFFG.*;
  */
 public class Client2TraversalPolicyReader extends Client2ReachabilityPolicyReader implements TraversalPolicyReader {
 
-	Client2TraversalPolicyReader(String name) {
-		super(name);
+	Client2TraversalPolicyReader(Client2NffgVerifier verifier, String name) {
+		super(verifier, name);
 		// TODO Auto-generated constructor stub
 	}
 

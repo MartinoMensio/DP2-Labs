@@ -1,6 +1,10 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
+import javax.ws.rs.client.*;
+import javax.ws.rs.core.*;
+
 import it.polito.dp2.NFFG.*;
+import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
  * 
@@ -9,9 +13,11 @@ import it.polito.dp2.NFFG.*;
  */
 public class Client2PolicyReader extends Client2NamedEntityReader implements PolicyReader {
 
-	Client2PolicyReader(String name) {
+	private WebTarget target;
+	
+	Client2PolicyReader(Client2NffgVerifier verifier, String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
+		target = verifier.getTarget();
 	}
 
 	@Override
@@ -25,7 +31,8 @@ public class Client2PolicyReader extends Client2NamedEntityReader implements Pol
 	public VerificationResultReader getResult() {
 		// TODO Auto-generated method stub
 		// GET /policies/{policyId}/result
-		return null;
+		ResultT result = target.path("policies").path(getName()).path("result").request(MediaType.APPLICATION_JSON).get(ResultT.class);
+		return new Client2VerificationResultReader(getName(), result.isSatisfied(), result.getContent(), result.getVerified());
 	}
 
 	@Override

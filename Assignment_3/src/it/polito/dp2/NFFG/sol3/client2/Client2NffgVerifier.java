@@ -52,14 +52,16 @@ public class Client2NffgVerifier implements NffgVerifier {
 	public Set<PolicyReader> getPolicies() {
 		// TODO Auto-generated method stub
 		// GET /policies
-		return null;
+		List<PolicyT> policies = target.path("policies").request(MediaType.APPLICATION_JSON).get(new GenericType<List<PolicyT>>() {});
+		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
 	}
 
 	@Override
-	public Set<PolicyReader> getPolicies(String policyName) {
+	public Set<PolicyReader> getPolicies(String nffgName) {
 		// TODO Auto-generated method stub
-		// GET /policies/{policyName}
-		return null;
+		// GET /nffgs/{nffgName}/policies
+		List<PolicyT> policies = target.path("nffgs").path(nffgName).path("policies").request(MediaType.APPLICATION_JSON).get(new GenericType<List<PolicyT>>() {});
+		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package it.polito.dp2.NFFG.sol3.client2;
 
 import java.util.*;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import it.polito.dp2.NFFG.*;
 
 /**
@@ -12,6 +14,17 @@ import it.polito.dp2.NFFG.*;
 public class Client2VerificationResultReader implements VerificationResultReader {
 
 	private String policyName;
+	private boolean satisfied;
+	private String content;
+	private Calendar verified;
+
+	Client2VerificationResultReader(String policyName, boolean satisfied, String content, XMLGregorianCalendar verified) {
+		// TODO Auto-generated constructor stub
+		this.policyName = policyName;
+		this.satisfied = satisfied;
+		this.content = content;
+		this.verified = verified.toGregorianCalendar();
+	}
 
 	@Override
 	public PolicyReader getPolicy() {
@@ -25,7 +38,7 @@ public class Client2VerificationResultReader implements VerificationResultReader
 		// TODO Auto-generated method stub
 		// GET /policies/{policyName}/result to have fresh data
 		// return result.verificationResult
-		return null;
+		return satisfied;
 	}
 
 	@Override
@@ -33,7 +46,7 @@ public class Client2VerificationResultReader implements VerificationResultReader
 		// TODO Auto-generated method stub
 		// GET /policies/{policyName}/result to have fresh data
 		// return result.verificationResult
-		return null;
+		return content;
 	}
 
 	@Override
@@ -41,7 +54,7 @@ public class Client2VerificationResultReader implements VerificationResultReader
 		// TODO Auto-generated method stub
 		// GET /policies/{policyName}/result to have fresh data
 		// return result.verificationTime
-		return null;
+		return verified;
 	}
 
 }

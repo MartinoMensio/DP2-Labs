@@ -4,6 +4,8 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.*;
 
+import javax.xml.datatype.*;
+
 import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 import it.polito.dp2.NFFG.sol3.service.wjc.*;
@@ -84,5 +86,29 @@ public class Service {
 		// TODO exceptions
 		Node nodeRes = neoClient.addNode(nodeReq);
 		return nodeRes;
+	}
+
+	public List<PolicyT> getPolicies() {
+		// TODO Auto-generated method stub
+		return data.policiesMap.values().stream().collect(Collectors.toList());
+	}
+
+	public PolicyT verifyPolicy(PolicyT policy) {
+		// TODO Auto-generated method stub
+		boolean reachabilityStatus = neoClient.testReachability(policy.getSrc().getRef(), policy.getDst().getRef());
+		ResultT result = new ResultT();
+		boolean satisfied = reachabilityStatus == policy.isPositive();
+		result.setSatisfied(satisfied);
+		result.setContent("the policy is " + (satisfied? "" : "not ") + "satisfied: expectation=" + policy.isPositive() + " actual=" + reachabilityStatus);
+		GregorianCalendar now = new GregorianCalendar();
+		try {
+			result.setVerified(DatatypeFactory.newInstance().newXMLGregorianCalendar(now));
+		} catch (DatatypeConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result.setVerified(null);
+		}
+		policy.setResult(result);
+		return policy;
 	}
 }
