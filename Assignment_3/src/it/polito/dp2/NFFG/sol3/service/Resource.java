@@ -164,6 +164,16 @@ public class Resource {
 	}
 	
 	@GET
+	@Path("nffgs/{nffg_name}/policies")
+	public List<PolicyT> getNffgPolicies(@PathParam("nffg_name") String nffgName) {
+		List<PolicyT> policies = service.getNffgPolicies(nffgName);
+		if (policies == null) {
+			throw new NotFoundException(nffgName);
+		}
+		return policies;
+	}
+	
+	@GET
 	@Path("policies/{policy_name}")
 	public PolicyT getPolicy(@PathParam("policy_name") String policyName) {
 		PolicyT policy = service.getPolicy(policyName);

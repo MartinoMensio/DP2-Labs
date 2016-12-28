@@ -13,18 +13,25 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
  */
 public class Client2PolicyReader extends Client2NamedEntityReader implements PolicyReader {
 
+	private Client2NffgVerifier verifier;
 	private WebTarget target;
 	
 	Client2PolicyReader(Client2NffgVerifier verifier, String name) {
 		super(name);
+		this.verifier = verifier;
 		target = verifier.getTarget();
+	}
+	
+	Client2NffgVerifier getVerifier() {
+		return verifier;
 	}
 
 	@Override
 	public NffgReader getNffg() {
 		// TODO Auto-generated method stub
 		// GET /policies/{policyId}/nffg
-		return null;
+		NffgT nffg = target.path("policies").path(getName()).path("nffg").request(MediaType.APPLICATION_JSON).get(NffgT.class);
+		return new Client2NffgReader(verifier, nffg.getName());
 	}
 
 	@Override
@@ -35,7 +42,7 @@ public class Client2PolicyReader extends Client2NamedEntityReader implements Pol
 		if (result == null) {
 			return null;
 		}
-		return new Client2VerificationResultReader(getName(), result.isSatisfied(), result.getContent(), result.getVerified());
+		return new Client2VerificationResultReader(this, result.isSatisfied(), result.getContent(), result.getVerified());
 	}
 
 	@Override

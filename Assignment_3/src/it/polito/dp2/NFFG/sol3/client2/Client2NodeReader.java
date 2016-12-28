@@ -16,17 +16,15 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
  */
 public class Client2NodeReader extends Client2NamedEntityReader implements NodeReader {
 
+	private Client2NffgReader nffgReader;
 	private String nffgName;
 	private WebTarget target;
 	
-	Client2NodeReader(Client2NffgReader nffgR, String name) {
+	Client2NodeReader(Client2NffgReader nffgReader, String name) {
 		super(name);
-		target = nffgR.getTarget();
-		nffgName = nffgR.getName();
-	}
-	
-	WebTarget getTarget() {
-		return target;
+		this.nffgReader = nffgReader;
+		target = nffgReader.getVerifier().getTarget();
+		nffgName = nffgReader.getName();
 	}
 	
 	String getNffgName() {
@@ -47,7 +45,7 @@ public class Client2NodeReader extends Client2NamedEntityReader implements NodeR
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes/{nodeName}/links
 		List<LinkT> links = target.path("nffgs").path(nffgName).path("nodes").path(getName()).path("links").request(MediaType.APPLICATION_JSON).get(new GenericType<List<LinkT>>() {});
-		return links.stream().map(l -> new Client2LinkReader(this, l.getName())).collect(Collectors.toSet());
+		return links.stream().map(l -> new Client2LinkReader(nffgReader, l.getName())).collect(Collectors.toSet());
 	}
 
 }

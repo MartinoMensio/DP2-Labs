@@ -95,6 +95,14 @@ public class Service {
 		// TODO Auto-generated method stub
 		return data.policiesMap.values().stream().collect(Collectors.toList());
 	}
+	
+	public List<PolicyT> getNffgPolicies(String nffgName) {
+		// TODO Auto-generated method stub
+		if(data.nffgsMap.get(nffgName) == null) {
+			return null;
+		}
+		return data.policiesMap.values().stream().filter(p -> p.getNffg().equals(nffgName)).collect(Collectors.toList());
+	}
 
 	public PolicyT verifyPolicy(PolicyT policy) {
 		// TODO Auto-generated method stub
@@ -126,4 +134,5 @@ public class Service {
 		return data.policiesMap.get(policyName);
 		// TODO verify again?
 	}
+
 }

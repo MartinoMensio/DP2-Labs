@@ -16,18 +16,19 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
  */
 public class Client2NffgReader extends Client2NamedEntityReader implements NffgReader {
 	
+	private Client2NffgVerifier verifier;
 	private WebTarget target;
 	private ObjectFactory factory;
 
 	Client2NffgReader(Client2NffgVerifier verifier, String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
+		this.verifier = verifier;
 		target = verifier.getTarget();
 		factory = new ObjectFactory();
 	}
 	
-	WebTarget getTarget() {
-		return target;
+	Client2NffgVerifier getVerifier() {
+		return verifier;
 	}
 
 	@Override

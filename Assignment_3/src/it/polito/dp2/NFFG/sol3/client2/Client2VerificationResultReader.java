@@ -13,14 +13,14 @@ import it.polito.dp2.NFFG.*;
  */
 public class Client2VerificationResultReader implements VerificationResultReader {
 
-	private String policyName;
+	private Client2PolicyReader policy;
 	private boolean satisfied;
 	private String content;
 	private Calendar verified;
 
-	Client2VerificationResultReader(String policyName, boolean satisfied, String content, XMLGregorianCalendar verified) {
+	Client2VerificationResultReader(Client2PolicyReader policy, boolean satisfied, String content, XMLGregorianCalendar verified) {
 		// TODO Auto-generated constructor stub
-		this.policyName = policyName;
+		this.policy = policy;
 		this.satisfied = satisfied;
 		this.content = content;
 		this.verified = verified.toGregorianCalendar();
@@ -30,7 +30,7 @@ public class Client2VerificationResultReader implements VerificationResultReader
 	public PolicyReader getPolicy() {
 		// TODO Auto-generated method stub
 		// GET /policies/{policyName}
-		return new Client2PolicyReader(null, policyName);
+		return new Client2PolicyReader(policy.getVerifier(), policy.getName());
 	}
 
 	@Override
