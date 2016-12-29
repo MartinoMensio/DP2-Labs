@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/nffgVerifier"
-	xmlns:tns="http://www.example.org/nffgVerifier" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://dp2.polito.it/nffgVerifier"
+	xmlns:tns="http://dp2.polito.it/nffgVerifier" elementFormDefault="qualified">
 
 	<element name="nffg">
 		<complexType>
