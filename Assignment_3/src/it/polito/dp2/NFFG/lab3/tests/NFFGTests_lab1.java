@@ -130,7 +130,6 @@ public class NFFGTests_lab1 {
 		// check the NffgReaders are not null
 		assertNotNull("Internal tester error: null nffg reader", rwr);
         assertNotNull("Unexpected null nffg reader", twr);
-        System.out.println("Comparing nffg "+rwr.getName());
 
         // check the NffgReaders return the same data
         compareString(rwr.getName(), twr.getName(), "nffg name");
@@ -175,11 +174,11 @@ public class NFFGTests_lab1 {
 		assertNotNull("Internal tester error: null node reader", rpr);
         assertNotNull("A null NodeReader has been found", tpr);
         
-        System.out.println("Comparing node " + rpr.getName());
-        
         // check the NodeReaders return the same name and functional type and links
         compareString(rpr.getName(), tpr.getName(), "node name");       
         assertEquals("wrong functional type", rpr.getFuncType(), tpr.getFuncType());
+        
+
         compareLinkReaderSets(rpr.getLinks(), tpr.getLinks(), "links");             
 	}
 
@@ -269,7 +268,6 @@ public class NFFGTests_lab1 {
 	private void comparePolicyReader(PolicyReader rpr, PolicyReader tpr) {
 		assertNotNull("Internal tester error: null policy reader", rpr);
         assertNotNull("A null PolicyReader has been found", tpr);
-        System.out.println("Comparing policy " + rpr.getName());
         compareString(rpr.getName(), tpr.getName(), "policy name");
         assertTrue("Wrong ispositive",rpr.isPositive()==tpr.isPositive());
         compareVerificationResultReader(rpr.getResult(),tpr.getResult());
@@ -286,7 +284,6 @@ public class NFFGTests_lab1 {
 		}
 		assertNotNull("Internal tester error: null policy referenced by verification result", rr.getPolicy());
         assertNotNull("Verification result references null policy", tr.getPolicy());
-        // System.out.println("Comparing verification result of policy "+rr.getPolicy().getName());
         compareString(rr.getPolicy().getName(),tr.getPolicy().getName(), "policy name");
         assertTrue("Wrong result",rr.getVerificationResult().equals(tr.getVerificationResult()));
         compareString(rr.getVerificationResultMsg(), tr.getVerificationResultMsg(), "verification result message");
