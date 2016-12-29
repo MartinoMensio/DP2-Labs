@@ -30,7 +30,7 @@ public class Client2PolicyReader extends Client2NamedEntityReader implements Pol
 	public NffgReader getNffg() {
 		// TODO Auto-generated method stub
 		// GET /policies/{policyId}/nffg
-		NffgT nffg = target.path("policies").path(getName()).path("nffg").request(MediaType.APPLICATION_JSON).get(NffgT.class);
+		Nffg nffg = target.path("policies").path(getName()).path("nffg").request(MediaType.APPLICATION_JSON).get(Nffg.class);
 		return new Client2NffgReader(verifier, nffg.getName());
 	}
 

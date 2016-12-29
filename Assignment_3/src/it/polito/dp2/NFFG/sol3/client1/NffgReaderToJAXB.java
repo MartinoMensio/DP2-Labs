@@ -6,13 +6,13 @@ import java.util.stream.*;
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
-public class NffgReaderToJAXB implements Function<NffgReader, NffgT> {
+public class NffgReaderToJAXB implements Function<NffgReader, Nffg> {
 
 	ObjectFactory factory = new ObjectFactory();
 	
 	@Override
-	public NffgT apply(NffgReader nffgR) {
-		NffgT result = factory.createNffgT();
+	public Nffg apply(NffgReader nffgR) {
+		Nffg result = factory.createNffg();
 		result.setName(nffgR.getName());
 		result.setUpdated(Utils.XMLGregorianCalendarFromCalendar(nffgR.getUpdateTime()));
 		// TODO

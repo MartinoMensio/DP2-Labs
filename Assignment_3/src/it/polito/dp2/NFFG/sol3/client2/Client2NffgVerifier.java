@@ -42,7 +42,7 @@ public class Client2NffgVerifier implements NffgVerifier {
 	public Set<NffgReader> getNffgs() {
 		// TODO Auto-generated method stub
 		// GET /nffgs
-		List<NffgT> nffgs = target.path("nffgs").request(MediaType.APPLICATION_JSON).get(new GenericType<List<NffgT>>() {});
+		List<Nffg> nffgs = target.path("nffgs").request(MediaType.APPLICATION_JSON).get(new GenericType<List<Nffg>>() {});
 
 		Set<NffgReader> result = nffgs.stream().map(nffg -> new Client2NffgReader(this, nffg.getName())).collect(Collectors.toSet());
 		return result;

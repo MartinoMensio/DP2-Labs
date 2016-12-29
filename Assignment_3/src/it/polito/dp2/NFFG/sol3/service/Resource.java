@@ -43,15 +43,15 @@ public class Resource {
 
 	@GET
 	@Path("nffgs")
-	public List<NffgT> getNffgs() {
+	public List<Nffg> getNffgs() {
 		// TODO
 		return service.getNffgs();
 	}
 
 	@POST
 	@Path("nffgs")
-	public Response postNffg(NffgT nffg, @Context UriInfo uriInfo) {
-		NffgT response = service.storeNffg(nffg);
+	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) {
+		Nffg response = service.storeNffg(nffg);
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
 			URI u = builder.path(response.getName()).build();
@@ -62,8 +62,8 @@ public class Resource {
 	
 	@GET
 	@Path("nffgs/{nffg_name}")
-	public NffgT getNffg(@PathParam("nffg_name") String nffgName) throws NotFoundException {
-		NffgT result = service.getNffg(nffgName);
+	public Nffg getNffg(@PathParam("nffg_name") String nffgName) throws NotFoundException {
+		Nffg result = service.getNffg(nffgName);
 		if (result == null) {
 			throw new NotFoundException(nffgName);
 		}
@@ -73,7 +73,7 @@ public class Resource {
 	@GET
 	@Path("nffgs/{nffg_name}/nodes")
 	public List<NodeT> getNodes(@PathParam("nffg_name") String nffgName) throws NotFoundException {
-		NffgT nffg = service.getNffg(nffgName);
+		Nffg nffg = service.getNffg(nffgName);
 		if (nffg == null) {
 			throw new NotFoundException(nffgName);
 		}
@@ -83,7 +83,7 @@ public class Resource {
 	@GET
 	@Path("nffgs/{nffg_name}/nodes/{node_name}")
 	public NodeT getNode(@PathParam("nffg_name") String nffgName, @PathParam("node_name") String nodeName) throws NotFoundException {
-		NffgT nffg = service.getNffg(nffgName);
+		Nffg nffg = service.getNffg(nffgName);
 		if (nffg == null) {
 			throw new NotFoundException(nffgName);
 		}
@@ -97,7 +97,7 @@ public class Resource {
 	@GET
 	@Path("nffgs/{nffg_name}/nodes/{node_name}/links")
 	public List<LinkT> getNodeLinks(@PathParam("nffg_name") String nffgName, @PathParam("node_name") String nodeName) throws NotFoundException {
-		NffgT nffg = service.getNffg(nffgName);
+		Nffg nffg = service.getNffg(nffgName);
 		if (nffg == null) {
 			throw new NotFoundException(nffgName);
 		}
@@ -111,7 +111,7 @@ public class Resource {
 	@GET
 	@Path("nffgs/{nffg_name}/links/{link_name}/src")
 	public NodeT getLinkSrcNode(@PathParam("nffg_name") String nffgName, @PathParam("link_name") String linkName) throws NotFoundException {
-		NffgT nffg = service.getNffg(nffgName);
+		Nffg nffg = service.getNffg(nffgName);
 		if (nffg == null) {
 			throw new NotFoundException(nffgName);
 		}
@@ -129,7 +129,7 @@ public class Resource {
 	@GET
 	@Path("nffgs/{nffg_name}/links/{link_name}/dst")
 	public NodeT getLinkDstNode(@PathParam("nffg_name") String nffgName, @PathParam("link_name") String linkName) throws NotFoundException {
-		NffgT nffg = service.getNffg(nffgName);
+		Nffg nffg = service.getNffg(nffgName);
 		if (nffg == null) {
 			throw new NotFoundException(nffgName);
 		}

@@ -34,14 +34,14 @@ public class Client1NFFGClient implements NFFGClient {
 			throw new UnknownNameException("No NFFG with name " + name);
 		}
 		// call transformer from NffgReader to NffgT
-		NffgT nffg = nffgReaderTransformer.apply(nffgR);
+		Nffg nffg = nffgReaderTransformer.apply(nffgR);
 		// POST /nffgs
 		// TODO move this request to a specific method, so that also loadAll()
 		// can call it. In this way a centralized management of exceptions will
 		// be applied
 		try {
-			Response res = target.path("nffgs").request(MediaType.APPLICATION_JSON)
-					.post(Entity.entity(nffg, MediaType.APPLICATION_JSON));
+			Response res = target.path("nffgs").request(MediaType.APPLICATION_XML)
+					.post(Entity.entity(nffg, MediaType.APPLICATION_XML));
 			if (res.getStatus() == 403) {
 				// if already loaded throw AlreadyLoadedException
 				throw new AlreadyLoadedException("nffg with name " + nffg.getName() + "already exists");

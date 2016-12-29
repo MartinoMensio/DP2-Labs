@@ -41,15 +41,15 @@ public class Service {
 		}
 	}
 
-	public List<NffgT> getNffgs() {
+	public List<Nffg> getNffgs() {
 		return data.nffgsMap.values().stream().collect(Collectors.toList());
 	}
 
-	public NffgT getNffg(String name) {
+	public Nffg getNffg(String name) {
 		return data.nffgsMap.get(name);
 	}
 	
-	public NffgT storeNffg(NffgT nffg) {
+	public Nffg storeNffg(Nffg nffg) {
 		
 		// check the uniqueness of the nffg name
 		if(data.nffgsMap.containsKey(nffg.getName())) {

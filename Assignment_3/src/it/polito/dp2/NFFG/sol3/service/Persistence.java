@@ -19,7 +19,7 @@ public class Persistence {
 	// instance data
 
 	// NFFGs are cached in the service
-	public Map<String, NffgT> nffgsMap = new HashMap<>();
+	public Map<String, Nffg> nffgsMap = new HashMap<>();
 	// policies are stored in the service
 	public Map<String, PolicyT> policiesMap = new HashMap<>();
 	// the service only memorizes the mappings between node name and node id
