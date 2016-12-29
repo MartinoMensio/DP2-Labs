@@ -70,40 +70,56 @@ public class Client1NFFGClient implements NFFGClient {
 		// foreach policy (from verifier): POST /nffgs/{nffgName}/policies
 		for (PolicyReader policyR : verifier.getPolicies()) {
 			ReachabilityPolicyReader reachPolicyR = (ReachabilityPolicyReader)policyR;
-			try {
-				// TODO fix:
-				// if a policy has a result, must upload it on the service. Therefore this method call does not work
-				loadReachabilityPolicy(policyR.getName(), policyR.getNffg().getName(), policyR.isPositive(), reachPolicyR.getSourceNode().getName(), reachPolicyR.getDestinationNode().getName());
-			} catch (Exception e) {
-				// TODO: handle exception
-				System.err.println("this is impossible");
-				System.exit(1);
+
+			PolicyT policy = new PolicyT();
+			policy.setName(policyR.getName());
+			policy.setNffg(policyR.getNffg().getName());
+			policy.setPositive(policyR.isPositive());
+			NodeRefT src = new NodeRefT();
+			src.setRef(reachPolicyR.getSourceNode().getName());
+			policy.setSrc(src);
+			NodeRefT dst = new NodeRefT();
+			dst.setRef(reachPolicyR.getSourceNode().getName());
+			policy.setDst(dst);
+			VerificationResultReader resultR = policyR.getResult();
+			if(resultR != null) {
+				ResultT result = new ResultT();
+				result.setContent(resultR.getVerificationResultMsg());
+				result.setSatisfied(resultR.getVerificationResult());
+				result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
+				policy.setResult(result);
 			}
+			loadPolicy(policy);
 		}
 	}
 
 	@Override
 	public void loadReachabilityPolicy(String name, String nffgName, boolean isPositive, String srcNodeName,
 			String dstNodeName) throws UnknownNameException, ServiceException {
-		// TODO Auto-generated method stub
-		// build a PolicyT from the values
+		
+		System.out.println("load called with name:"+name+" nffgName:"+nffgName);
+
 		// if nffgName or srcNodeName or dstNodeName don't correspond to local info, throw UnknownNameException
 		NffgReader nffgR = verifier.getNffg(nffgName);
 		if(nffgR == null) {
+			System.err.println("nffgR null: " + nffgName);
 			throw new UnknownNameException(nffgName);
+		}
+		System.out.println("the nodes of nffg "+nffgName+ " are:");
+		for(NodeReader n : nffgR.getNodes()) {
+			System.out.print(n.getName() + " ");
 		}
 		NodeReader src = nffgR.getNode(srcNodeName);
 		if(src == null) {
+			System.err.println("src null: " + srcNodeName);
 			throw new UnknownNameException(srcNodeName);
 		}
 		NodeReader dst = nffgR.getNode(dstNodeName);
 		if(dst == null) {
+			System.err.println("dst null: " + dstNodeName);
 			throw new UnknownNameException(dstNodeName);
 		}
-		// TODO remove this:
-		// this is only a workaround to make things work
-		VerificationResultReader rpR = verifier.getPolicies().stream().filter(p -> p.getName().equals(name)).findAny().get().getResult();
-		
+		// build a PolicyT from the values
 		PolicyT policy = new PolicyT();
 		policy.setName(name);
 		NodeRefT srcRef = new NodeRefT();
@@ -114,21 +130,14 @@ public class Client1NFFGClient implements NFFGClient {
 		policy.setDst(dstRef);
 		policy.setNffg(nffgName);
 		policy.setPositive(isPositive);
-		
-		// TODO remove this
-		if(rpR != null) {
-			ResultT result = new ResultT();
-			result.setContent(rpR.getVerificationResultMsg());
-			result.setSatisfied(rpR.getVerificationResult());
-			result.setVerified(Utils.XMLGregorianCalendarFromCalendar(rpR.getVerificationTime()));
-			policy.setResult(result);
-		}
-		
-		
+		loadPolicy(policy);
+}
+	
+	void loadPolicy(PolicyT policy) throws ServiceException {
 		// POST /nffgs/{nffgName}/policies
 		// if some errors with communication with server, throw ServiceException
 		// TODO catch 404, ...
-		PolicyT res = target.path("nffgs").path(nffgName).path("policies").request(MediaType.APPLICATION_JSON).post(Entity.entity(policy, MediaType.APPLICATION_JSON), PolicyT.class);
+		PolicyT res = target.path("nffgs").path(policy.getNffg()).path("policies").request(MediaType.APPLICATION_JSON).post(Entity.entity(policy, MediaType.APPLICATION_JSON), PolicyT.class);
 	}
 
 	@Override
@@ -137,16 +146,22 @@ public class Client1NFFGClient implements NFFGClient {
 		// DELETE /policies/{policyName}
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
+		Response res = target.path("policies").path(name).request(MediaType.APPLICATION_JSON).delete();
+		if (res.getStatus() == 404) {
+			throw new UnknownNameException(name);
+		}
 	}
 
 	@Override
 	public boolean testReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
 		// TODO Auto-generated method stub
-		// GET /policies/{policyName}/result
+		// POST /policies/{policyName}/result/update
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
 		// return result.verificationResult
-		return false;
+		ResultT result = target.path("policies").path(name).path("result").path("update").request(MediaType.APPLICATION_JSON).post(Entity.entity(null, MediaType.APPLICATION_JSON), ResultT.class);
+		// TODO exceptions
+		return result.isSatisfied();
 	}
 
 }

@@ -80,6 +80,10 @@ public class Service {
 		return policy;
 	}
 	
+	public PolicyT deletePolicy(String policyName) {
+		return data.policiesMap.remove(policyName);
+	}
+	
 	Node addNamedNode(String nodeName) {
 		Node nodeReq = new Node();
 		Property nameProp = new Property();

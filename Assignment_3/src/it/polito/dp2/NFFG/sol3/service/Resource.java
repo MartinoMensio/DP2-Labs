@@ -183,6 +183,16 @@ public class Resource {
 		return policy;
 	}
 	
+	@DELETE
+	@Path("policies/{policy_name}")
+	public Response deletePolicy(@PathParam("policy_name") String policyName) {
+		PolicyT policy = service.deletePolicy(policyName);
+		if(policy == null) {
+			throw new NotFoundException(policyName);
+		}
+		return Response.ok().build();
+	}
+	
 	@GET
 	@Path("policies/{policy_name}/result")
 	public ResultT getPolicyResult(@PathParam("policy_name") String policyName) {
@@ -193,8 +203,7 @@ public class Resource {
 		return policy.getResult();
 	}
 	
-	// TODO get is the best option?
-	@GET
+	@POST
 	@Path("policies/{policy_name}/result/update")
 	public ResultT updatePolicyResult(@PathParam("policy_name") String policyName) {
 		PolicyT policy = service.getPolicy(policyName);
