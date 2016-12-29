@@ -71,7 +71,7 @@ public class Client1NFFGClient implements NFFGClient {
 		for (PolicyReader policyR : verifier.getPolicies()) {
 			ReachabilityPolicyReader reachPolicyR = (ReachabilityPolicyReader)policyR;
 
-			PolicyT policy = new PolicyT();
+			Policy policy = new Policy();
 			policy.setName(policyR.getName());
 			policy.setNffg(policyR.getNffg().getName());
 			policy.setPositive(policyR.isPositive());
@@ -120,7 +120,7 @@ public class Client1NFFGClient implements NFFGClient {
 			throw new UnknownNameException(dstNodeName);
 		}
 		// build a PolicyT from the values
-		PolicyT policy = new PolicyT();
+		Policy policy = new Policy();
 		policy.setName(name);
 		NodeRefT srcRef = new NodeRefT();
 		NodeRefT dstRef = new NodeRefT();
@@ -133,11 +133,11 @@ public class Client1NFFGClient implements NFFGClient {
 		loadPolicy(policy);
 }
 	
-	void loadPolicy(PolicyT policy) throws ServiceException {
+	void loadPolicy(Policy policy) throws ServiceException {
 		// POST /nffgs/{nffgName}/policies
 		// if some errors with communication with server, throw ServiceException
 		// TODO catch 404, ...
-		PolicyT res = target.path("nffgs").path(policy.getNffg()).path("policies").request(MediaType.APPLICATION_JSON).post(Entity.entity(policy, MediaType.APPLICATION_JSON), PolicyT.class);
+		Policy res = target.path("nffgs").path(policy.getNffg()).path("policies").request(MediaType.APPLICATION_XML).post(Entity.entity(policy, MediaType.APPLICATION_XML), Policy.class);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class Client1NFFGClient implements NFFGClient {
 		// DELETE /policies/{policyName}
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
-		Response res = target.path("policies").path(name).request(MediaType.APPLICATION_JSON).delete();
+		Response res = target.path("policies").path(name).request(MediaType.APPLICATION_XML).delete();
 		if (res.getStatus() == 404) {
 			throw new UnknownNameException(name);
 		}
@@ -159,7 +159,7 @@ public class Client1NFFGClient implements NFFGClient {
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
 		// return result.verificationResult
-		ResultT result = target.path("policies").path(name).path("result").path("update").request(MediaType.APPLICATION_JSON).post(Entity.entity(null, MediaType.APPLICATION_JSON), ResultT.class);
+		ResultT result = target.path("policies").path(name).path("result").path("update").request(MediaType.APPLICATION_JSON).post(Entity.entity(null, MediaType.APPLICATION_XML), ResultT.class);
 		// TODO exceptions
 		return result.isSatisfied();
 	}

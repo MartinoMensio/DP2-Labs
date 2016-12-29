@@ -74,13 +74,13 @@ public class Service {
 		return nffg;
 	}
 	
-	public PolicyT storePolicy(PolicyT policy) {
+	public Policy storePolicy(Policy policy) {
 		// TODO check all the constraints
 		data.policiesMap.put(policy.getName(), policy);
 		return policy;
 	}
 	
-	public PolicyT deletePolicy(String policyName) {
+	public Policy deletePolicy(String policyName) {
 		return data.policiesMap.remove(policyName);
 	}
 	
@@ -95,12 +95,12 @@ public class Service {
 		return nodeRes;
 	}
 
-	public List<PolicyT> getPolicies() {
+	public List<Policy> getPolicies() {
 		// TODO Auto-generated method stub
 		return data.policiesMap.values().stream().collect(Collectors.toList());
 	}
 	
-	public List<PolicyT> getNffgPolicies(String nffgName) {
+	public List<Policy> getNffgPolicies(String nffgName) {
 		// TODO Auto-generated method stub
 		if(data.nffgsMap.get(nffgName) == null) {
 			return null;
@@ -108,7 +108,7 @@ public class Service {
 		return data.policiesMap.values().stream().filter(p -> p.getNffg().equals(nffgName)).collect(Collectors.toList());
 	}
 
-	public PolicyT verifyPolicy(PolicyT policy) {
+	public Policy verifyPolicy(Policy policy) {
 		// TODO Auto-generated method stub
 		String srcId = data.nodesId.get(policy.getSrc().getRef());
 		String dstId = data.nodesId.get(policy.getDst().getRef());
@@ -133,7 +133,7 @@ public class Service {
 		return policy;
 	}
 
-	public PolicyT getPolicy(String policyName) {
+	public Policy getPolicy(String policyName) {
 		// TODO Auto-generated method stub
 		return data.policiesMap.get(policyName);
 		// TODO verify again?

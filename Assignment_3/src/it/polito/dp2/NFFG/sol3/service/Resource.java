@@ -146,8 +146,8 @@ public class Resource {
 
 	@POST
 	@Path("nffgs/{nffg_name}/policies")
-	public Response postPolicy(PolicyT policy, @PathParam("nffg_name") String nffgName, @Context UriInfo uriInfo) {
-		PolicyT response = service.storePolicy(policy);
+	public Response postPolicy(Policy policy, @PathParam("nffg_name") String nffgName, @Context UriInfo uriInfo) {
+		Policy response = service.storePolicy(policy);
 		// TODO distinguish if already stored or not ??
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
@@ -159,14 +159,14 @@ public class Resource {
 	
 	@GET
 	@Path("policies")
-	public List<PolicyT> getPolicies() {
+	public List<Policy> getPolicies() {
 		return service.getPolicies();
 	}
 	
 	@GET
 	@Path("nffgs/{nffg_name}/policies")
-	public List<PolicyT> getNffgPolicies(@PathParam("nffg_name") String nffgName) {
-		List<PolicyT> policies = service.getNffgPolicies(nffgName);
+	public List<Policy> getNffgPolicies(@PathParam("nffg_name") String nffgName) {
+		List<Policy> policies = service.getNffgPolicies(nffgName);
 		if (policies == null) {
 			throw new NotFoundException(nffgName);
 		}
@@ -175,8 +175,8 @@ public class Resource {
 	
 	@GET
 	@Path("policies/{policy_name}")
-	public PolicyT getPolicy(@PathParam("policy_name") String policyName) {
-		PolicyT policy = service.getPolicy(policyName);
+	public Policy getPolicy(@PathParam("policy_name") String policyName) {
+		Policy policy = service.getPolicy(policyName);
 		if(policy == null) {
 			throw new NotFoundException(policyName);
 		}
@@ -186,7 +186,7 @@ public class Resource {
 	@DELETE
 	@Path("policies/{policy_name}")
 	public Response deletePolicy(@PathParam("policy_name") String policyName) {
-		PolicyT policy = service.deletePolicy(policyName);
+		Policy policy = service.deletePolicy(policyName);
 		if(policy == null) {
 			throw new NotFoundException(policyName);
 		}
@@ -196,7 +196,7 @@ public class Resource {
 	@GET
 	@Path("policies/{policy_name}/result")
 	public ResultT getPolicyResult(@PathParam("policy_name") String policyName) {
-		PolicyT policy = service.getPolicy(policyName);
+		Policy policy = service.getPolicy(policyName);
 		if(policy == null) {
 			throw new NotFoundException(policyName);
 		}
@@ -206,7 +206,7 @@ public class Resource {
 	@POST
 	@Path("policies/{policy_name}/result/update")
 	public ResultT updatePolicyResult(@PathParam("policy_name") String policyName) {
-		PolicyT policy = service.getPolicy(policyName);
+		Policy policy = service.getPolicy(policyName);
 		if(policy == null) {
 			throw new NotFoundException(policyName);
 		}

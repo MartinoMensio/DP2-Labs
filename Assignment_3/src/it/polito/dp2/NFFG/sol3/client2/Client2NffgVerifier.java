@@ -42,7 +42,7 @@ public class Client2NffgVerifier implements NffgVerifier {
 	public Set<NffgReader> getNffgs() {
 		// TODO Auto-generated method stub
 		// GET /nffgs
-		List<Nffg> nffgs = target.path("nffgs").request(MediaType.APPLICATION_JSON).get(new GenericType<List<Nffg>>() {});
+		List<Nffg> nffgs = target.path("nffgs").request(MediaType.APPLICATION_XML).get(new GenericType<List<Nffg>>() {});
 
 		Set<NffgReader> result = nffgs.stream().map(nffg -> new Client2NffgReader(this, nffg.getName())).collect(Collectors.toSet());
 		return result;
@@ -52,7 +52,7 @@ public class Client2NffgVerifier implements NffgVerifier {
 	public Set<PolicyReader> getPolicies() {
 		// TODO Auto-generated method stub
 		// GET /policies
-		List<PolicyT> policies = target.path("policies").request(MediaType.APPLICATION_JSON).get(new GenericType<List<PolicyT>>() {});
+		List<Policy> policies = target.path("policies").request(MediaType.APPLICATION_XML).get(new GenericType<List<Policy>>() {});
 		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
 	}
 
@@ -60,7 +60,7 @@ public class Client2NffgVerifier implements NffgVerifier {
 	public Set<PolicyReader> getPolicies(String nffgName) {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/policies
-		List<PolicyT> policies = target.path("nffgs").path(nffgName).path("policies").request(MediaType.APPLICATION_JSON).get(new GenericType<List<PolicyT>>() {});
+		List<Policy> policies = target.path("nffgs").path(nffgName).path("policies").request(MediaType.APPLICATION_XML).get(new GenericType<List<Policy>>() {});
 		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
 	}
 

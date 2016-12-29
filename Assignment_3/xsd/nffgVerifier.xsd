@@ -15,7 +15,22 @@
 			</complexContent>
 		</complexType>
 	</element>
-	<element name="policy" type="tns:policy_t" />
+	<element name="policy">
+		<complexType>
+			<complexContent>
+				<extension base="tns:link_t">
+					<sequence>
+						<element name="functionality" minOccurs="0" maxOccurs="unbounded"
+							type="tns:functionality_t" />
+						<element ref="tns:result" minOccurs="0" />
+					</sequence>
+					<attribute name="nffg" type="tns:name_t" use="required" />
+					<attribute name="positive" type="boolean" use="optional"
+						default="true" />
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
 	<element name="result" type="tns:result_t" />
 	<element name="node" type="tns:node_t" />
 	<element name="link" type="tns:link_t" />
@@ -26,21 +41,6 @@
 				<sequence>
 					<element name="functionality" type="tns:functionality_t" />
 				</sequence>
-			</extension>
-		</complexContent>
-	</complexType>
-
-	<complexType name="policy_t">
-		<complexContent>
-			<extension base="tns:link_t">
-				<sequence>
-					<element name="functionality" minOccurs="0" maxOccurs="unbounded"
-						type="tns:functionality_t" />
-					<element ref="tns:result" minOccurs="0" />
-				</sequence>
-				<attribute name="nffg" type="tns:name_t" use="required" />
-				<attribute name="positive" type="boolean" use="optional"
-					default="true" />
 			</extension>
 		</complexContent>
 	</complexType>
