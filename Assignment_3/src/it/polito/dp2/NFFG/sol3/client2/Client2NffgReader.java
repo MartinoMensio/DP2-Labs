@@ -35,7 +35,9 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 	public NodeReader getNode(String nodeName) {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes/{nodeName}
-		return null;
+		NodeT node = target.path("nffgs").path(getName()).path("nodes").path(nodeName).request(MediaType.APPLICATION_JSON).get(NodeT.class);
+		// TODO catch 404 to return null
+		return new Client2NodeReader(this, nodeName);
 	}
 
 	@Override
@@ -52,7 +54,8 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName} to have fresh data
 		// return nffg.updateTime
-		return null;
+		Nffg nffg = target.path("nffgs").path(getName()).request(MediaType.APPLICATION_XML).get(Nffg.class);
+		return nffg.getUpdated().toGregorianCalendar();
 	}
 
 }

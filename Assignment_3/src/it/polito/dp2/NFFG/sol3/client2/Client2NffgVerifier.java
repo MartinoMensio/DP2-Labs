@@ -68,7 +68,10 @@ public class Client2NffgVerifier implements NffgVerifier {
 	public Set<PolicyReader> getPolicies(Calendar verificationTime) {
 		// TODO Auto-generated method stub
 		// GET /policies?from={verificationTime}
-		return null;
+		// TODO convert to XMLGregorianCalendar String ??
+		// TODO implement the queryParam on server side
+		List<Policy> policies = target.path("policies").queryParam("from", verificationTime.toString()).request(MediaType.APPLICATION_XML).get(new GenericType<List<Policy>>() {});
+		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
 	}
 
 }
