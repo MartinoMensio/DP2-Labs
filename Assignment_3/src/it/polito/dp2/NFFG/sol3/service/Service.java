@@ -8,7 +8,7 @@ import javax.xml.datatype.*;
 
 import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.wjc.*;
+import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;;
 
 /**
  * Core functionality: orchestrator + response builder. Called by the web
@@ -57,17 +57,27 @@ public class Service {
 		}
 		
 		// Add the nffg fake node to neo4j
-		Node nffgN = addNamedNode(nffg.getName());
-		neoClient.addNffgLabelToNode(nffgN.getId());
+		String nffgId = neoClient.addNamedNode(nffg.getName());
+		neoClient.addNffgLabelToNode(nffgId);
 		
 		// adding all the nodes to neo4j
 		for(NodeT node : nffg.getNode()) {
-			Node nodeN = addNamedNode(node.getName());
+			String nodeId = neoClient.addNamedNode(node.getName());
 			// store the ID of the node
-			data.nodesId.put(node.getName(), nodeN.getId());
+			data.nodesId.put(node.getName(), nodeId);
 			// add the belongs relationship
-			neoClient.addBelongsToNffg(nffgN.getId(), nodeN.getId());
+			neoClient.addBelongsToNffg(nffgId, nodeId);
 		}
+		
+		// set updateTime
+		/*GregorianCalendar now = new GregorianCalendar();
+		try {
+			nffg.setUpdated(DatatypeFactory.newInstance().newXMLGregorianCalendar(now));
+		} catch (DatatypeConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			nffg.setUpdated(null);
+		}*/
 		
 		// store the Nffg in the persistence
 		data.nffgsMap.put(nffg.getName(), nffg);
@@ -82,17 +92,6 @@ public class Service {
 	
 	public Policy deletePolicy(String policyName) {
 		return data.policiesMap.remove(policyName);
-	}
-	
-	Node addNamedNode(String nodeName) {
-		Node nodeReq = new Node();
-		Property nameProp = new Property();
-		nameProp.setName("name");
-		nameProp.setValue(nodeName);
-		nodeReq.getProperty().add(nameProp);
-		// TODO exceptions
-		Node nodeRes = neoClient.addNode(nodeReq);
-		return nodeRes;
 	}
 
 	public List<Policy> getPolicies() {

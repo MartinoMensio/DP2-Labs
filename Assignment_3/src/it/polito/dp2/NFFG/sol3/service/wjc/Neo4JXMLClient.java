@@ -118,4 +118,15 @@ public class Neo4JXMLClient {
 		// TODO exceptions
 		return !res.getPath().isEmpty();
 	}
+	
+	public String addNamedNode(String nodeName) {
+		Node nodeReq = new Node();
+		Property nameProp = new Property();
+		nameProp.setName("name");
+		nameProp.setValue(nodeName);
+		nodeReq.getProperty().add(nameProp);
+		// TODO exceptions
+		Node nodeRes = addNode(nodeReq);
+		return nodeRes.getId();
+	}
 }

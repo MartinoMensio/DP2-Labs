@@ -1,11 +1,10 @@
 package it.polito.dp2.NFFG.sol3.service;
 
 import java.net.URI;
-import java.util.*;
 import java.util.concurrent.*;
 
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.wjc.*;
+import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;
 
 /**
  * Class for persistence
