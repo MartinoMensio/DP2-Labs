@@ -8,6 +8,7 @@ import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
+import it.polito.dp2.NFFG.sol3.service.jaxb.Link;
 
 /**
  * 
@@ -36,7 +37,7 @@ public class Client2NodeReader extends Client2NamedEntityReader implements NodeR
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes/{nodeName} to have fresh data
 		// return node.funcType
-		NodeT node = target.path("nffgs").path(nffgName).path("nodes").path(getName()).request(MediaType.APPLICATION_JSON).get(NodeT.class);
+		Node node = target.path("nffgs").path(nffgName).path("nodes").path(getName()).request(MediaType.APPLICATION_XML).get(Node.class);
 		return FunctionalType.fromValue(node.getFunctionality().value());
 	}
 
@@ -44,7 +45,7 @@ public class Client2NodeReader extends Client2NamedEntityReader implements NodeR
 	public Set<LinkReader> getLinks() {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes/{nodeName}/links
-		List<LinkT> links = target.path("nffgs").path(nffgName).path("nodes").path(getName()).path("links").request(MediaType.APPLICATION_JSON).get(new GenericType<List<LinkT>>() {});
+		List<Link> links = target.path("nffgs").path(nffgName).path("nodes").path(getName()).path("links").request(MediaType.APPLICATION_XML).get(new GenericType<List<Link>>() {});
 		return links.stream().map(l -> new Client2LinkReader(nffgReader, l.getName())).collect(Collectors.toSet());
 	}
 

@@ -15,11 +15,14 @@
 			</complexContent>
 		</complexType>
 	</element>
+	
 	<element name="policy">
 		<complexType>
 			<complexContent>
-				<extension base="tns:link_t">
+				<extension base="tns:named_element_t">
 					<sequence>
+						<element name="src" type="tns:node_ref_t" />
+						<element name="dst" type="tns:node_ref_t" />
 						<element name="functionality" minOccurs="0" maxOccurs="unbounded"
 							type="tns:functionality_t" />
 						<element ref="tns:result" minOccurs="0" />
@@ -31,35 +34,38 @@
 			</complexContent>
 		</complexType>
 	</element>
-	<element name="result" type="tns:result_t" />
-	<element name="node" type="tns:node_t" />
-	<element name="link" type="tns:link_t" />
-
-	<complexType name="node_t">
-		<complexContent>
-			<extension base="tns:named_element_t">
-				<sequence>
-					<element name="functionality" type="tns:functionality_t" />
-				</sequence>
-			</extension>
-		</complexContent>
-	</complexType>
-
-	<complexType name="link_t">
-		<complexContent>
-			<extension base="tns:named_element_t">
-				<sequence>
-					<element name="src" type="tns:node_ref_t" />
-					<element name="dst" type="tns:node_ref_t" />
-				</sequence>
-			</extension>
-		</complexContent>
-	</complexType>
-
-	<complexType name="result_t" mixed="true">
-		<attribute name="satisfied" type="boolean" use="required" />
-		<attribute name="verified" type="dateTime" use="required" />
-	</complexType>
+	
+	<element name="result">
+		<complexType mixed="true">
+			<attribute name="satisfied" type="boolean" use="required" />
+			<attribute name="verified" type="dateTime" use="required" />
+		</complexType>
+	</element>
+	
+	<element name="node">
+		<complexType>
+			<complexContent>
+				<extension base="tns:named_element_t">
+					<sequence>
+						<element name="functionality" type="tns:functionality_t" />
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+	
+	<element name="link">
+		<complexType>
+			<complexContent>
+				<extension base="tns:named_element_t">
+					<sequence>
+						<element name="src" type="tns:node_ref_t" />
+						<element name="dst" type="tns:node_ref_t" />
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
 
 	<complexType name="named_element_t">
 		<attribute name="name" type="tns:name_t" use="required" />

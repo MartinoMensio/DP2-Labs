@@ -35,7 +35,7 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 	public NodeReader getNode(String nodeName) {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes/{nodeName}
-		NodeT node = target.path("nffgs").path(getName()).path("nodes").path(nodeName).request(MediaType.APPLICATION_JSON).get(NodeT.class);
+		Node node = target.path("nffgs").path(getName()).path("nodes").path(nodeName).request(MediaType.APPLICATION_XML).get(Node.class);
 		// TODO catch 404 to return null
 		return new Client2NodeReader(this, nodeName);
 	}
@@ -44,7 +44,7 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 	public Set<NodeReader> getNodes() {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/nodes
-		List<NodeT> nodes = target.path("nffgs").path(getName()).path("nodes").request(MediaType.APPLICATION_JSON).get(new GenericType<List<NodeT>>() {});
+		List<Node> nodes = target.path("nffgs").path(getName()).path("nodes").request(MediaType.APPLICATION_XML).get(new GenericType<List<Node>>() {});
 		
 		return nodes.stream().map(n -> new Client2NodeReader(this, n.getName())).collect(Collectors.toSet());
 	}

@@ -61,7 +61,7 @@ public class Service {
 		neoClient.addNffgLabelToNode(nffgId);
 		
 		// adding all the nodes to neo4j
-		for(NodeT node : nffg.getNode()) {
+		for(Node node : nffg.getNode()) {
 			String nodeId = neoClient.addNamedNode(node.getName());
 			// store the ID of the node
 			data.nodesId.put(node.getName(), nodeId);
@@ -116,7 +116,7 @@ public class Service {
 			return null;
 		}
 		boolean reachabilityStatus = neoClient.testReachability(srcId, dstId);
-		ResultT result = new ResultT();
+		Result result = new Result();
 		boolean satisfied = reachabilityStatus == policy.isPositive();
 		result.setSatisfied(satisfied);
 		result.setContent("the policy is " + (satisfied? "" : "not ") + "satisfied: expectation=" + policy.isPositive() + " actual=" + reachabilityStatus);

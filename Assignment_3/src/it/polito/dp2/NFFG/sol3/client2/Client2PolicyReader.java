@@ -38,7 +38,7 @@ public class Client2PolicyReader extends Client2NamedEntityReader implements Pol
 	public VerificationResultReader getResult() {
 		// TODO Auto-generated method stub
 		// GET /policies/{policyId}/result
-		ResultT result = target.path("policies").path(getName()).path("result").request(MediaType.APPLICATION_JSON).get(ResultT.class);
+		Result result = target.path("policies").path(getName()).path("result").request(MediaType.APPLICATION_XML).get(Result.class);
 		if (result == null) {
 			return null;
 		}

@@ -27,7 +27,7 @@ public class Client2ReachabilityPolicyReader extends Client2PolicyReader impleme
 		// TODO Auto-generated method stub
 		// GET /policies/{policyName}/dst
 		// TODO implement this resource on server
-		NodeT node = target.path("policies").path(getName()).path("dst").request(MediaType.APPLICATION_JSON).get(NodeT.class);
+		Node node = target.path("policies").path(getName()).path("dst").request(MediaType.APPLICATION_XML).get(Node.class);
 		return new Client2NodeReader(nffgReader, node.getName());
 	}
 
@@ -36,7 +36,7 @@ public class Client2ReachabilityPolicyReader extends Client2PolicyReader impleme
 		// TODO Auto-generated method stub
 		// GET /policies/{policyName}/src
 		// TODO implement this resource on server
-		NodeT node = target.path("policies").path(getName()).path("src").request(MediaType.APPLICATION_JSON).get(NodeT.class);
+		Node node = target.path("policies").path(getName()).path("src").request(MediaType.APPLICATION_XML).get(Node.class);
 		return new Client2NodeReader(nffgReader, node.getName());
 	}
 

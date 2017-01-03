@@ -83,7 +83,7 @@ public class Client1NFFGClient implements NFFGClient {
 			policy.setDst(dst);
 			VerificationResultReader resultR = policyR.getResult();
 			if(resultR != null) {
-				ResultT result = new ResultT();
+				Result result = new Result();
 				result.setContent(resultR.getVerificationResultMsg());
 				result.setSatisfied(resultR.getVerificationResult());
 				result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
@@ -159,7 +159,7 @@ public class Client1NFFGClient implements NFFGClient {
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
 		// return result.verificationResult
-		ResultT result = target.path("policies").path(name).path("result").path("update").request(MediaType.APPLICATION_JSON).post(Entity.entity(null, MediaType.APPLICATION_XML), ResultT.class);
+		Result result = target.path("policies").path(name).path("result").path("update").request(MediaType.APPLICATION_XML).post(Entity.entity(null, MediaType.APPLICATION_XML), Result.class);
 		// TODO exceptions
 		return result.isSatisfied();
 	}

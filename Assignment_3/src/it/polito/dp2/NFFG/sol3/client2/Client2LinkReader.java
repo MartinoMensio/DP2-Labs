@@ -4,7 +4,7 @@ import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.NodeT;
+import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
  * 
@@ -27,7 +27,7 @@ public class Client2LinkReader extends Client2NamedEntityReader implements LinkR
 	public NodeReader getDestinationNode() {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/links/{linkName}/dst
-		NodeT dst = target.path("nffgs").path(nffgReader.getName()).path("links").path(getName()).path("dst").request(MediaType.APPLICATION_JSON).get(NodeT.class);
+		Node dst = target.path("nffgs").path(nffgReader.getName()).path("links").path(getName()).path("dst").request(MediaType.APPLICATION_XML).get(Node.class);
 		// TODO fix null
 		return new Client2NodeReader(nffgReader, dst.getName());
 	}
@@ -36,7 +36,7 @@ public class Client2LinkReader extends Client2NamedEntityReader implements LinkR
 	public NodeReader getSourceNode() {
 		// TODO Auto-generated method stub
 		// GET /nffgs/{nffgName}/links/{linkName}/src
-		NodeT src = target.path("nffgs").path(nffgReader.getName()).path("links").path(getName()).path("src").request(MediaType.APPLICATION_JSON).get(NodeT.class);
+		Node src = target.path("nffgs").path(nffgReader.getName()).path("links").path(getName()).path("src").request(MediaType.APPLICATION_XML).get(Node.class);
 		// TODO fix null
 		return new Client2NodeReader(nffgReader, src.getName());
 	}

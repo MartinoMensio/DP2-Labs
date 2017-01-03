@@ -21,15 +21,15 @@ public class NffgReaderToJAXB implements Function<NffgReader, Nffg> {
 		return result;
 	}
 
-	NodeT transformNode(NodeReader nodeR) {
-		NodeT result = factory.createNodeT();
+	Node transformNode(NodeReader nodeR) {
+		Node result = factory.createNode();
 		result.setName(nodeR.getName());
 		result.setFunctionality(FunctionalityT.fromValue(nodeR.getFuncType().value()));
 		return result;
 	}
 	
-	LinkT transformLink(LinkReader linkR) {
-		LinkT result = factory.createLinkT();
+	Link transformLink(LinkReader linkR) {
+		Link result = factory.createLink();
 		result.setName(linkR.getName());
 		NodeRefT src = factory.createNodeRefT();
 		src.setRef(linkR.getSourceNode().getName());
