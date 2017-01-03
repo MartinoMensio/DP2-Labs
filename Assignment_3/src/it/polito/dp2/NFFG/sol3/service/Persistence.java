@@ -2,6 +2,7 @@ package it.polito.dp2.NFFG.sol3.service;
 
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.*;
 
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 import it.polito.dp2.NFFG.sol3.service.wjc.*;
@@ -19,11 +20,11 @@ public class Persistence {
 	// instance data
 
 	// NFFGs are cached in the service
-	public Map<String, Nffg> nffgsMap = new HashMap<>();
+	public ConcurrentMap<String, Nffg> nffgsMap = new ConcurrentSkipListMap<>();
 	// policies are stored in the service
-	public Map<String, Policy> policiesMap = new HashMap<>();
+	public ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
 	// the service only memorizes the mappings between node name and node id
-	public Map<String, String> nodesId = new HashMap<>();
+	public ConcurrentMap<String, String> nodesId = new ConcurrentSkipListMap<>();
 
 	private Persistence() {
 		// TODO erase all the data from NEO4JXML
