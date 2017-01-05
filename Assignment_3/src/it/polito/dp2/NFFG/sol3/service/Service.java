@@ -70,14 +70,13 @@ public class Service {
 		}
 		
 		// set updateTime
-		/*GregorianCalendar now = new GregorianCalendar();
+		GregorianCalendar now = new GregorianCalendar();
 		try {
 			nffg.setUpdated(DatatypeFactory.newInstance().newXMLGregorianCalendar(now));
 		} catch (DatatypeConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			nffg.setUpdated(null);
-		}*/
+		}
 		
 		// store the Nffg in the persistence
 		data.nffgsMap.put(nffg.getName(), nffg);
