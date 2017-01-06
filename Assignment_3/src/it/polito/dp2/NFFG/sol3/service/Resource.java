@@ -207,7 +207,7 @@ public class Resource {
 	}
 	
 	@POST
-	@Path("policies/{policy_name}/result/update")
+	@Path("policies/{policy_name}/result")
 	public Result updatePolicyResult(@PathParam("policy_name") String policyName) {
 		Policy policy = service.getPolicy(policyName);
 		if(policy == null) {

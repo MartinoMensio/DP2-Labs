@@ -155,11 +155,11 @@ public class Client1NFFGClient implements NFFGClient {
 	@Override
 	public boolean testReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
 		// TODO Auto-generated method stub
-		// POST /policies/{policyName}/result/update
+		// POST /policies/{policyName}/result
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
 		// return result.verificationResult
-		Result result = target.path("policies").path(name).path("result").path("update").request(MediaType.APPLICATION_XML).post(Entity.entity(null, MediaType.APPLICATION_XML), Result.class);
+		Result result = target.path("policies").path(name).path("result").request(MediaType.APPLICATION_XML).post(Entity.entity(null, MediaType.APPLICATION_XML), Result.class);
 		// TODO exceptions
 		return result.isSatisfied();
 	}
