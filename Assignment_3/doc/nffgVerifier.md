@@ -26,21 +26,33 @@ This basic schema has resources only for unit of data that need to be manipulate
 
 ### Complete structure
 
-The service consists of two top level resources: one for NFFGs and the other one for policies.
-
-#### Policies/Policy placement
-
-The policies are made available as root elements because the clients may want to get the whole set of policies stored inside the server, without being specific on policies belonging to a single NFFG. The policy resource remains as child of nffg only for creation and for getting the collection of the policies of a specific nffg
-
 ![hierarchy of resources](../doc-files/resources_chart.svg)
 
-In the following paragraphs the resources are explained in more detail, including the information they store and the HTTP methods allowed on them.
+The service consists of two top level resources: one for NFFGs and the other one for policies.
+
+#### Policies placement
+
+The `policies` are made available as root elements because the clients may want to get the whole set of policies stored inside the server, without being specific on policies belonging to a single NFFG. Since the name of a policy is unique not only iniside a single NFFG, but has a global scope, it is appropriate that also the child resource `policy` belongs to this subtree.
+
+The `policies` resource remains as child of nffg only for creation/update and for getting the collection of the policies of a specific nffg.
+
+#### Policy creation and modification
+
+Single policies can be created and updated using the same procedure: a POST request on the resource `policies` child of `nffg`. Because the requirements specify that if a new policy is submitted with the same name as an already stored one, a replacement will occurr, to update a policy the client simply need to send the new version into a POST request using the same name (on the `policies` resource child of the correct `nffg`) (TODO check the nffg in the request??).
+
+#### Ignored fields of POST requests
+
+The POST requests done on resource whose ancestors are identified by a name, may contain a reference to the ancestor. Those fields will be ignored by the service.
+
+For example, a POST request for creating a policy may contain the nffg name. This information, since is already provided by the path on which the POST request is done, is not required and will be ignored.
 
 #### Other notes on the strucure TODO
 
 TODO
 
-### Nffgs
+In the following paragraphs the resources are explained in more detail, including the information they store and the HTTP methods allowed on them. (TODO better to avoid two times enumeration of resources. Do it after explaining the mapping to URLs)
+
+### nffgs
 
 This is the first out of the two root resources. It represents the collection of NFFG elements.
 
@@ -85,7 +97,27 @@ The policy resource stores informations about a policy: name, source node, desti
 
 ## 2. Mapping of the resources to URLs
 
-Methods summary:
+The tree structure of the resources previously shown is reflected on the URLs used. Curly braces are used in the following when the path contains an identifier.
+
+| URL                     | resource type | method | usage
+| ---                     | ------------- | ------ | --------
+| `/nffgs`                | nffgs         | GET    | obtain the collection of NFFGs
+|                         |               | POST   | store a new NFFG
+| `/nffgs/{nffg_name}`    | nffg          | GET    | obtain a single NFFG given its name
+|                         |               | DELETE | delete a single NFFG given its name
+| `/nffgs/{nffg_name}/policies`  | policy | GET    | obtain the collection of policies belonging to a NFFG whose name is given
+|                                |        | POST   | store a new policy belonging to a NFFG whose name is given
+| `/nffgs/{nffg_name}/online_result` | result |POST| obtain the result of a policy provided in the request testing it against an existing NFFG given its name
+| `/policies` TODO
+|
+| `/policies/{policy_name}` |
+|
+| `policies/{policy_name}`
+|
+
+Additional resources can be used to obtain partial information about the data.
+
+TODO nodes, links, ...
 
 ```text
 /                                                      GET, DELETE
