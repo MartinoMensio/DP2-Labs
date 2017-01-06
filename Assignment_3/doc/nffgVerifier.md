@@ -1,44 +1,89 @@
 # Design of RESTful API for NFFG verifier
 
-## Conceptual structure of the resources
+## 1. Conceptual structure of the resources
 
-### verifier
+### Basic structure
 
-The root resource. Includes nffgs
+The conceptual structure of the data to be represented in the service has a hierarchical structure that is:
+
+- there is a collection of **NFFGs** (top level resource)
+- the collection is a set of **NFFG** (child resource), that contain information about nodes and links
+- each NFFG has a child resource that represents **policies**
+- policies is a collection of **policy** resources
+- each policy can have a **result** resource
+
+```text
+     nffgs
+       |
+      nffg
+       |
+    policies
+       |
+     policy
+```
+
+This basic schema has resources only for unit of data that need to be manipulated separately. This is not the complete structure that I designed. The complete structure, that is more complete and complex, will be explained in details and is needed in order to make the data available in an easier way for the clients.
+
+### Complete structure
+
+The service consists of two top level resources: one for NFFGs and the other one for policies.
+
+#### Policies/Policy placement
+
+The policies are made available as root elements because the clients may want to get the whole set of policies stored inside the server, without being specific on policies belonging to a single NFFG. The policy resource remains as child of nffg only for creation and for getting the collection of the policies of a specific nffg
+
+![hierarchy of resources](../doc-files/resources_chart.svg)
+
+In the following paragraphs the resources are explained in more detail, including the information they store and the HTTP methods allowed on them.
+
+#### Other notes on the strucure TODO
 
 TODO
 
-### nffgs
+### Nffgs
 
-The collection of nffg elements.
+This is the first out of the two root resources. It represents the collection of NFFG elements.
 
-TODO
+| method | explaination
+| ------ | ------------
+|  GET   | read the collection of NFFGs
+|  POST  | add a new NFFG to the service
 
-### nffg
+### Nffg
 
-Inlcudes info about the nffg: name, last update, nodes, links, policies??
+The NFFG resource stores informations about a nffg: name, last update, nodes, links.
 
-TODO
+| method | explaination
+| ------ | ------------
+|  GET   | read the info about the NFFG
+| DELETE | delete the NFFG from the service
 
-### policies
+### Policies
 
-The collection of policies.
+This resource represents the collection of policies.
 
-TODO
+| method | explaination
+| ------ | ------------
+|  GET   | read the collection of policies
+|  POST  | add a new policy to the service
 
-### policy
+### Policy
 
-TODO
+The policy resource stores informations about a policy: name, source node, destination node, list of functionalities to be traversed (optional), the result of verification (optional), a reference to the NFFG to be considered, the information about the positiveness of the policy.
 
-### result
+| method | explaination
+| ------ | ------------
+|  GET   | read the info about the policy
+| DELETE | delete the policy from the service
 
-TODO
+### Result
 
-## Mapping of the resources to URLs
+| method | explaination
+| ------ | ------------
+|  GET   | read the verification result
+| POST (called on `update` nested resource) | requests an update of the verification result
 
-TODO
-
-## Operations by resource
+## 2. Mapping of the resources to URLs
 
 Methods summary:
 
@@ -59,10 +104,12 @@ Methods summary:
     policies/                                          GET (flat view. readonly??)
           {policy_id}/                                 GET, DELETE
                    nffg/                               GET
-                   result/                             GET ??
+                   result/                             GET, POST to request an update of the result
                    src/                                GET
                    dst/                                GET
 ```
+
+## 3. Operations by resource
 
 ### `/` verifier root
 
