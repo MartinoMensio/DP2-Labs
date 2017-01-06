@@ -96,8 +96,6 @@ public class Client1NFFGClient implements NFFGClient {
 	@Override
 	public void loadReachabilityPolicy(String name, String nffgName, boolean isPositive, String srcNodeName,
 			String dstNodeName) throws UnknownNameException, ServiceException {
-		
-		System.out.println("load called with name:"+name+" nffgName:"+nffgName);
 
 		// if nffgName or srcNodeName or dstNodeName don't correspond to local info, throw UnknownNameException
 		NffgReader nffgR = verifier.getNffg(nffgName);
@@ -105,10 +103,7 @@ public class Client1NFFGClient implements NFFGClient {
 			System.err.println("nffgR null: " + nffgName);
 			throw new UnknownNameException(nffgName);
 		}
-		System.out.println("the nodes of nffg "+nffgName+ " are:");
-		for(NodeReader n : nffgR.getNodes()) {
-			System.out.print(n.getName() + " ");
-		}
+		
 		NodeReader src = nffgR.getNode(srcNodeName);
 		if(src == null) {
 			System.err.println("src null: " + srcNodeName);
