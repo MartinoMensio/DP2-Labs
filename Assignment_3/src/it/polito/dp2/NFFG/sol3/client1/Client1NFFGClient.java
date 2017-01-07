@@ -67,7 +67,7 @@ public class Client1NFFGClient implements NFFGClient {
 			}
 		}
 		// TODO
-		// foreach policy (from verifier): POST /nffgs/{nffgName}/policies
+		// foreach policy (from verifier): PUT /policies/{policy_name}
 		for (PolicyReader policyR : verifier.getPolicies()) {
 			ReachabilityPolicyReader reachPolicyR = (ReachabilityPolicyReader)policyR;
 
@@ -129,10 +129,10 @@ public class Client1NFFGClient implements NFFGClient {
 }
 	
 	void loadPolicy(Policy policy) throws ServiceException {
-		// POST /nffgs/{nffgName}/policies
+		// PUT /policies/{policy_name}
 		// if some errors with communication with server, throw ServiceException
 		// TODO catch 404, ...
-		Policy res = target.path("nffgs").path(policy.getNffg()).path("policies").request(MediaType.APPLICATION_XML).post(Entity.entity(policy, MediaType.APPLICATION_XML), Policy.class);
+		Policy res = target.path("policies").path(policy.getName()).request(MediaType.APPLICATION_XML).put(Entity.entity(policy, MediaType.APPLICATION_XML), Policy.class);
 	}
 
 	@Override

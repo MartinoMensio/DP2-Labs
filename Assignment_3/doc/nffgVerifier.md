@@ -38,7 +38,7 @@ The `policies` resource remains as child of nffg only for creation/update and fo
 
 #### Policy creation and modification
 
-Single policies can be created and updated using the same procedure: a POST request on the resource `policies` child of `nffg`. Because the requirements specify that if a new policy is submitted with the same name as an already stored one, a replacement will occurr, to update a policy the client simply need to send the new version into a POST request using the same name (on the `policies` resource child of the correct `nffg`) (TODO check the nffg in the request??).
+Single policies can be created and updated using the same procedure: a PUT request on the `policy` resource child of `policies`. Because the requirements specify that if a new policy is submitted with the same name as an already stored one, a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent.
 
 #### Ignored fields of POST requests
 
@@ -47,53 +47,6 @@ The POST requests done on resource whose ancestors are identified by a name, may
 For example, a POST request for creating a policy may contain the nffg name. This information, since is already provided by the path on which the POST request is done, is not required and will be ignored.
 
 #### Other notes on the strucure TODO
-
-TODO
-
-In the following paragraphs the resources are explained in more detail, including the information they store and the HTTP methods allowed on them. (TODO better to avoid two times enumeration of resources. Do it after explaining the mapping to URLs)
-
-### nffgs
-
-This is the first out of the two root resources. It represents the collection of NFFG elements.
-
-| method | explaination
-| ------ | ------------
-|  GET   | read the collection of NFFGs
-|  POST  | add a new NFFG to the service
-
-### Nffg
-
-The NFFG resource stores informations about a nffg: name, last update, nodes, links.
-
-| method | explaination
-| ------ | ------------
-|  GET   | read the info about the NFFG
-| DELETE | delete the NFFG from the service
-
-### Policies
-
-This resource represents the collection of policies.
-
-| method | explaination
-| ------ | ------------
-|  GET   | read the collection of policies
-|  POST  | add a new policy to the service
-
-### Policy
-
-The policy resource stores informations about a policy: name, source node, destination node, list of functionalities to be traversed (optional), the result of verification (optional), a reference to the NFFG to be considered, the information about the positiveness of the policy.
-
-| method | explaination
-| ------ | ------------
-|  GET   | read the info about the policy
-| DELETE | delete the policy from the service
-
-### Result
-
-| method | explaination
-| ------ | ------------
-|  GET   | read the verification result
-| POST (called on `update` nested resource) | requests an update of the verification result
 
 ## 2. Mapping of the resources to URLs
 
@@ -106,10 +59,10 @@ The tree structure of the resources previously shown is reflected on the URLs us
 | `/nffgs/{nffg_name}`    | nffg          | GET    | obtain a single NFFG given its name
 |                         |               | DELETE | delete a single NFFG given its name
 | `/nffgs/{nffg_name}/policies`  | policy | GET    | obtain the collection of policies belonging to a NFFG whose name is given
-|                                |        | POST   | store a new policy belonging to a NFFG whose name is given
 | `/nffgs/{nffg_name}/online_result` | result |POST| obtain the result of a policy provided in the request testing it against an existing NFFG given its name
 | `/policies`              | policies     | GET    | obtain the collection of all the policies
 | `/policies/{policy_name}`| policy       | GET    | obtain a single policy given its name
+|                          |              | PUT   | store a policy on this resource (both creation or update)
 |                          |              | DELETE | delete a single policy given its name
 | `/policies/{policy_name}/result` | result | GET   | obtain (if any) the stored result for the stored policy given its name
 |                          |              | POST   | recompute and obtain the result of a stored policy
@@ -128,28 +81,6 @@ Additional resources can be used to obtain partial information about the data.
 | `policies/{policy_name}/nffg`               | nffg          | GET    | obtain the NFFG that the policy belongs to
 | `policies/{policy_name}/src`                | node          | GET    | obtain the source node of the reachability policy
 | `policies/{policy_name}/dst`                | node          | GET    | obtain the destination node of the reachability policy
-
-```text
-/                                                      GET, DELETE
-    nffgs/                                             GET, POST
-          {nffg_id}/                                   GET, DELETE
-                   nodes/                              GET
-                            {node_id}/                 GET
-                                        links/         GET
-                   links/                              GET
-                            {link_id}/                 GET
-                                        src/           GET
-                                        dst/           GET
-                   policies/                           GET, POST
-                            {policy_id}/               GET, PUT/PATCH
-                   online_result/                      POST (because need body request)
-    policies/                                          GET (flat view. readonly??)
-          {policy_id}/                                 GET, DELETE
-                   nffg/                               GET
-                   result/                             GET, POST to request an update of the result
-                   src/                                GET
-                   dst/                                GET
-```
 
 ## 3. Operations by resource
 

@@ -168,9 +168,11 @@ public class Resource {
 		return dst.get();
 	}
 
-	@POST
-	@Path("nffgs/{nffg_name}/policies")
-	public Response postPolicy(Policy policy, @PathParam("nffg_name") String nffgName, @Context UriInfo uriInfo) {
+	@PUT
+	@Path("policies/{policy_name}")
+	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
+		// Overwrite the policy name in the request
+		policy.setName(policyName);
 		Policy response = service.storePolicy(policy);
 		// TODO distinguish if already stored or not ??
 		if (response != null) {
