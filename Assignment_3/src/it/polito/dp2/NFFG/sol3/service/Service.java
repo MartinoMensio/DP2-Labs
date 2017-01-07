@@ -83,6 +83,10 @@ public class Service {
 		return nffg;
 	}
 	
+	public Nffg deleteNffg(String nffgName) {
+		return data.nffgsMap.remove(nffgName);
+	}
+	
 	public Policy storePolicy(Policy policy) {
 		// TODO check all the constraints
 		data.policiesMap.put(policy.getName(), policy);

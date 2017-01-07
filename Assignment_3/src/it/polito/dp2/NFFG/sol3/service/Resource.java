@@ -63,6 +63,16 @@ public class Resource {
 			throw new ForbiddenException("something wrong");
 	}
 	
+	@DELETE
+	@Path("nffgs/{nffg_name}")
+	public Response deleteNffg(@PathParam("nffg_name") String nffgName) {
+		Nffg nffg = service.deleteNffg(nffgName);
+		if(nffg == null) {
+			throw new NotFoundException(nffgName);
+		}
+		return Response.ok().build();
+	}
+	
 	@GET
 	@Path("nffgs/{nffg_name}")
 	public Nffg getNffg(@PathParam("nffg_name") String nffgName) throws NotFoundException {
