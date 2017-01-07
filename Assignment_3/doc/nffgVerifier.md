@@ -108,16 +108,26 @@ The tree structure of the resources previously shown is reflected on the URLs us
 | `/nffgs/{nffg_name}/policies`  | policy | GET    | obtain the collection of policies belonging to a NFFG whose name is given
 |                                |        | POST   | store a new policy belonging to a NFFG whose name is given
 | `/nffgs/{nffg_name}/online_result` | result |POST| obtain the result of a policy provided in the request testing it against an existing NFFG given its name
-| `/policies` TODO
-|
-| `/policies/{policy_name}` |
-|
-| `policies/{policy_name}`
-|
+| `/policies`              | policies     | GET    | obtain the collection of all the policies
+| `/policies/{policy_name}`| policy       | GET    | obtain a single policy given its name
+|                          |              | DELETE | delete a single policy given its name
+| `/policies/{policy_name}/result` | result | GET   | obtain (if any) the stored result for the stored policy given its name
+|                          |              | POST   | recompute and obtain the result of a stored policy
 
 Additional resources can be used to obtain partial information about the data.
 
-TODO nodes, links, ...
+| URL                                         | resource type | method | usage
+| ---                                         | ------------- | ------ | --------
+| `nffgs/{nffg_name}/nodes`                   | nodes         | GET    | obtain the collection of nodes belonging to a stored nffg
+| `nffgs/{nffg_name}/nodes/{node_name}`       | nodes         | GET    | obtain a single node belonging to a stored nffg
+| `nffgs/{nffg_name}/nodes/{node_name}/links` | links         | GET    | obtain the collection of links outgoing from a  node belonging to a stored nffg
+| `nffgs/{nffg_name}/links`                   | links         | GET    | obtain the collection of links belonging to a stored nffg (outgoing from all the nodes belonging to the nffg)
+| `nffgs/{nffg_name}/links/{link_name}`       | links         | GET    | obtain a single link belonging to a stored nffg given its name
+| `nffgs/{nffg_name}/links/{link_name}/src`   | node          | GET    | obtain the source node of a link belonging to a stored nffg
+| `nffgs/{nffg_name}/links/{link_name}/dst`   | node          | GET    | obtain the destination node of a link belonging to a stored nffg
+| `policies/{policy_name}/nffg`               | nffg          | GET    | obtain the NFFG that the policy belongs to
+| `policies/{policy_name}/src`                | node          | GET    | obtain the source node of the reachability policy
+| `policies/{policy_name}/dst`                | node          | GET    | obtain the destination node of the reachability policy
 
 ```text
 /                                                      GET, DELETE
@@ -142,15 +152,6 @@ TODO nodes, links, ...
 ```
 
 ## 3. Operations by resource
-
-### `/` verifier root
-
-This is the root resource, also the entry point. Returns all the informations about NFFGs and policies.
-
-| method | request type | response type | explaination           | errors
-| ------ | ------------ | ------------- | ------------           | ------
-| GET    | -            | verifier      | get the informations (pagination)  |
-| DELETE | -            | OK            | delete all the informations |
 
 ### `/nffgs`
 
@@ -188,7 +189,6 @@ A node identified by its id
 | ------ | ------------ | ------------- | ------------           | ------
 | GET    | -            | node          | get the node           | 404: wrong nffg_id/node_id
 
-
 ### `/nffgs/{nffg_id}/links`
 
 Links collection for this NFFG
@@ -204,7 +204,6 @@ A link identified by its id
 | method | request type | response type | explaination           | errors
 | ------ | ------------ | ------------- | ------------           | ------
 | GET    | -            | link          | get the link           | 404: wrong nffg_id/link_id
-
 
 ### `/nffgs/{nffg_id}/policies`
 
