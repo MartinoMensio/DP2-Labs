@@ -69,6 +69,16 @@ public class Service {
 			neoClient.addBelongsToNffg(nffgId, nodeId);
 		}
 		
+		// and add the links to neo4j
+		for(Link link : nffg.getLink()) {
+			String srcNodeId = data.nodesId.get(link.getSrc().getRef());
+			String dstNodeId = data.nodesId.get(link.getDst().getRef());
+			if (srcNodeId == null || dstNodeId == null) {
+				return null;
+			}
+			neoClient.addLinkBetweenNodes(srcNodeId, dstNodeId);
+		}
+		
 		// set updateTime
 		GregorianCalendar now = new GregorianCalendar();
 		try {
