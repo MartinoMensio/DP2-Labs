@@ -87,6 +87,11 @@ public class Service {
 		return data.nffgsMap.remove(nffgName);
 	}
 	
+	public Result verifyResultOnTheFly(Policy policy, String nffgName) {
+		Policy verified = verifyPolicy(policy);
+		return verified.getResult();
+	}
+	
 	public Policy storePolicy(Policy policy) {
 		// TODO check all the constraints
 		data.policiesMap.put(policy.getName(), policy);

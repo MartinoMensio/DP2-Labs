@@ -73,6 +73,17 @@ public class Resource {
 		return Response.ok().build();
 	}
 	
+	@POST
+	@Path("nffgs/{nffg_name}/online_result")
+	public Result verifyResultOnTheFly(Policy policy, @PathParam("nffg_name") String nffgName) {
+		Result result = service.verifyResultOnTheFly(policy, nffgName);
+		if(result == null) {
+			// TODO reason: could be because of nffgName or because other references or other errors in body request
+			throw new NotFoundException();
+		}
+		return result;
+	}
+	
 	@GET
 	@Path("nffgs/{nffg_name}")
 	public Nffg getNffg(@PathParam("nffg_name") String nffgName) throws NotFoundException {
