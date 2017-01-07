@@ -234,7 +234,12 @@ public class Resource {
 		if(policy == null) {
 			throw new NotFoundException(policyName);
 		}
-		return service.verifyPolicy(policy).getResult();
+		policy = service.verifyPolicy(policy);
+		if(policy == null) {
+			// TODO maybe for src or dst not found
+			throw new ForbiddenException();
+		}
+		return policy.getResult();
 	}
 	
 }
