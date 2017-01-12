@@ -1,44 +1,34 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
-
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
+ * Implementation of the interface LinkReader. This class is an extension of
+ * Client2NamedEntityReader, adding the private fields for source and
+ * destination nodes.
  * 
  * @author Martino Mensio
  *
  */
 public class Client2LinkReader extends Client2NamedEntityReader implements LinkReader {
 
-	private Client2NffgReader nffgReader;
-	private WebTarget target;
-	
-	Client2LinkReader(Client2NffgReader nffgReader, String name) {
+	private NodeReader sourceNode;
+	private NodeReader destinationNode;
+
+	public Client2LinkReader(String name, NodeReader sourceNode, NodeReader destionationNode) {
 		super(name);
-		// TODO Auto-generated constructor stub
-		target = nffgReader.getVerifier().getTarget();
-		this.nffgReader = nffgReader;
+		this.sourceNode = sourceNode;
+		this.destinationNode = destionationNode;
 	}
 
 	@Override
 	public NodeReader getDestinationNode() {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}/links/{linkName}/dst
-		Node dst = target.path("nffgs").path(nffgReader.getName()).path("links").path(getName()).path("dst").request(MediaType.APPLICATION_XML).get(Node.class);
-		// TODO fix null
-		return new Client2NodeReader(nffgReader, dst.getName());
+		return destinationNode;
 	}
 
 	@Override
 	public NodeReader getSourceNode() {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}/links/{linkName}/src
-		Node src = target.path("nffgs").path(nffgReader.getName()).path("links").path(getName()).path("src").request(MediaType.APPLICATION_XML).get(Node.class);
-		// TODO fix null
-		return new Client2NodeReader(nffgReader, src.getName());
+		return sourceNode;
 	}
 
 }

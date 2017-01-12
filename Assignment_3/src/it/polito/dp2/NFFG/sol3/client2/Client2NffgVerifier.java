@@ -1,77 +1,111 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
-import java.net.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
-
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
+ * Implementation of the NffgVerifier interface
  * 
  * @author Martino Mensio
  *
  */
 public class Client2NffgVerifier implements NffgVerifier {
 
-	private WebTarget target;
-	private ObjectFactory factory;
-	
-	public Client2NffgVerifier(URI uri) {
-		// TODO Auto-generated constructor stub
-		target = ClientBuilder.newClient().target(uri);
-		factory = new ObjectFactory();
+	// the nffgs mapped by their name
+	private Map<String, NffgReader> nffgs;
+	// set of policies mapped by the name of the nffg they belong to
+	private Map<String, Set<PolicyReader>> policies;
+
+	public Client2NffgVerifier() {
+		this.nffgs = new HashMap<>();
+		this.policies = new HashMap<>();
 	}
-	
-	WebTarget getTarget() {
-		return target;
+
+	/**
+	 * adds to the private Map the specified nffg. This method does not belong
+	 * to the interface
+	 * 
+	 * @param nffg
+	 * @throws NffgVerifierException
+	 *             if another nffg with this name is already there
+	 */
+	void addNffg(NffgReader nffg) throws NffgVerifierException {
+		if (nffgs.containsKey(nffg.getName())) {
+			// a duplicate nffg is found
+			throw new NffgVerifierException("A NFFG with the name " + nffg.getName() + " is already there");
+		}
+		// store the nffg
+		nffgs.put(nffg.getName(), nffg);
+		// and create a new Set for storing its policies
+		policies.put(nffg.getName(), new HashSet<>());
+	}
+
+	/**
+	 * Adds the policy to the verifier
+	 * 
+	 * @param nffgName
+	 *            the name of the nffg this policy refers to
+	 * @param policy
+	 *            the policy to be added
+	 * @throws NffgVerifierException
+	 *             if there is no nffg with this name or if there is already a
+	 *             policy with this name
+	 */
+	void addPolicy(String nffgName, PolicyReader policy) throws NffgVerifierException {
+		if (!nffgs.containsKey(nffgName)) {
+			// no nffg with this name
+			throw new NffgVerifierException(
+					"The policy " + policy.getName() + "refers to the NFFG " + nffgName + " that does not exist");
+		}
+		// get a flat map of policies mapped by their name
+		Map<String, PolicyReader> flatPolicies = policies.values().stream().flatMap(Set::stream)
+				.collect(Collectors.toMap(PolicyReader::getName, Function.identity()));
+		if (flatPolicies.containsKey(policy.getName())) {
+			// duplicate policy (the scope for policy name is global
+			throw new NffgVerifierException("A policy named " + policy.getName() + " already exists");
+		}
+		policies.get(nffgName).add(policy);
 	}
 
 	@Override
 	public NffgReader getNffg(String nffgName) {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}
-		// TODO check now if it exists
-		return new Client2NffgReader(this, nffgName);
+		return nffgs.get(nffgName);
 	}
 
 	@Override
 	public Set<NffgReader> getNffgs() {
-		// TODO Auto-generated method stub
-		// GET /nffgs
-		List<Nffg> nffgs = target.path("nffgs").request(MediaType.APPLICATION_XML).get(new GenericType<List<Nffg>>() {});
-
-		Set<NffgReader> result = nffgs.stream().map(nffg -> new Client2NffgReader(this, nffg.getName())).collect(Collectors.toSet());
-		return result;
+		return new HashSet<>(nffgs.values());
 	}
 
 	@Override
 	public Set<PolicyReader> getPolicies() {
-		// TODO Auto-generated method stub
-		// GET /policies
-		List<Policy> policies = target.path("policies").request(MediaType.APPLICATION_XML).get(new GenericType<List<Policy>>() {});
-		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
+		// get a Set of all the policies stored inside the map
+		return policies.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
 	}
 
 	@Override
 	public Set<PolicyReader> getPolicies(String nffgName) {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}/policies
-		List<Policy> policies = target.path("nffgs").path(nffgName).path("policies").request(MediaType.APPLICATION_XML).get(new GenericType<List<Policy>>() {});
-		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
+		Set<PolicyReader> result = policies.get(nffgName);
+		// the result could be null if there is no nffg with this name
+		// or could be an empty set if there are no policies for this nffg
+		return (result != null && result.size() > 0) ? result : null;
 	}
 
 	@Override
 	public Set<PolicyReader> getPolicies(Calendar verificationTime) {
-		// TODO Auto-generated method stub
-		// GET /policies?from={verificationTime}
-		// TODO convert to XMLGregorianCalendar String ??
-		// TODO implement the queryParam on server side
-		List<Policy> policies = target.path("policies").queryParam("from", verificationTime.toString()).request(MediaType.APPLICATION_XML).get(new GenericType<List<Policy>>() {});
-		return policies.stream().map(p -> new Client2PolicyReader(this, p.getName())).collect(Collectors.toSet());
+		// get all the policies
+		Set<PolicyReader> result = policies.values().stream().flatMap(Set::stream).filter(p -> {
+			// filter lets in the stream only the policies that have been
+			// verified after the VerificationTime
+			return p.getResult().getVerificationTime().compareTo(verificationTime) > 0;
+		}).collect(Collectors.toSet());
+		// if no policy satisfies the condition, return null instead of an empty
+		// Set
+		return (result.size() > 0) ? result : null;
 	}
 
 }
+

@@ -2,59 +2,58 @@ package it.polito.dp2.NFFG.sol3.client2;
 
 import java.util.*;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import it.polito.dp2.NFFG.*;
 
 /**
+ * Implementation of the VerificationResultReader interface
  * 
  * @author Martino Mensio
  *
  */
 public class Client2VerificationResultReader implements VerificationResultReader {
 
-	private Client2PolicyReader policy;
-	private boolean satisfied;
-	private String content;
-	private Calendar verified;
+	private PolicyReader policy;
+	private boolean result;
+	private String message;
+	private Calendar verificationTime;
 
-	Client2VerificationResultReader(Client2PolicyReader policy, boolean satisfied, String content, XMLGregorianCalendar verified) {
-		// TODO Auto-generated constructor stub
+	public Client2VerificationResultReader(Boolean result, String message, Calendar verificationTime) {
+		this.result = result;
+		this.message = message;
+		this.verificationTime = verificationTime;
+	}
+
+	/**
+	 * Sets the policy that this result belongs to. This is a circular
+	 * information, since from the policy we can get the result and viceversa.
+	 * For this reason this information cannot be provided inside the
+	 * constructor, and to break the "chicken or the egg" problem this method
+	 * has been added. This method does not belong to the interface
+	 * 
+	 * @param policy
+	 */
+	void setPolicy(PolicyReader policy) {
 		this.policy = policy;
-		this.satisfied = satisfied;
-		this.content = content;
-		this.verified = verified.toGregorianCalendar();
 	}
 
 	@Override
 	public PolicyReader getPolicy() {
-		// TODO Auto-generated method stub
-		// GET /policies/{policyName}
-		return new Client2PolicyReader(policy.getVerifier(), policy.getName());
+		return policy;
 	}
 
 	@Override
 	public Boolean getVerificationResult() {
-		// TODO Auto-generated method stub
-		// GET /policies/{policyName}/result to have fresh data
-		// return result.verificationResult
-		return satisfied;
+		return result;
 	}
 
 	@Override
 	public String getVerificationResultMsg() {
-		// TODO Auto-generated method stub
-		// GET /policies/{policyName}/result to have fresh data
-		// return result.verificationResult
-		return content;
+		return message;
 	}
 
 	@Override
 	public Calendar getVerificationTime() {
-		// TODO Auto-generated method stub
-		// GET /policies/{policyName}/result to have fresh data
-		// return result.verificationTime
-		return verified;
+		return verificationTime;
 	}
 
 }

@@ -1,43 +1,33 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
-
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
+ * Implementation of the ReachabilityPolicyReader
  * 
  * @author Martino Mensio
  *
  */
 public class Client2ReachabilityPolicyReader extends Client2PolicyReader implements ReachabilityPolicyReader {
 
-	private Client2NffgReader nffgReader;
-	protected WebTarget target;
-	
-	Client2ReachabilityPolicyReader(Client2NffgVerifier verifier, String name) {
-		super(verifier, name);
-		nffgReader = new Client2NffgReader(verifier, getNffg().getName());
-		target = verifier.getTarget();
+	private NodeReader src;
+	private NodeReader dst;
+
+	public Client2ReachabilityPolicyReader(String name, NffgReader nffg, VerificationResultReader result,
+			Boolean expected, NodeReader src, NodeReader dst) {
+		super(name, nffg, result, expected);
+		this.src = src;
+		this.dst = dst;
 	}
 
 	@Override
 	public NodeReader getDestinationNode() {
-		// TODO Auto-generated method stub
-		// GET /policies/{policyName}/dst
-		// TODO implement this resource on server
-		Node node = target.path("policies").path(getName()).path("dst").request(MediaType.APPLICATION_XML).get(Node.class);
-		return new Client2NodeReader(nffgReader, node.getName());
+		return src;
 	}
 
 	@Override
 	public NodeReader getSourceNode() {
-		// TODO Auto-generated method stub
-		// GET /policies/{policyName}/src
-		// TODO implement this resource on server
-		Node node = target.path("policies").path(getName()).path("src").request(MediaType.APPLICATION_XML).get(Node.class);
-		return new Client2NodeReader(nffgReader, node.getName());
+		return dst;
 	}
 
 }

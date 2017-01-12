@@ -1,61 +1,77 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
 import java.util.*;
-import java.util.stream.*;
-
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
+ * Implementation of the interface NffgReader. The class is an extension of
+ * Client2NamedEntityReader, adding the set of nodes and the updateTime.
  * 
  * @author Martino Mensio
  *
  */
 public class Client2NffgReader extends Client2NamedEntityReader implements NffgReader {
-	
-	private Client2NffgVerifier verifier;
-	private WebTarget target;
-	private ObjectFactory factory;
 
-	Client2NffgReader(Client2NffgVerifier verifier, String name) {
+	// the nodes mapped by their name
+	private Map<String, NodeReader> nodes;
+	private Calendar updateTime;
+
+	public Client2NffgReader(String name, Calendar updateTime) {
 		super(name);
-		this.verifier = verifier;
-		target = verifier.getTarget();
-		factory = new ObjectFactory();
+		this.updateTime = updateTime;
+		this.nodes = new HashMap<>();
 	}
-	
-	Client2NffgVerifier getVerifier() {
-		return verifier;
+
+	/**
+	 * Adds a node to the private collection of nodes. This is not a method of
+	 * the interface.
+	 * 
+	 * @param node
+	 * @throws NffgVerifierException
+	 *             on duplicate node (by name)
+	 */
+	void addNode(NodeReader node) throws NffgVerifierException {
+		if (nodes.containsKey(node.getName())) {
+			throw new NffgVerifierException(
+					"a node with the name " + node.getName() + " is already stored in the NFFG " + getName());
+		}
+		nodes.put(node.getName(), node);
+	}
+
+	/**
+	 * This method is similar to the getNode one, but it returns an object of
+	 * type Client2NodeReader instead of NodeReader. The visibility is only
+	 * inside the package. This method allows other classes in the package to
+	 * use the addOutgoingLink method. This is not a method of the interface.
+	 * 
+	 * @param nodeName
+	 *            the name of the node to retrieve
+	 * @return a Client2NodeReader object with the corresponding name
+	 * 
+	 */
+	Client2NodeReader getClient2Node(String nodeName) {
+		NodeReader tmp = nodes.get(nodeName);
+		if (tmp != null && tmp instanceof Client2NodeReader) {
+			return (Client2NodeReader) tmp;
+		}
+		return null;
 	}
 
 	@Override
 	public NodeReader getNode(String nodeName) {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}/nodes/{nodeName}
-		Node node = target.path("nffgs").path(getName()).path("nodes").path(nodeName).request(MediaType.APPLICATION_XML).get(Node.class);
-		// TODO catch 404 to return null
-		return new Client2NodeReader(this, nodeName);
+		return nodes.get(nodeName);
 	}
 
 	@Override
 	public Set<NodeReader> getNodes() {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}/nodes
-		List<Node> nodes = target.path("nffgs").path(getName()).path("nodes").request(MediaType.APPLICATION_XML).get(new GenericType<List<Node>>() {});
-		
-		return nodes.stream().map(n -> new Client2NodeReader(this, n.getName())).collect(Collectors.toSet());
+		// transform the map into a set
+		return new HashSet<>(nodes.values());
 	}
 
 	@Override
 	public Calendar getUpdateTime() {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName} to have fresh data
-		// return nffg.updateTime
-		Nffg nffg = target.path("nffgs").path(getName()).request(MediaType.APPLICATION_XML).get(Nffg.class);
-		return nffg.getUpdated().toGregorianCalendar();
+		return updateTime;
 	}
 
 }

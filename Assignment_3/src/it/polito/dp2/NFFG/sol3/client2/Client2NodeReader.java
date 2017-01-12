@@ -1,52 +1,51 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
 import java.util.*;
-import java.util.stream.*;
-
-import javax.ws.rs.client.*;
-import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.Link;
 
 /**
+ * Implementation of the NodeReader interface
  * 
  * @author Martino Mensio
  *
  */
 public class Client2NodeReader extends Client2NamedEntityReader implements NodeReader {
 
-	private Client2NffgReader nffgReader;
-	private String nffgName;
-	private WebTarget target;
-	
-	Client2NodeReader(Client2NffgReader nffgReader, String name) {
+	private FunctionalType functionality;
+	// the Set of outgoing links
+	private Map<String, LinkReader> outgoingLinks;
+
+	public Client2NodeReader(String name, FunctionalType functionality) {
 		super(name);
-		this.nffgReader = nffgReader;
-		target = nffgReader.getVerifier().getTarget();
-		nffgName = nffgReader.getName();
+		this.functionality = functionality;
+		outgoingLinks = new HashMap<>();
 	}
-	
-	String getNffgName() {
-		return nffgName;
+
+	/**
+	 * Adds an outgoing link to the private Set. This method does not belong to
+	 * the interface
+	 * 
+	 * @param link
+	 * @throws NffgVerifierException
+	 *             if a link with this name already exists
+	 */
+	void addOutgoingLink(LinkReader link) throws NffgVerifierException {
+		if (outgoingLinks.containsKey(link.getName())) {
+			throw new NffgVerifierException(
+					"a link with the name " + link.getName() + " already exists in the nffg " + getName());
+		}
+		outgoingLinks.put(link.getName(), link);
 	}
 
 	@Override
 	public FunctionalType getFuncType() {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}/nodes/{nodeName} to have fresh data
-		// return node.funcType
-		Node node = target.path("nffgs").path(nffgName).path("nodes").path(getName()).request(MediaType.APPLICATION_XML).get(Node.class);
-		return FunctionalType.fromValue(node.getFunctionality().value());
+		return functionality;
 	}
 
 	@Override
 	public Set<LinkReader> getLinks() {
-		// TODO Auto-generated method stub
-		// GET /nffgs/{nffgName}/nodes/{nodeName}/links
-		List<Link> links = target.path("nffgs").path(nffgName).path("nodes").path(getName()).path("links").request(MediaType.APPLICATION_XML).get(new GenericType<List<Link>>() {});
-		return links.stream().map(l -> new Client2LinkReader(nffgReader, l.getName())).collect(Collectors.toSet());
+		return new HashSet<>(outgoingLinks.values());
 	}
 
 }
