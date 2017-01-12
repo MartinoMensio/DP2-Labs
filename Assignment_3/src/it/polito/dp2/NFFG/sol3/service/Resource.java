@@ -115,17 +115,6 @@ public class Resource {
 		return service.getPolicies();
 	}
 	
-	// TODO move that as queryParam
-	@GET
-	@Path("nffgs/{nffg_name}/policies")
-	public List<Policy> getNffgPolicies(@PathParam("nffg_name") String nffgName) {
-		List<Policy> policies = service.getNffgPolicies(nffgName);
-		if (policies == null) {
-			throw new NotFoundException(nffgName);
-		}
-		return policies;
-	}
-	
 	@GET
 	@Path("policies/{policy_name}")
 	public Policy getPolicy(@PathParam("policy_name") String policyName) {
@@ -144,17 +133,6 @@ public class Resource {
 			throw new NotFoundException(policyName);
 		}
 		return Response.ok().build();
-	}
-	
-	// TODO remove that
-	@GET
-	@Path("policies/{policy_name}/result")
-	public Result getPolicyResult(@PathParam("policy_name") String policyName) {
-		Policy policy = service.getPolicy(policyName);
-		if(policy == null) {
-			throw new NotFoundException(policyName);
-		}
-		return policy.getResult();
 	}
 	
 	@POST
