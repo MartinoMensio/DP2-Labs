@@ -94,80 +94,6 @@ public class Resource {
 		return result;
 	}
 	
-	@GET
-	@Path("nffgs/{nffg_name}/nodes")
-	public List<Node> getNodes(@PathParam("nffg_name") String nffgName) throws NotFoundException {
-		Nffg nffg = service.getNffg(nffgName);
-		if (nffg == null) {
-			throw new NotFoundException(nffgName);
-		}
-		return nffg.getNode();
-	}
-	
-	@GET
-	@Path("nffgs/{nffg_name}/nodes/{node_name}")
-	public Node getNode(@PathParam("nffg_name") String nffgName, @PathParam("node_name") String nodeName) throws NotFoundException {
-		Nffg nffg = service.getNffg(nffgName);
-		if (nffg == null) {
-			throw new NotFoundException(nffgName);
-		}
-		Optional<Node> node = nffg.getNode().stream().filter(n -> n.getName().equals(nodeName)).findAny();
-		if(!node.isPresent()) {
-			throw new NotFoundException(nodeName);
-		}
-		return node.get();
-	}
-	
-	@GET
-	@Path("nffgs/{nffg_name}/nodes/{node_name}/links")
-	public List<Link> getNodeLinks(@PathParam("nffg_name") String nffgName, @PathParam("node_name") String nodeName) throws NotFoundException {
-		Nffg nffg = service.getNffg(nffgName);
-		if (nffg == null) {
-			throw new NotFoundException(nffgName);
-		}
-		Optional<Node> node = nffg.getNode().stream().filter(n -> n.getName().equals(nodeName)).findAny();
-		if(!node.isPresent()) {
-			throw new NotFoundException(nodeName);
-		}
-		return nffg.getLink().stream().filter(l -> l.getSrc().getRef().equals(nodeName)).collect(Collectors.toList());
-	}
-	
-	@GET
-	@Path("nffgs/{nffg_name}/links/{link_name}/src")
-	public Node getLinkSrcNode(@PathParam("nffg_name") String nffgName, @PathParam("link_name") String linkName) throws NotFoundException {
-		Nffg nffg = service.getNffg(nffgName);
-		if (nffg == null) {
-			throw new NotFoundException(nffgName);
-		}
-		Optional<Link> link = nffg.getLink().stream().filter(l -> l.getName().equals(linkName)).findAny();
-		if(!link.isPresent()) {
-			throw new NotFoundException(linkName);
-		}
-		Optional<Node> src = nffg.getNode().stream().filter(n -> n.getName().equals(link.get().getSrc().getRef())).findAny();
-		if(!src.isPresent()) {
-			throw new InternalServerErrorException(link.get().getName());
-		}
-		return src.get();
-	}
-	
-	@GET
-	@Path("nffgs/{nffg_name}/links/{link_name}/dst")
-	public Node getLinkDstNode(@PathParam("nffg_name") String nffgName, @PathParam("link_name") String linkName) throws NotFoundException {
-		Nffg nffg = service.getNffg(nffgName);
-		if (nffg == null) {
-			throw new NotFoundException(nffgName);
-		}
-		Optional<Link> link = nffg.getLink().stream().filter(l -> l.getName().equals(linkName)).findAny();
-		if(!link.isPresent()) {
-			throw new NotFoundException(linkName);
-		}
-		Optional<Node> dst = nffg.getNode().stream().filter(n -> n.getName().equals(link.get().getDst().getRef())).findAny();
-		if(!dst.isPresent()) {
-			throw new InternalServerErrorException(link.get().getName());
-		}
-		return dst.get();
-	}
-
 	@PUT
 	@Path("policies/{policy_name}")
 	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
@@ -190,16 +116,6 @@ public class Resource {
 	}
 	
 	@GET
-	@Path("nffgs/{nffg_name}/policies")
-	public List<Policy> getNffgPolicies(@PathParam("nffg_name") String nffgName) {
-		List<Policy> policies = service.getNffgPolicies(nffgName);
-		if (policies == null) {
-			throw new NotFoundException(nffgName);
-		}
-		return policies;
-	}
-	
-	@GET
 	@Path("policies/{policy_name}")
 	public Policy getPolicy(@PathParam("policy_name") String policyName) {
 		Policy policy = service.getPolicy(policyName);
@@ -217,16 +133,6 @@ public class Resource {
 			throw new NotFoundException(policyName);
 		}
 		return Response.ok().build();
-	}
-	
-	@GET
-	@Path("policies/{policy_name}/result")
-	public Result getPolicyResult(@PathParam("policy_name") String policyName) {
-		Policy policy = service.getPolicy(policyName);
-		if(policy == null) {
-			throw new NotFoundException(policyName);
-		}
-		return policy.getResult();
 	}
 	
 	@POST
