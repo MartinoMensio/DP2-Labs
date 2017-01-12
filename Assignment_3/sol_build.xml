@@ -13,6 +13,7 @@
 		<pathelement location="${lib.dir}/jersey-core-1.19.1.jar" />
 	</path>
 
+	<property name="src.dir" location="${basedir}/src" />
 	<property name="custom.dir" value="${basedir}/custom" />
 	<property name="build.dir" value="${basedir}/build" />
 	<property name="schema.dir" value="${basedir}/xsd" />
@@ -42,7 +43,7 @@
 
 	<target name="build-lab3">
 		<javac destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath">
-			<src path="${basedir}/src/" />
+			<src path="${src.dir}" />
 			<include name="it/polito/dp2/NFFG/lab3/**" />
 			<exclude name="it/polito/dp2/NFFG/lab3/tests/**" />
 		</javac>
