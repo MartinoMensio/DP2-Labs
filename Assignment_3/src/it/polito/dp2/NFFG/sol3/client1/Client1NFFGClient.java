@@ -154,9 +154,9 @@ public class Client1NFFGClient implements NFFGClient {
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
 		// return result.verificationResult
-		Result result = target.path("policies").path(name).path("result").request(MediaType.APPLICATION_XML).post(Entity.entity(null, MediaType.APPLICATION_XML), Result.class);
+		Policy result = target.path("policies").path(name).path("result").request(MediaType.APPLICATION_XML).post(Entity.entity(null, MediaType.APPLICATION_XML), Policy.class);
 		// TODO exceptions
-		return result.isSatisfied();
+		return result.getResult().isSatisfied();
 	}
 
 }

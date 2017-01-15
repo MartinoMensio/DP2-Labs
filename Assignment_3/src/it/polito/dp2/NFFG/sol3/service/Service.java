@@ -46,7 +46,8 @@ public class Service {
 	}
 
 	public Nffg getNffg(String name) {
-		return data.nffgsMap.get(name).getNffg();
+		NffgStorage nffgStorage = data.nffgsMap.get(name);
+		return (nffgStorage != null)? nffgStorage.getNffg() : null;
 	}
 
 	public Nffg storeNffg(Nffg nffg) {
@@ -129,12 +130,13 @@ public class Service {
 	}
 
 	public Nffg deleteNffg(String nffgName) {
-		return data.nffgsMap.remove(nffgName).getNffg();
+		NffgStorage nffgStorage = data.nffgsMap.remove(nffgName);
+		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
-	public Result verifyResultOnTheFly(Policy policy, String nffgName) {
+	public Policy verifyResultOnTheFly(Policy policy, String nffgName) {
 		Policy verified = verifyPolicy(policy);
-		return verified.getResult();
+		return verified;
 	}
 
 	public Policy storePolicy(Policy policy) {
