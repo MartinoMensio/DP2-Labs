@@ -46,11 +46,11 @@ public class Resource {
 
 	@POST
 	@Path("nffgs")
-	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) throws ValidationFailedException {
+	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) {
 		// TODO validate nffg
-		if (nffg != null) {
+		if (nffg == null) {
 			// validation error
-			throw new ValidationFailedException("validation falied, HTTP status 422");
+			throw new ValidationFailedException("nffg is not compliant with the schema");
 		}
 		Nffg response = service.storeNffg(nffg);
 		if (response != null) {
@@ -58,7 +58,7 @@ public class Resource {
 			URI u = builder.path(response.getName()).build();
 			return Response.created(u).entity(response).build();
 		} else
-			throw new ClientErrorException("nffg already stored with this name", Response.Status.CONFLICT);
+			throw new ConflictException("nffg already stored with the name " + nffg.getName());
 	}
 	
 	@DELETE
@@ -77,7 +77,7 @@ public class Resource {
 		Policy result = service.verifyResultOnTheFly(policy, nffgName);
 		if(result == null) {
 			// TODO reason: could be because of nffgName or because other references or other errors in body request
-			throw new NotFoundException();
+			throw new NotFoundException(nffgName);
 		}
 		return result;
 	}
@@ -95,6 +95,9 @@ public class Resource {
 	@PUT
 	@Path("policies/{policy_name}")
 	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
+		if(policy == null) {
+			throw new ValidationFailedException("policy is not compliant with the schema");
+		}
 		// Overwrite the policy name in the request
 		policy.setName(policyName);
 		Policy response = service.storePolicy(policy);

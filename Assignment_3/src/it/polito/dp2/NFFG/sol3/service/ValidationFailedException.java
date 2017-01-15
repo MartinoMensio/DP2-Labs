@@ -1,9 +1,18 @@
 package it.polito.dp2.NFFG.sol3.service;
 
+import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import javax.ws.rs.ext.ExceptionMapper;
 
-public class ValidationFailedException extends Exception implements ExceptionMapper<ValidationFailedException> {
+/**
+ * This class handles the HTTP 422 status code, that is meant for requests that
+ * have right syntax but are semantically incorrect. See
+ * <a href="https://tools.ietf.org/html/rfc4918#section-11.2">corresponding
+ * RFC</a>
+ * 
+ * @author Martino Mensio
+ *
+ */
+public class ValidationFailedException extends WebApplicationException {
 
 	/**
 	 * 
@@ -11,14 +20,7 @@ public class ValidationFailedException extends Exception implements ExceptionMap
 	private static final long serialVersionUID = 1L;
 
 	public ValidationFailedException(String string) {
-		// TODO Auto-generated constructor stub
-		super(string);
-	}
-
-	@Override
-	public Response toResponse(ValidationFailedException exception) {
-		// TODO Auto-generated method stub
-		return Response.status(422).entity(exception.getMessage()).type(MediaType.TEXT_PLAIN).build();
+		super(Response.status(422).entity("Validation failed: " + string).type(MediaType.TEXT_PLAIN).build());
 	}
 
 }
