@@ -196,4 +196,11 @@ public class Service {
 		// TODO verify again?
 	}
 
+	public Policy updatePolicyResult(String policyName) {
+		Policy policy = getPolicy(policyName);
+		if (policy == null) {
+			return null;
+		}
+		return verifyPolicy(policy);
+	}
 }

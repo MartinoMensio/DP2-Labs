@@ -138,14 +138,10 @@ public class Resource {
 	@POST
 	@Path("policies/{policy_name}/result")
 	public Policy updatePolicyResult(@PathParam("policy_name") String policyName) {
-		Policy policy = service.getPolicy(policyName);
+		Policy policy = service.updatePolicyResult(policyName);
 		if(policy == null) {
+			// TODO possible notFound or internal error because of neo4j
 			throw new NotFoundException(policyName);
-		}
-		policy = service.verifyPolicy(policy);
-		if(policy == null) {
-			// TODO maybe for src or dst not found
-			throw new ForbiddenException();
 		}
 		return policy;
 	}
