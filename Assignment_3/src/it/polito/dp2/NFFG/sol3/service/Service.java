@@ -135,6 +135,7 @@ public class Service {
 	}
 
 	public Policy verifyResultOnTheFly(Policy policy, String nffgName) {
+		policy.setNffg(nffgName);
 		Policy verified = verifyPolicy(policy);
 		return verified;
 	}
