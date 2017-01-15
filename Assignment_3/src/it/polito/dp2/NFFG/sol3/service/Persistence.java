@@ -18,12 +18,10 @@ public class Persistence {
 
 	// instance data
 
-	// NFFGs are cached in the service
-	public ConcurrentMap<String, Nffg> nffgsMap = new ConcurrentSkipListMap<>();
+	// NFFGs are cached in the service together with mappings between node name and node id
+	public ConcurrentMap<String, NffgStorage> nffgsMap = new ConcurrentSkipListMap<>();
 	// policies are stored in the service
 	public ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
-	// the service only memorizes the mappings between node name and node id
-	public ConcurrentMap<String, String> nodesId = new ConcurrentSkipListMap<>();
 
 	private Persistence() {
 		// TODO erase all the data from NEO4JXML

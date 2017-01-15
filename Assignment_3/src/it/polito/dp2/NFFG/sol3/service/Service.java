@@ -42,11 +42,11 @@ public class Service {
 	}
 
 	public List<Nffg> getNffgs() {
-		return data.nffgsMap.values().stream().collect(Collectors.toList());
+		return data.nffgsMap.values().stream().map(NffgStorage::getNffg).collect(Collectors.toList());
 	}
 
 	public Nffg getNffg(String name) {
-		return data.nffgsMap.get(name);
+		return data.nffgsMap.get(name).getNffg();
 	}
 	
 	public Nffg storeNffg(Nffg nffg) {
@@ -60,19 +60,21 @@ public class Service {
 		String nffgId = neoClient.addNamedNode(nffg.getName());
 		neoClient.addNffgLabelToNode(nffgId);
 		
+		Map<String, String> idMappings = new HashMap<>();
+		
 		// adding all the nodes to neo4j
 		for(Node node : nffg.getNode()) {
 			String nodeId = neoClient.addNamedNode(node.getName());
 			// store the ID of the node
-			data.nodesId.put(node.getName(), nodeId);
+			idMappings.put(node.getName(), nodeId);
 			// add the belongs relationship
 			neoClient.addBelongsToNffg(nffgId, nodeId);
 		}
 		
 		// and add the links to neo4j
 		for(Link link : nffg.getLink()) {
-			String srcNodeId = data.nodesId.get(link.getSrc().getRef());
-			String dstNodeId = data.nodesId.get(link.getDst().getRef());
+			String srcNodeId = idMappings.get(link.getSrc().getRef());
+			String dstNodeId = idMappings.get(link.getDst().getRef());
 			if (srcNodeId == null || dstNodeId == null) {
 				return null;
 			}
@@ -89,12 +91,12 @@ public class Service {
 		}
 		
 		// store the Nffg in the persistence
-		data.nffgsMap.put(nffg.getName(), nffg);
+		data.nffgsMap.put(nffg.getName(), new NffgStorage(nffg, idMappings));
 		return nffg;
 	}
 	
 	public Nffg deleteNffg(String nffgName) {
-		return data.nffgsMap.remove(nffgName);
+		return data.nffgsMap.remove(nffgName).getNffg();
 	}
 	
 	public Result verifyResultOnTheFly(Policy policy, String nffgName) {
@@ -127,8 +129,8 @@ public class Service {
 
 	public Policy verifyPolicy(Policy policy) {
 		// TODO Auto-generated method stub
-		String srcId = data.nodesId.get(policy.getSrc().getRef());
-		String dstId = data.nodesId.get(policy.getDst().getRef());
+		String srcId = data.nffgsMap.get(policy.getNffg()).getId(policy.getSrc().getRef());
+		String dstId = data.nffgsMap.get(policy.getNffg()).getId(policy.getDst().getRef());
 		if(srcId == null || dstId == null) {
 			// TODO
 			return null;
