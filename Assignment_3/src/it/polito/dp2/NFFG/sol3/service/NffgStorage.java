@@ -15,9 +15,26 @@ public class NffgStorage {
 	private final Nffg nffg;
 	private final Map<String, String> idMappings;
 
+	private boolean incomplete;
+	private boolean ok;
+
 	public NffgStorage(Nffg nffg, Map<String, String> idMappings) {
 		this.nffg = nffg;
 		this.idMappings = idMappings;
+
+		this.incomplete = true;
+	}
+
+	public synchronized void setOK() {
+		this.incomplete = false;
+		this.ok = true;
+		this.notifyAll();
+	}
+	
+	public synchronized void setKO() {
+		this.incomplete = false;
+		this.ok = false;
+		this.notifyAll();
 	}
 
 	/**
@@ -38,6 +55,16 @@ public class NffgStorage {
 	 *         not stored
 	 */
 	public String getId(String nodeName) {
-		return idMappings.get(nodeName);
+		synchronized (this) {
+			while (incomplete) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					return null;
+				}
+			}
+		}
+		return ok ? idMappings.get(nodeName) : null;
 	}
 }
