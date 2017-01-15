@@ -24,20 +24,22 @@ public class Service {
 	// retrieve data from persistence
 	private Persistence data;
 
-	private Service(URI neo4jLocation) {
+	private Service(URI neo4jLocation, Persistence data) {
 		neoClient = new Neo4JXMLClient(neo4jLocation);
-		data = Persistence.getPersistence();
+		this.data = data;
 	}
+	
+	public final static Service standardService = createStandardService();
 
-	public static Service createService() throws ServiceException {
+	private static Service createStandardService() {
 		String url = System.getProperty("it.polito.dp2.NFFG.lab3.NEO4JURL");
 		if (url == null) {
 			url = "http://localhost:8080/Neo4JXML/rest";
 		}
 		try {
-			return new Service(URI.create(url));
+			return new Service(URI.create(url), Persistence.getPersistence());
 		} catch (IllegalArgumentException e) {
-			throw new ServiceException(e);
+			return null;
 		}
 	}
 

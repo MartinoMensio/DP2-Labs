@@ -24,16 +24,11 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.Link;
 public class Resource {
 
 	private Service service;
-	private ObjectFactory factory;
 
 	public Resource() {
-		factory = new ObjectFactory();
-		try {
-			service = Service.createService();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
+		service = Service.standardService;
+		if (service == null) {
+			throw new RuntimeException();
 			// What the hell
 		}
 	}
