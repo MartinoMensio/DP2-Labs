@@ -2,14 +2,12 @@ package it.polito.dp2.NFFG.sol3.service;
 
 import java.net.*;
 import java.util.*;
-import java.util.stream.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.jaxb.Link;
 
 /**
  * This class is the web interface
@@ -24,10 +22,8 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.Link;
 public class Resource {
 
 	private Service service;
-	private ObjectFactory factory;
 
 	public Resource() {
-		factory = new ObjectFactory();
 		try {
 			service = Service.createService();
 		} catch (ServiceException e) {
@@ -53,14 +49,19 @@ public class Resource {
 
 	@POST
 	@Path("nffgs")
-	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) {
+	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) throws ValidationFailedException {
+		// TODO validate nffg
+		if (nffg != null) {
+			// validation error
+			throw new ValidationFailedException("validation falied, HTTP status 422");
+		}
 		Nffg response = service.storeNffg(nffg);
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
 			URI u = builder.path(response.getName()).build();
 			return Response.created(u).entity(response).build();
 		} else
-			throw new ForbiddenException("something wrong");
+			throw new ClientErrorException("nffg already stored with this name", Response.Status.CONFLICT);
 	}
 	
 	@DELETE
