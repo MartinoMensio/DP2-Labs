@@ -24,12 +24,9 @@ public class Resource {
 	private Service service;
 
 	public Resource() {
-		try {
-			service = Service.createService();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
+		service = Service.standardService;
+		if (service == null) {
+			throw new RuntimeException();
 			// What the hell
 		}
 	}
@@ -76,8 +73,8 @@ public class Resource {
 	
 	@POST
 	@Path("nffgs/{nffg_name}/online_result")
-	public Result verifyResultOnTheFly(Policy policy, @PathParam("nffg_name") String nffgName) {
-		Result result = service.verifyResultOnTheFly(policy, nffgName);
+	public Policy verifyResultOnTheFly(Policy policy, @PathParam("nffg_name") String nffgName) {
+		Policy result = service.verifyResultOnTheFly(policy, nffgName);
 		if(result == null) {
 			// TODO reason: could be because of nffgName or because other references or other errors in body request
 			throw new NotFoundException();
@@ -138,17 +135,13 @@ public class Resource {
 	
 	@POST
 	@Path("policies/{policy_name}/result")
-	public Result updatePolicyResult(@PathParam("policy_name") String policyName) {
-		Policy policy = service.getPolicy(policyName);
+	public Policy updatePolicyResult(@PathParam("policy_name") String policyName) {
+		Policy policy = service.updatePolicyResult(policyName);
 		if(policy == null) {
+			// TODO possible notFound or internal error because of neo4j
 			throw new NotFoundException(policyName);
 		}
-		policy = service.verifyPolicy(policy);
-		if(policy == null) {
-			// TODO maybe for src or dst not found
-			throw new ForbiddenException();
-		}
-		return policy.getResult();
+		return policy;
 	}
 	
 }
