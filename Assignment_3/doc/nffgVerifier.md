@@ -80,7 +80,7 @@ NFFGs collection
 | method | request type | response type | explaination           | errors
 | ------ | ------------ | ------------- | ------------           | ------
 | GET    | -            | nffgs         | get the collection of NFFGs | -
-| POST   | nffg         | nffg          | create a new NFFG      | 422 validation error, 403 already existing
+| POST   | nffg         | nffg          | create a new NFFG      | 422(400) validation error, 409 already existing
 
 The post request must contain the field `name`, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 403 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 422 error.
 
@@ -99,7 +99,7 @@ Verification endpoint for client policies, not stored on the service
 
 | method | request type | response type | explaination           | errors
 | ------ | ------------ | ------------- | ------------           | ------
-| POST   | policy       | policy        | verify this policy     | 404: wrong id, 4xx: wrong request
+| POST   | policy       | policy        | verify this policy     | 404: wrong id, 422(400): validation error
 
 ### `/policies`
 
