@@ -68,7 +68,7 @@ public class Resource {
 		if(nffg == null) {
 			throw new NotFoundException(nffgName);
 		}
-		return Response.ok().build();
+		return Response.ok(nffg).build();
 	}
 	
 	@POST
@@ -133,7 +133,7 @@ public class Resource {
 		if(policy == null) {
 			throw new NotFoundException(policyName);
 		}
-		return Response.ok().build();
+		return Response.ok(policy).build();
 	}
 	
 	@POST
