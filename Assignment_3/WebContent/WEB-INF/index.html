@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>../doc/nffgVerifier.md</title>
+  <link rel="stylesheet" href="markdown.css">
+</head>
+<body>
+<h1>
+<a id="user-content-design-of-restful-api-for-nffg-verifier" class="anchor" href="#design-of-restful-api-for-nffg-verifier" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Design of RESTful API for NFFG verifier</h1>
+
+<h2>
+<a id="user-content-1-conceptual-structure-of-the-resources" class="anchor" href="#1-conceptual-structure-of-the-resources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Conceptual structure of the resources</h2>
+
+<h3>
+<a id="user-content-basic-structure" class="anchor" href="#basic-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basic structure</h3>
+
+<p>The conceptual structure of the data to be represented in the service has a hierarchical structure that is:</p>
+
+<ul>
+<li>there is a collection of <strong>NFFGs</strong> (top level resource)</li>
+<li>the collection is a set of <strong>NFFG</strong> (child resource), that contain information about nodes and links</li>
+<li>each NFFG has a child resource that represents <strong>policies</strong>
+</li>
+<li>policies is a collection of <strong>policy</strong> resources</li>
+<li>each policy can have a <strong>result</strong> resource</li>
+</ul>
+
+<pre lang="text"><code>     nffgs
+       |
+      nffg
+       |
+    policies
+       |
+     policy
+       |
+     result
+</code></pre>
+
+<p>This basic schema has resources only for unit of data that need to be manipulated separately. This is not the actual structure that I designed. The complete structure, that has some more resources and moves the <code>policies</code> resource as a top level one, will be explained in details and is needed in order to make the data available in an easier way for the clients.</p>
+
+<h3>
+<a id="user-content-complete-structure" class="anchor" href="#complete-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Complete structure</h3>
+
+<p><a href="../doc-files/resources_chart.svg" target="_blank"><img src="../doc-files/resources_chart.svg" alt="hierarchy of resources" style="max-width:100%;"></a></p>
+
+<p>The service consists of two top level resources: one for NFFGs and the other one for policies.</p>
+
+<h4>
+<a id="user-content-policies-placement" class="anchor" href="#policies-placement" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policies placement</h4>
+
+<p>The <code>policies</code> are made available as root elements because the clients may want to get the whole set of policies stored inside the server. Since the name of a policy is unique not only iniside a single NFFG, but has a global scope, it is appropriate that also the child resource <code>policy</code> belongs to this subtree.</p>
+
+<p>Therefore the <code>policies</code> resource has no more purpose of existing.</p>
+
+<h4>
+<a id="user-content-policy-creation-and-modification" class="anchor" href="#policy-creation-and-modification" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policy creation and modification</h4>
+
+<p>Single policies can be created and updated using the same procedure: a PUT request on the <code>policy</code> resource child of <code>policies</code>. Because the requirements specify that if a new policy is submitted with the same name as an already stored one, a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent.</p>
+
+<h4>
+<a id="user-content-other-notes-on-the-strucure-todo" class="anchor" href="#other-notes-on-the-strucure-todo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other notes on the strucure TODO</h4>
+
+<h2>
+<a id="user-content-2-mapping-of-the-resources-to-urls" class="anchor" href="#2-mapping-of-the-resources-to-urls" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Mapping of the resources to URLs</h2>
+
+<p>The tree structure of the resources previously shown is reflected on the URLs used. Curly braces are used in the following when the path contains an identifier.</p>
+
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>resource type</th>
+<th>method</th>
+<th>usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/nffgs</code></td>
+<td>nffgs</td>
+<td>GET</td>
+<td>obtain the collection of NFFGs</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>POST</td>
+<td>store a new NFFG</td>
+</tr>
+<tr>
+<td><code>/nffgs/{nffg_name}</code></td>
+<td>nffg</td>
+<td>GET</td>
+<td>obtain a single NFFG given its name</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>DELETE</td>
+<td>delete a single NFFG given its name</td>
+</tr>
+<tr>
+<td><code>/nffgs/{nffg_name}/policies</code></td>
+<td>policy</td>
+<td>GET</td>
+<td>obtain the collection of policies belonging to a NFFG whose name is given</td>
+</tr>
+<tr>
+<td><code>/nffgs/{nffg_name}/online_result</code></td>
+<td>result</td>
+<td>POST</td>
+<td>obtain the result of a policy provided in the request testing it against an existing NFFG given its name</td>
+</tr>
+<tr>
+<td><code>/policies</code></td>
+<td>policies</td>
+<td>GET</td>
+<td>obtain the collection of all the policies</td>
+</tr>
+<tr>
+<td><code>/policies/{policy_name}</code></td>
+<td>policy</td>
+<td>GET</td>
+<td>obtain a single policy given its name</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>PUT</td>
+<td>store a policy on this resource (both creation or update)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>DELETE</td>
+<td>delete a single policy given its name</td>
+</tr>
+<tr>
+<td><code>/policies/{policy_name}/result</code></td>
+<td>result</td>
+<td>GET</td>
+<td>obtain (if any) the stored result for the stored policy given its name</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>POST</td>
+<td>recompute and obtain the result of a stored policy</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-ids" class="anchor" href="#ids" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>IDs</h3>
+
+<p>Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directy as path elements and therefore the ID of the resources is chosen by the client.</p>
+
+<p>For the NFFGs creation, the POST method is used because the creation is not idempotent as explained in the requirements (creation of an NFFG with the same name as an existing one is forbidden). Instead for the policies, since the creation of a policy with the same name as one already stored in the service is allowed and is used for replacement, the creation of a policy uses the same method as the replacement/update. In this way the client directly submits a PUT request to the path that contains the name of the policy, and since PUT is idempotent the creation follows the same approach as an update.</p>
+
+<h2>
+<a id="user-content-3-operations-by-resource" class="anchor" href="#3-operations-by-resource" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Operations by resource</h2>
+
+<p>All the operations are available with Content-Type (both requests and responses) <code>application/xml</code> or <code>application/json</code>. The types used are the ones contained in the XSD.</p>
+
+<p>Errors on all the resources: 406 500 400 </p>
+
+<h3>
+<a id="user-content-nffgs" class="anchor" href="#nffgs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs</code>
+</h3>
+
+<p>NFFGs collection</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>nffgs</td>
+<td>get the collection of NFFGs</td>
+<td>200 OK</td>
+<td>-</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>nffg</td>
+<td>nffg</td>
+<td>create a new NFFG</td>
+<td>201 CREATED</td>
+<td>422 validation error, 409 already existing</td>
+</tr>
+</tbody>
+</table>
+
+<p>The POST request must contain the field <code>name</code>, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 403 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 422 error.</p>
+
+<h3>
+<a id="user-content-nffgsnffg_name" class="anchor" href="#nffgsnffg_name" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs/{nffg_name}</code>
+</h3>
+
+<p>A single nffg identified by its name.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>nffg</td>
+<td>get the NFFG</td>
+<td>200 OK</td>
+<td>404: no NFFG exists with this name</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>nffg</td>
+<td>delete the NFFG</td>
+<td>200 OK</td>
+<td>404: no NFFG exists with this name</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-nffgsnffg_nameonline_result" class="anchor" href="#nffgsnffg_nameonline_result" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs/{nffg_name}/online_result</code>
+</h3>
+
+<p>Verification endpoint for client policies, not stored on the service</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>policy</td>
+<td>policy</td>
+<td>verify this policy</td>
+<td>200 OK</td>
+<td>404: wrong id, 422: validation error</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-policies" class="anchor" href="#policies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies</code>
+</h3>
+
+<p>Policies collection</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>policies</td>
+<td>get the collection of policies</td>
+<td>200 OK</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>queryParam:</p>
+
+<ul>
+<li>
+<code>nffg</code>: only get policies for a specific NFFG</li>
+<li>
+<code>from</code>: get policies only from a certain time</li>
+</ul>
+
+<h3>
+<a id="user-content-policiespolicy_name" class="anchor" href="#policiespolicy_name" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies/{policy_name}</code>
+</h3>
+
+<p>A single policy identified by its id.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>policy</td>
+<td>get the policy</td>
+<td>200 OK</td>
+<td>404: no policy exists with this name</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>-</td>
+<td>delete the policy</td>
+<td>200 OK</td>
+<td>404: no policy exists with this name</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>policy</td>
+<td>policy</td>
+<td>update/create the policy</td>
+<td>200 OK, 201 CREATED</td>
+<td>422: no nffg with this name or validation error</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-policiespolicy_nameresult" class="anchor" href="#policiespolicy_nameresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies/{policy_name}/result</code>
+</h3>
+
+<p>The corresponding result for this policy.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>-</td>
+<td>policy</td>
+<td>update the policy result</td>
+<td>200 OK</td>
+<td>404: no policy exists with this name</td>
+</tr>
+</tbody>
+</table>
+
+</body>
+</html>
