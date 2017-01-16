@@ -167,9 +167,13 @@ public class Service {
 	}
 
 	public Policy verifyPolicy(Policy policy) {
-		// TODO Auto-generated method stub
-		String srcId = data.nffgsMap.get(policy.getNffg()).getId(policy.getSrc().getRef());
-		String dstId = data.nffgsMap.get(policy.getNffg()).getId(policy.getDst().getRef());
+		
+		NffgStorage nffgStorage = data.nffgsMap.get(policy.getNffg());
+		if (nffgStorage == null) {
+			return null;
+		}
+		String srcId = nffgStorage.getId(policy.getSrc().getRef());
+		String dstId = nffgStorage.getId(policy.getDst().getRef());
 		if (srcId == null || dstId == null) {
 			// TODO
 			return null;
