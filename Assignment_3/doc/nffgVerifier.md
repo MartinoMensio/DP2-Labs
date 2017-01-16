@@ -73,41 +73,43 @@ For the NFFGs creation, the POST method is used because the creation is not idem
 
 All the operations are available with Content-Type (both requests and responses) `application/xml` or `application/json`. The types used are the ones contained in the XSD.
 
+Errors on all the resources: 406 500 400 
+
 ### `/nffgs`
 
 NFFGs collection
 
-| method | request type | response type | explaination           | errors
-| ------ | ------------ | ------------- | ------------           | ------
-| GET    | -            | nffgs         | get the collection of NFFGs | -
-| POST   | nffg         | nffg          | create a new NFFG      | 422(400) validation error, 409 already existing
+| method | request type | response type | explaination                | result      | errors
+| ------ | ------------ | ------------- | ------------                | ----------- | ------
+| GET    | -            | nffgs         | get the collection of NFFGs | 200 OK      | -
+| POST   | nffg         | nffg          | create a new NFFG           | 201 CREATED | 422(400) validation error, 409 already existing
 
-The post request must contain the field `name`, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 403 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 422 error.
+The POST request must contain the field `name`, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 403 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 422 error.
 
 ### `/nffgs/{nffg_name}`
 
 A single nffg identified by its name.
 
-| method | request type | response type | explaination           | errors
-| ------ | ------------ | ------------- | ------------           | ------
-| GET    | -            | nffg          | get the NFFG           | 404: no NFFG exists with this name
-| DELETE | -            | -             | delete the NFFG        | 404: no NFFG exists with this name
+| method | request type | response type | explaination           | result | errors
+| ------ | ------------ | ------------- | ------------           | ------ | ------
+| GET    | -            | nffg          | get the NFFG           | 200 OK | 404: no NFFG exists with this name
+| DELETE | -            | nffg          | delete the NFFG        | 200 OK | 404: no NFFG exists with this name
 
 ### `/nffgs/{nffg_name}/online_result`
 
 Verification endpoint for client policies, not stored on the service
 
-| method | request type | response type | explaination           | errors
-| ------ | ------------ | ------------- | ------------           | ------
-| POST   | policy       | policy        | verify this policy     | 404: wrong id, 422(400): validation error
+| method | request type | response type | explaination           | result      | errors
+| ------ | ------------ | ------------- | ------------           | ----------- | ------
+| POST   | policy       | policy        | verify this policy     | 201 CREATED | 404: wrong id, 422(400): validation error
 
 ### `/policies`
 
 Policies collection
 
-| method | request type | response type | explaination           | errors
-| ------ | ------------ | ------------- | ------------           | ------
-| GET    | -            | policies      | get the collection of policies | -
+| method | request type | response type | explaination                   | result | errors
+| ------ | ------------ | ------------- | ------------                   | ------ | ------
+| GET    | -            | policies      | get the collection of policies | 200 OK |
 
 queryParam:
 
@@ -118,16 +120,16 @@ queryParam:
 
 A single policy identified by its id.
 
-| method | request type | response type | explaination             | errors
-| ------ | ------------ | ------------- | ------------             | ------
-| GET    | -            | policy        | get the policy           | 404: no policy exists with this name
-| DELETE | -            | -             | delete the policy        | 404: no policy exists with this name
-| PUT    | policy       | policy        | update/create the policy | 422: validation error
+| method | request type | response type | explaination             | result              | errors
+| ------ | ------------ | ------------- | ------------             | ------              | ------
+| GET    | -            | policy        | get the policy           | 200 OK              | 404: no policy exists with this name
+| DELETE | -            | -             | delete the policy        | 200 OK              | 404: no policy exists with this name
+| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 404: no nffg with this name, 422: validation error
 
 ### `/policies/{policy_name}/result`
 
 The corresponding result for this policy.
 
-| method | request type | response type | explaination             | errors
-| ------ | ------------ | ------------- | ------------             | ------
-| POST   | -            | policy        | update the policy result | 404: no policy exists with this name
+| method | request type | response type | explaination             | result | errors
+| ------ | ------------ | ------------- | ------------             | ------ | ------
+| POST   | -            | policy        | update the policy result | 200 OK | 404: no policy exists with this name
