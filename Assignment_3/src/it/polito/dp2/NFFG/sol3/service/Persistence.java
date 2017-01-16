@@ -24,7 +24,6 @@ public class Persistence {
 	public ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
 
 	private Persistence() {
-		// TODO erase all the data from NEO4JXML
 		String url = System.getProperty("it.polito.dp2.NFFG.lab3.NEO4JURL");
 		if (url == null) {
 			url = "http://localhost:8080/Neo4JXML/rest";

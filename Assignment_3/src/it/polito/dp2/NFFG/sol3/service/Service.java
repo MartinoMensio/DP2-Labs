@@ -143,7 +143,9 @@ public class Service {
 	}
 
 	public Policy storePolicy(Policy policy) {
-		// TODO check all the constraints
+		if (!data.nffgsMap.containsKey(policy.getNffg())) {
+			throw new ValidationFailedException("the policy refers to inexistent nffg named " + policy.getNffg());
+		}
 		data.policiesMap.put(policy.getName(), policy);
 		return policy;
 	}
@@ -153,12 +155,10 @@ public class Service {
 	}
 
 	public List<Policy> getPolicies() {
-		// TODO Auto-generated method stub
 		return data.policiesMap.values().stream().collect(Collectors.toList());
 	}
 
 	public List<Policy> getNffgPolicies(String nffgName) {
-		// TODO Auto-generated method stub
 		if (data.nffgsMap.get(nffgName) == null) {
 			return null;
 		}
@@ -197,9 +197,7 @@ public class Service {
 	}
 
 	public Policy getPolicy(String policyName) {
-		// TODO Auto-generated method stub
 		return data.policiesMap.get(policyName);
-		// TODO verify again?
 	}
 
 	public Policy updatePolicyResult(String policyName) {
