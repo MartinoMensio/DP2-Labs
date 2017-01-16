@@ -130,8 +130,7 @@ public class Resource {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "policy updated"),
 			@ApiResponse(code = 201, message = "policy created"),
-			@ApiResponse(code = 412, message = "the referred nffg does not exist"),
-			@ApiResponse(code = 422, message = "validation of policy failed")
+			@ApiResponse(code = 422, message = "validation of policy failed or reference to inexistent NFFG")
 	})
 	@Path("policies/{policy_name}")
 	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
