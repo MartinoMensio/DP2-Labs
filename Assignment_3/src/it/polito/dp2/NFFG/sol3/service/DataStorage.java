@@ -16,12 +16,12 @@ public class DataStorage {
 	// singleton class
 	private static DataStorage data = new DataStorage();
 
-	// instance data
-
+	// The Maps are kept private in order to avoid overwriting, getters below
+	
 	// NFFGs are cached in the service together with mappings between node name and node id
-	public ConcurrentMap<String, NffgStorage> nffgsMap = new ConcurrentSkipListMap<>();
+	private ConcurrentMap<String, NffgStorage> nffgsMap = new ConcurrentSkipListMap<>();
 	// policies are stored in the service
-	public ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
+	private ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
 
 	private DataStorage() {
 		String url = System.getProperty("it.polito.dp2.NFFG.lab3.NEO4JURL");
@@ -36,7 +36,7 @@ public class DataStorage {
 			// wrong URI
 			throw new RuntimeException(e);
 		} catch (Exception e) {
-			// TODO change type of exception
+			// Some exceptions calling deleteAllNodes
 			throw new RuntimeException("impossible to delete all the nodes at persistence instantiation. Reason: " + e.getMessage());
 		}
 		 
@@ -44,6 +44,14 @@ public class DataStorage {
 
 	public static DataStorage getData() {
 		return data;
+	}
+	
+	public ConcurrentMap<String, NffgStorage> getNffgsMap() {
+		return nffgsMap;
+	}
+	
+	public ConcurrentMap<String, Policy> getPoliciesMap() {
+		return policiesMap;
 	}
 
 }

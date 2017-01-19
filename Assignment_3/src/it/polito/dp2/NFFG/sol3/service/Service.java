@@ -45,11 +45,11 @@ public class Service {
 	}
 
 	public List<Nffg> getNffgs() {
-		return data.nffgsMap.values().stream().map(NffgStorage::getNffg).collect(Collectors.toList());
+		return data.getNffgsMap().values().stream().map(NffgStorage::getNffg).collect(Collectors.toList());
 	}
 
 	public Nffg getNffg(String name) {
-		NffgStorage nffgStorage = data.nffgsMap.get(name);
+		NffgStorage nffgStorage = data.getNffgsMap().get(name);
 		return (nffgStorage != null)? nffgStorage.getNffg() : null;
 	}
 
@@ -94,7 +94,7 @@ public class Service {
 		// because the reference to the map is lost).
 		//
 		NffgStorage nffgStorage = new NffgStorage(nffg, idMappings);
-		if (data.nffgsMap.putIfAbsent(nffg.getName(), nffgStorage) != null) {
+		if (data.getNffgsMap().putIfAbsent(nffg.getName(), nffgStorage) != null) {
 			return null;
 		}
 
@@ -133,7 +133,7 @@ public class Service {
 	}
 
 	public Nffg deleteNffg(String nffgName) {
-		NffgStorage nffgStorage = data.nffgsMap.remove(nffgName);
+		NffgStorage nffgStorage = data.getNffgsMap().remove(nffgName);
 		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
@@ -145,29 +145,29 @@ public class Service {
 
 	public Policy storePolicy(Policy policy) {
 		validateReferences(policy);
-		data.policiesMap.put(policy.getName(), policy);
+		data.getPoliciesMap().put(policy.getName(), policy);
 		return policy;
 	}
 
 	public Policy deletePolicy(String policyName) {
-		return data.policiesMap.remove(policyName);
+		return data.getPoliciesMap().remove(policyName);
 	}
 
 	public List<Policy> getPolicies() {
-		return data.policiesMap.values().stream().collect(Collectors.toList());
+		return data.getPoliciesMap().values().stream().collect(Collectors.toList());
 	}
 
 	public List<Policy> getNffgPolicies(String nffgName) {
-		if (data.nffgsMap.get(nffgName) == null) {
+		if (data.getNffgsMap().get(nffgName) == null) {
 			return null;
 		}
-		return data.policiesMap.values().stream().filter(p -> p.getNffg().equals(nffgName))
+		return data.getPoliciesMap().values().stream().filter(p -> p.getNffg().equals(nffgName))
 				.collect(Collectors.toList());
 	}
 
 	public Policy verifyPolicy(Policy policy) {
 		
-		NffgStorage nffgStorage = data.nffgsMap.get(policy.getNffg());
+		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
 		if (nffgStorage == null) {
 			return null;
 		}
@@ -196,7 +196,7 @@ public class Service {
 	}
 
 	public Policy getPolicy(String policyName) {
-		return data.policiesMap.get(policyName);
+		return data.getPoliciesMap().get(policyName);
 	}
 
 	public Policy updatePolicyResult(String policyName) {
@@ -212,7 +212,7 @@ public class Service {
 	 * @param policy
 	 */
 	public void validateReferences(Policy policy) {
-		NffgStorage nffgStorage = data.nffgsMap.get(policy.getNffg());
+		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
 		if (nffgStorage == null) {
 			throw new ValidationFailedException("the policy refers to inexistent nffg named " + policy.getNffg());
 		}
