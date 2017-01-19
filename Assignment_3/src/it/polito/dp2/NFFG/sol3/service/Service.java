@@ -222,13 +222,18 @@ public class Service {
 	}
 
 	public List<Policy> getPolicies(String nffgName) {
-		return data.getPoliciesMap().values().stream().filter(p -> {
-			if (nffgName == null) {
-				// no filtering
-				return true;
-			}
-			return p.getNffg().equals(nffgName);
-		}).collect(Collectors.toList());
+		long stamp = l.readLock();
+		try {
+			return data.getPoliciesMap().values().stream().filter(p -> {
+				if (nffgName == null) {
+					// no filtering
+					return true;
+				}
+				return p.getNffg().equals(nffgName);
+			}).collect(Collectors.toList());
+		} finally {
+			l.unlockRead(stamp);
+		}
 	}
 
 	public Policy getPolicy(String policyName) {
