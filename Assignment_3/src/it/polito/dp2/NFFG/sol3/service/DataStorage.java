@@ -12,9 +12,9 @@ import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;
  * @author Martino Mensio
  *
  */
-public class Persistence {
+public class DataStorage {
 	// singleton class
-	private static Persistence data = new Persistence();
+	private static DataStorage data = new DataStorage();
 
 	// instance data
 
@@ -23,7 +23,7 @@ public class Persistence {
 	// policies are stored in the service
 	public ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
 
-	private Persistence() {
+	private DataStorage() {
 		String url = System.getProperty("it.polito.dp2.NFFG.lab3.NEO4JURL");
 		if (url == null) {
 			url = "http://localhost:8080/Neo4JXML/rest";
@@ -42,7 +42,7 @@ public class Persistence {
 		 
 	}
 
-	public static Persistence getPersistence() {
+	public static DataStorage getData() {
 		return data;
 	}
 

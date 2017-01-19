@@ -23,9 +23,9 @@ public class Service {
 	private Neo4JXMLClient neoClient;
 
 	// retrieve data from persistence
-	private Persistence data;
+	private DataStorage data;
 
-	private Service(URI neo4jLocation, Persistence data) {
+	private Service(URI neo4jLocation, DataStorage data) {
 		neoClient = new Neo4JXMLClient(neo4jLocation);
 		this.data = data;
 	}
@@ -38,7 +38,7 @@ public class Service {
 			url = "http://localhost:8080/Neo4JXML/rest";
 		}
 		try {
-			return new Service(URI.create(url), Persistence.getPersistence());
+			return new Service(URI.create(url), DataStorage.getData());
 		} catch (IllegalArgumentException e) {
 			return null;
 		}
