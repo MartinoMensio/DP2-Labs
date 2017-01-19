@@ -139,14 +139,13 @@ public class Service {
 
 	public Policy verifyResultOnTheFly(Policy policy, String nffgName) {
 		policy.setNffg(nffgName);
+		validateReferences(policy);
 		Policy verified = verifyPolicy(policy);
 		return verified;
 	}
 
 	public Policy storePolicy(Policy policy) {
-		if (!data.nffgsMap.containsKey(policy.getNffg())) {
-			throw new ValidationFailedException("the policy refers to inexistent nffg named " + policy.getNffg());
-		}
+		validateReferences(policy);
 		data.policiesMap.put(policy.getName(), policy);
 		return policy;
 	}
@@ -207,5 +206,22 @@ public class Service {
 			return null;
 		}
 		return verifyPolicy(policy);
+	}
+	
+	/**
+	 * Checks that the referred nffg exists and contains src and dst nodes
+	 * @param policy
+	 */
+	public void validateReferences(Policy policy) {
+		NffgStorage nffgStorage = data.nffgsMap.get(policy.getNffg());
+		if (nffgStorage == null) {
+			throw new ValidationFailedException("the policy refers to inexistent nffg named " + policy.getNffg());
+		}
+		if (nffgStorage.getId(policy.getSrc().getRef()) == null) {
+			throw new ValidationFailedException("the policy source node named " + policy.getSrc().getRef() + " does not belong to stored nffg named " + policy.getNffg());
+		}
+		if (nffgStorage.getId(policy.getDst().getRef()) == null) {
+			throw new ValidationFailedException("the policy destination node named " + policy.getDst().getRef() + " does not belong to stored nffg named " + policy.getNffg());
+		}
 	}
 }
