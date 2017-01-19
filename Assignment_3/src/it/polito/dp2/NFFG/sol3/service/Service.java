@@ -2,15 +2,16 @@ package it.polito.dp2.NFFG.sol3.service;
 
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.locks.*;
 import java.util.stream.*;
 
-import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.*;
 import javax.xml.datatype.*;
 
 import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.service.exceptions.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;;
+import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;
 
 /**
  * Core functionality: orchestrator + response builder. Called by the web
@@ -25,9 +26,27 @@ public class Service {
 
 	private DataStorage data;
 
+	/**
+	 * This lock allows two kinds of locking and is only used to protect
+	 * consistency against the deletion of NFFGs from the service. Since the
+	 * implementation of the deletion is not required, also this locking is not
+	 * required if no one uses the deletion. It is used in the following way:
+	 * <ul>
+	 * <li>as shared lock: by all the methods that manipulate policies and
+	 * therefore need that the corresponding NFFG is not removed while they are
+	 * performing some actions on the stored data</li>
+	 * <li>as exclusive lock: by the remove NFFG method, in order to make
+	 * atomically the deletion of the nffg with its policies</li>
+	 * </ul>
+	 * The usage of shared lock was chosen in order to allow multiple thread
+	 * that own it to go into the sections of code.
+	 */
+	private StampedLock l;
+
 	private Service(URI neo4jLocation, DataStorage data) {
 		neoClient = new Neo4JXMLClient(neo4jLocation);
 		this.data = data;
+		l = new StampedLock();
 	}
 
 	public final static Service standardService = createStandardService();
@@ -61,7 +80,7 @@ public class Service {
 		try {
 			nffg.setUpdated(DatatypeFactory.newInstance().newXMLGregorianCalendar(now));
 		} catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
+			// this never happens, but let's be fail-safe
 			nffg.setUpdated(null);
 		}
 
@@ -94,6 +113,10 @@ public class Service {
 		// because the reference to the map is lost).
 		//
 		NffgStorage nffgStorage = new NffgStorage(nffg, idMappings);
+		// acquiring the lock is not required because the concurrency on the map
+		// of nffgs is already managed by the ConcurrentMap, and the
+		// synchronization will take place when creating new policies and asking
+		// for a shared lock
 		if (data.getNffgsMap().putIfAbsent(nffg.getName(), nffgStorage) != null) {
 			return null;
 		}
@@ -140,35 +163,62 @@ public class Service {
 	 * @return
 	 */
 	public Nffg deleteNffg(String nffgName, boolean force) {
-		// TODO concurrency
-		if (data.getPoliciesMap().values().stream().filter(n -> n.getNffg().equals(nffgName)).count() > 0) {
-			if (force == false) {
-				// TODO use custom exception
-				throw new ForbiddenException("force queryParam required");
+		NffgStorage nffgStorage = null;
+		// acquire exclusive lock to block insertion or verification of policies
+		// that may refer this nffg
+		long stamp = l.writeLock();
+		try {
+			if (data.getPoliciesMap().values().stream().filter(n -> n.getNffg().equals(nffgName)).count() > 0) {
+				if (force == false) {
+					// TODO use custom exception
+					throw new ForbiddenException("force queryParam required");
+				}
+				// delete all the policies belonging to this nffg
+				data.getPoliciesMap().entrySet().removeIf(e -> e.getValue().getNffg().equals(nffgName));
 			}
-			// delete all the policies belonging to this nffg
-			data.getPoliciesMap().entrySet().removeIf(e -> e.getValue().getNffg().equals(nffgName));
+			nffgStorage = data.getNffgsMap().remove(nffgName);
+			// TODO should delete all the IDs from neo4j ??
+		} finally {
+			l.unlockWrite(stamp);
 		}
-		NffgStorage nffgStorage = data.getNffgsMap().remove(nffgName);
 		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
 	public Policy verifyResultOnTheFly(Policy policy) {
-		validateReferences(policy);
-		// the data referenced don't change because nffg cannot be deleted here
-		Policy verified = verifyPolicy(policy);
-		return verified;
+		// acquire shared lock
+		long stamp = l.readLock();
+		try {
+			validateReferences(policy);
+			// the data referenced don't change because nffg cannot be deleted
+			// here, thanks to locking
+			return verifyPolicy(policy);
+		} finally {
+			l.unlockRead(stamp);
+		}
 	}
 
 	public Policy storePolicy(Policy policy) {
-		validateReferences(policy);
-		// the data referenced don't change because nffg cannot be deleted here
-		data.getPoliciesMap().put(policy.getName(), policy);
+		// acquire shared lock
+		long stamp = l.readLock();
+		try {
+			validateReferences(policy);
+			// the data referenced don't change because nffg cannot be deleted
+			// here, thanks to locking
+			data.getPoliciesMap().put(policy.getName(), policy);
+		} finally {
+			l.unlockRead(stamp);
+		}
 		return policy;
 	}
 
 	public Policy deletePolicy(String policyName) {
-		return data.getPoliciesMap().remove(policyName);
+		// acquire shared lock
+		long stamp = l.readLock();
+		try {
+			return data.getPoliciesMap().remove(policyName);
+		} finally {
+			l.unlockRead(stamp);
+		}
 	}
 
 	public List<Policy> getPolicies(String nffgName) {
@@ -186,16 +236,27 @@ public class Service {
 	}
 
 	public Policy updatePolicyResult(String policyName) {
-		Policy policy = getPolicy(policyName);
-		if (policy == null) {
-			return null;
+		long stamp = l.readLock();
+		try {
+			Policy policy = getPolicy(policyName);
+			if (policy == null) {
+				// caller will call NotFoundException
+				return null;
+			}
+			// the data referenced don't change because nffg cannot be deleted
+			// here, thanks to locking
+			return verifyPolicy(policy);
+		} finally {
+			l.unlockRead(stamp);
 		}
-		// the data referenced don't change because nffg cannot be deleted here
-		return verifyPolicy(policy);
 	}
 
 	/**
-	 * Called by other methods above. This is a slave method
+	 * Called by other methods above. This is a slave method. Considering
+	 * synchronization issues with removeNffg, this method is always called by a
+	 * block protected by sharedLock, in order to be sure that the nffg is
+	 * always existing (the policy could have been removed / never been stored
+	 * on the service)
 	 * 
 	 * @param policy
 	 * @return
@@ -204,13 +265,15 @@ public class Service {
 
 		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
 		if (nffgStorage == null) {
-			return null;
+			// TODO more specific
+			throw new InternalServerErrorException("in the verification process the nffg was not found");
 		}
 		String srcId = nffgStorage.getId(policy.getSrc().getRef());
 		String dstId = nffgStorage.getId(policy.getDst().getRef());
 		if (srcId == null || dstId == null) {
-			// TODO
-			return null;
+			// TODO more specific
+			throw new InternalServerErrorException(
+					"in the verification process there was an error retrieving the neo4j nodes id");
 		}
 		boolean reachabilityStatus = neoClient.testReachability(srcId, dstId);
 		Result result = new Result();
@@ -222,8 +285,7 @@ public class Service {
 		try {
 			result.setVerified(DatatypeFactory.newInstance().newXMLGregorianCalendar(now));
 		} catch (DatatypeConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// this never happens, but let's be fail-safe
 			result.setVerified(null);
 		}
 		policy.setResult(result);

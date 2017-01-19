@@ -90,7 +90,7 @@ public class PoliciesResource extends GenericResource {
 	public Policy updatePolicyResult(@PathParam("policy_name") String policyName) {
 		Policy policy = service.updatePolicyResult(policyName);
 		if(policy == null) {
-			// TODO possible notFound or internal error because of neo4j
+			// policy not found in the service
 			throw new NotFoundException(policyName);
 		}
 		return policy;
