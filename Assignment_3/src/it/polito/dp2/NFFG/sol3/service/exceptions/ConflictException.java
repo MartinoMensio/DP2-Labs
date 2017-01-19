@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol3.service;
+package it.polito.dp2.NFFG.sol3.service.exceptions;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;

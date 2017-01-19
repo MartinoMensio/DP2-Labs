@@ -8,8 +8,8 @@ import javax.ws.rs.core.*;
 
 import com.wordnik.swagger.annotations.*;
 
-import it.polito.dp2.NFFG.sol3.service.NotFoundException;
-import it.polito.dp2.NFFG.sol3.service.ValidationFailedException;
+import it.polito.dp2.NFFG.sol3.service.exceptions.*;
+import it.polito.dp2.NFFG.sol3.service.exceptions.NotFoundException;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 @Path("policies")
