@@ -4,6 +4,7 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.*;
 
+import javax.ws.rs.ForbiddenException;
 import javax.xml.datatype.*;
 
 import it.polito.dp2.NFFG.lab3.*;
@@ -22,14 +23,13 @@ public class Service {
 
 	private Neo4JXMLClient neoClient;
 
-	// retrieve data from persistence
 	private DataStorage data;
 
 	private Service(URI neo4jLocation, DataStorage data) {
 		neoClient = new Neo4JXMLClient(neo4jLocation);
 		this.data = data;
 	}
-	
+
 	public final static Service standardService = createStandardService();
 
 	private static Service createStandardService() {
@@ -50,7 +50,7 @@ public class Service {
 
 	public Nffg getNffg(String name) {
 		NffgStorage nffgStorage = data.getNffgsMap().get(name);
-		return (nffgStorage != null)? nffgStorage.getNffg() : null;
+		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
 	public Nffg storeNffg(Nffg nffg) {
@@ -132,19 +132,37 @@ public class Service {
 		return nffg;
 	}
 
-	public Nffg deleteNffg(String nffgName) {
+	/**
+	 * This is the only method that requires additional synchronization, because
+	 * invalidates the references done in policies.
+	 * 
+	 * @param nffgName
+	 * @return
+	 */
+	public Nffg deleteNffg(String nffgName, boolean force) {
+		// TODO concurrency
+		if(data.getPoliciesMap().values().stream().filter(n -> n.getNffg().equals(nffgName)).count() > 0) {
+			if (force == false) {
+				// TODO use custom exception
+				throw new ForbiddenException("force queryParam required");
+			}
+			// delete all the policies belonging to this nffg
+			data.getPoliciesMap().entrySet().removeIf(e -> e.getValue().getNffg().equals(nffgName));
+		}
 		NffgStorage nffgStorage = data.getNffgsMap().remove(nffgName);
 		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
 	public Policy verifyResultOnTheFly(Policy policy) {
 		validateReferences(policy);
+		// the data referenced don't change
 		Policy verified = verifyPolicy(policy);
 		return verified;
 	}
 
 	public Policy storePolicy(Policy policy) {
 		validateReferences(policy);
+		// the data referenced don't change
 		data.getPoliciesMap().put(policy.getName(), policy);
 		return policy;
 	}
@@ -153,20 +171,18 @@ public class Service {
 		return data.getPoliciesMap().remove(policyName);
 	}
 
-	public List<Policy> getPolicies() {
-		return data.getPoliciesMap().values().stream().collect(Collectors.toList());
-	}
-
-	public List<Policy> getNffgPolicies(String nffgName) {
-		if (data.getNffgsMap().get(nffgName) == null) {
-			return null;
-		}
-		return data.getPoliciesMap().values().stream().filter(p -> p.getNffg().equals(nffgName))
-				.collect(Collectors.toList());
+	public List<Policy> getPolicies(String nffgName) {
+		return data.getPoliciesMap().values().stream().filter(p -> {
+			if (nffgName == null) {
+				// no filtering
+				return true;
+			}
+			return p.getNffg().equals(nffgName);
+		}).collect(Collectors.toList());
 	}
 
 	public Policy verifyPolicy(Policy policy) {
-		
+
 		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
 		if (nffgStorage == null) {
 			return null;
@@ -204,11 +220,13 @@ public class Service {
 		if (policy == null) {
 			return null;
 		}
+		// the data referenced don't change
 		return verifyPolicy(policy);
 	}
-	
+
 	/**
 	 * Checks that the referred nffg exists and contains src and dst nodes
+	 * 
 	 * @param policy
 	 */
 	public void validateReferences(Policy policy) {
@@ -217,10 +235,12 @@ public class Service {
 			throw new ValidationFailedException("the policy refers to inexistent nffg named " + policy.getNffg());
 		}
 		if (nffgStorage.getId(policy.getSrc().getRef()) == null) {
-			throw new ValidationFailedException("the policy source node named " + policy.getSrc().getRef() + " does not belong to stored nffg named " + policy.getNffg());
+			throw new ValidationFailedException("the policy source node named " + policy.getSrc().getRef()
+					+ " does not belong to stored nffg named " + policy.getNffg());
 		}
 		if (nffgStorage.getId(policy.getDst().getRef()) == null) {
-			throw new ValidationFailedException("the policy destination node named " + policy.getDst().getRef() + " does not belong to stored nffg named " + policy.getNffg());
+			throw new ValidationFailedException("the policy destination node named " + policy.getDst().getRef()
+					+ " does not belong to stored nffg named " + policy.getNffg());
 		}
 	}
 }

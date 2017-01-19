@@ -95,6 +95,13 @@ A single nffg identified by its name.
 | GET    | -            | nffg          | get the NFFG           | 200 OK | 404: no NFFG exists with this name
 | DELETE | -            | nffg          | delete the NFFG        | 200 OK | 404: no NFFG exists with this name
 
+The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is `force` and the behaviour of the service is the following:
+
+| DELETE                | with queryParam | without queryParam
+| --------------------- | --------------- | --------------
+| NFFG without policies | success         | success
+| NFFG with policies    | success         | FAIL
+
 ### `/policies`
 
 Policies collection

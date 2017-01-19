@@ -69,8 +69,8 @@ public class NffgsResource extends GenericResource {
 			@ApiResponse(code = 404, message = "NFFG not found")
 	})
 	@Path("{nffg_name}")
-	public Response deleteNffg(@PathParam("nffg_name") String nffgName) {
-		Nffg nffg = service.deleteNffg(nffgName);
+	public Response deleteNffg(@PathParam("nffg_name") String nffgName, @DefaultValue("false") @QueryParam("force") Boolean force) {
+		Nffg nffg = service.deleteNffg(nffgName, force);
 		if(nffg == null) {
 			throw new NotFoundException(nffgName);
 		}

@@ -21,8 +21,8 @@ public class PoliciesResource extends GenericResource {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "OK")
 	})
-	public List<Policy> getPolicies() {
-		return service.getPolicies();
+	public List<Policy> getPolicies(@QueryParam("nffg") String nffgName) {
+		return service.getPolicies(nffgName);
 	}
 	
 	@PUT
