@@ -141,7 +141,7 @@ public class Service {
 	 */
 	public Nffg deleteNffg(String nffgName, boolean force) {
 		// TODO concurrency
-		if(data.getPoliciesMap().values().stream().filter(n -> n.getNffg().equals(nffgName)).count() > 0) {
+		if (data.getPoliciesMap().values().stream().filter(n -> n.getNffg().equals(nffgName)).count() > 0) {
 			if (force == false) {
 				// TODO use custom exception
 				throw new ForbiddenException("force queryParam required");
@@ -155,14 +155,14 @@ public class Service {
 
 	public Policy verifyResultOnTheFly(Policy policy) {
 		validateReferences(policy);
-		// the data referenced don't change
+		// the data referenced don't change because nffg cannot be deleted here
 		Policy verified = verifyPolicy(policy);
 		return verified;
 	}
 
 	public Policy storePolicy(Policy policy) {
 		validateReferences(policy);
-		// the data referenced don't change
+		// the data referenced don't change because nffg cannot be deleted here
 		data.getPoliciesMap().put(policy.getName(), policy);
 		return policy;
 	}
@@ -181,6 +181,25 @@ public class Service {
 		}).collect(Collectors.toList());
 	}
 
+	public Policy getPolicy(String policyName) {
+		return data.getPoliciesMap().get(policyName);
+	}
+
+	public Policy updatePolicyResult(String policyName) {
+		Policy policy = getPolicy(policyName);
+		if (policy == null) {
+			return null;
+		}
+		// the data referenced don't change because nffg cannot be deleted here
+		return verifyPolicy(policy);
+	}
+
+	/**
+	 * Called by other methods above. This is a slave method
+	 * 
+	 * @param policy
+	 * @return
+	 */
 	public Policy verifyPolicy(Policy policy) {
 
 		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
@@ -209,19 +228,6 @@ public class Service {
 		}
 		policy.setResult(result);
 		return policy;
-	}
-
-	public Policy getPolicy(String policyName) {
-		return data.getPoliciesMap().get(policyName);
-	}
-
-	public Policy updatePolicyResult(String policyName) {
-		Policy policy = getPolicy(policyName);
-		if (policy == null) {
-			return null;
-		}
-		// the data referenced don't change
-		return verifyPolicy(policy);
 	}
 
 	/**
