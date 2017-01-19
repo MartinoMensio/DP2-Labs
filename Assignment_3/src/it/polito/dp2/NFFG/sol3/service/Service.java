@@ -137,8 +137,7 @@ public class Service {
 		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
-	public Policy verifyResultOnTheFly(Policy policy, String nffgName) {
-		policy.setNffg(nffgName);
+	public Policy verifyResultOnTheFly(Policy policy) {
 		validateReferences(policy);
 		Policy verified = verifyPolicy(policy);
 		return verified;

@@ -95,14 +95,6 @@ A single nffg identified by its name.
 | GET    | -            | nffg          | get the NFFG           | 200 OK | 404: no NFFG exists with this name
 | DELETE | -            | nffg          | delete the NFFG        | 200 OK | 404: no NFFG exists with this name
 
-### `/nffgs/{nffg_name}/online_result`
-
-Verification endpoint for client policies, not stored on the service
-
-| method | request type | response type | explaination           | result | errors
-| ------ | ------------ | ------------- | ------------           | ------ | ------
-| POST   | policy       | policy        | verify this policy     | 200 OK | 404: wrong id, 422: validation error
-
 ### `/policies`
 
 Policies collection
@@ -124,7 +116,7 @@ A single policy identified by its id.
 | ------ | ------------ | ------------- | ------------             | ------              | ------
 | GET    | -            | policy        | get the policy           | 200 OK              | 404: no policy exists with this name
 | DELETE | -            | -             | delete the policy        | 200 OK              | 404: no policy exists with this name
-| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 422: no nffg with this name or validation error
+| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 422: validation error or invalid reference to stored resources
 
 ### `/policies/{policy_name}/result`
 
@@ -133,3 +125,11 @@ The corresponding result for this policy.
 | method | request type | response type | explaination             | result | errors
 | ------ | ------------ | ------------- | ------------             | ------ | ------
 | POST   | -            | policy        | update the policy result | 200 OK | 404: no policy exists with this name
+
+### `/verifier`
+
+Verification endpoint for client policies, not stored on the service
+
+| method | request type | response type | explaination           | result | errors
+| ------ | ------------ | ------------- | ------------           | ------ | ------
+| POST   | policy       | policy        | verify this policy     | 200 OK | 422: validation error or invalid reference to stored resources (nffg or node)

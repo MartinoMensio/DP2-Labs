@@ -76,25 +76,5 @@ public class NffgsResource extends GenericResource {
 		}
 		return Response.ok(nffg).build();
 	}
-	
-	@POST
-	@ApiOperation(value = "verify a policy without storing it", notes ="to be called on the child resource of the nffg of reference")
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "verification done"),
-			@ApiResponse(code = 404, message = "NFFG not found"),
-			@ApiResponse(code = 422, message = "policy is not compliant with the schema")
-	})
-	@Path("{nffg_name}/online_result")
-	public Policy verifyResultOnTheFly(Policy policy, @PathParam("nffg_name") String nffgName) {
-		// TODO validate policy
-		if (policy == null) {
-			throw new ValidationFailedException("policy is not compliant with the schema");
-		}
-		Policy result = service.verifyResultOnTheFly(policy, nffgName);
-		if(result == null) {
-			// TODO reason: could be because of nffgName or because other references or other errors in body request
-			throw new NotFoundException(nffgName);
-		}
-		return result;
-	}
+
 }
