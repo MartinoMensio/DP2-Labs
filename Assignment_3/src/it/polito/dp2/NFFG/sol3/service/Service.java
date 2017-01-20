@@ -8,7 +8,6 @@ import java.util.stream.*;
 import javax.ws.rs.*;
 import javax.xml.datatype.*;
 
-import it.polito.dp2.NFFG.lab3.*;
 import it.polito.dp2.NFFG.sol3.service.exceptions.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;
