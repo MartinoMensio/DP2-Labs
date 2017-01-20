@@ -17,8 +17,9 @@ public class DataStorage {
 	private static DataStorage data = new DataStorage();
 
 	// The Maps are kept private in order to avoid overwriting, getters below
-	
-	// NFFGs are cached in the service together with mappings between node name and node id
+
+	// NFFGs are cached in the service together with mappings between node name
+	// and node id
 	private ConcurrentMap<String, NffgStorage> nffgsMap = new ConcurrentSkipListMap<>();
 	// policies are stored in the service
 	private ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
@@ -37,19 +38,20 @@ public class DataStorage {
 			throw new RuntimeException(e);
 		} catch (Exception e) {
 			// Some exceptions calling deleteAllNodes
-			throw new RuntimeException("impossible to delete all the nodes at persistence instantiation. Reason: " + e.getMessage());
+			throw new RuntimeException(
+					"impossible to delete all the nodes at persistence instantiation. Reason: " + e.getMessage());
 		}
-		 
+
 	}
 
 	public static DataStorage getData() {
 		return data;
 	}
-	
+
 	public ConcurrentMap<String, NffgStorage> getNffgsMap() {
 		return nffgsMap;
 	}
-	
+
 	public ConcurrentMap<String, Policy> getPoliciesMap() {
 		return policiesMap;
 	}

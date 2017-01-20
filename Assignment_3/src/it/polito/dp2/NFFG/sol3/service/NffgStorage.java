@@ -30,7 +30,7 @@ public class NffgStorage {
 		this.ok = true;
 		this.notifyAll();
 	}
-	
+
 	public synchronized void setKO() {
 		this.incomplete = false;
 		this.ok = false;
