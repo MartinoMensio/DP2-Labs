@@ -68,11 +68,16 @@ public class Neo4JXMLClient {
 		}
 	}
 
+	/**
+	 * Creates a relationship with DestNode=nodeId type="belongs". Then the
+	 * relationship is added to the nffg node
+	 * 
+	 * @param nffgId
+	 * @param nodeId
+	 * @return
+	 */
 	public Relationship addBelongsToNffg(String nffgId, String nodeId) {
-		// TODO (look at addRelationshipToNode)
-		// POST /resource/nodes/{nffgId}/relationship with destNode={nodeId}
-		// type="belongs"
-		Relationship rel = new Relationship();
+		Relationship rel = factory.createRelationship();
 		rel.setDstNode(nodeId);
 		rel.setType("belongs");
 		return addRelationshipToNode(nffgId, rel);
