@@ -18,12 +18,14 @@ public class Client1NFFGClient implements NFFGClient {
 
 	private NffgVerifier verifier;
 	private WebTarget target;
-	private NffgReaderToJAXB nffgReaderTransformer;
+	private NffgReaderToJaxb nffgReaderTransformer;
+	private PolicyReaderToJaxb policyReaderTransformer;
 
 	public Client1NFFGClient(NffgVerifier verifier, URI uri) {
 		this.verifier = verifier;
 		target = ClientBuilder.newClient().target(uri);
-		nffgReaderTransformer = new NffgReaderToJAXB();
+		nffgReaderTransformer = new NffgReaderToJaxb();
+		policyReaderTransformer = new PolicyReaderToJaxb();
 	}
 
 	@Override
@@ -31,7 +33,7 @@ public class Client1NFFGClient implements NFFGClient {
 		// get the corresponding NffgReader
 		NffgReader nffgR = verifier.getNffg(name);
 		if (nffgR == null) {
-			throw new UnknownNameException("No NFFG with name " + name);
+			throw new UnknownNameException("no locally known NFFG corresponds to the name " + name);
 		}
 		loadNffg(nffgR);
 	}
@@ -44,26 +46,7 @@ public class Client1NFFGClient implements NFFGClient {
 		}
 		// load all the policies
 		for (PolicyReader policyR : verifier.getPolicies()) {
-			ReachabilityPolicyReader reachPolicyR = (ReachabilityPolicyReader) policyR;
-
-			Policy policy = new Policy();
-			policy.setName(policyR.getName());
-			policy.setNffg(policyR.getNffg().getName());
-			policy.setPositive(policyR.isPositive());
-			NodeRefT src = new NodeRefT();
-			src.setRef(reachPolicyR.getSourceNode().getName());
-			policy.setSrc(src);
-			NodeRefT dst = new NodeRefT();
-			dst.setRef(reachPolicyR.getSourceNode().getName());
-			policy.setDst(dst);
-			VerificationResultReader resultR = policyR.getResult();
-			if (resultR != null) {
-				Result result = new Result();
-				result.setContent(resultR.getVerificationResultMsg());
-				result.setSatisfied(resultR.getVerificationResult());
-				result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
-				policy.setResult(result);
-			}
+			Policy policy = policyReaderTransformer.apply(policyR);
 			loadPolicy(policy);
 		}
 	}
@@ -71,44 +54,51 @@ public class Client1NFFGClient implements NFFGClient {
 	@Override
 	public void loadReachabilityPolicy(String name, String nffgName, boolean isPositive, String srcNodeName,
 			String dstNodeName) throws UnknownNameException, ServiceException {
-
-		// if nffgName or srcNodeName or dstNodeName don't correspond to local
-		// info, throw UnknownNameException
+		// check the references
 		NffgReader nffgR = verifier.getNffg(nffgName);
 		if (nffgR == null) {
-			System.err.println("nffgR null: " + nffgName);
-			throw new UnknownNameException(nffgName);
+			throw new UnknownNameException("the policy refers to a locally unknown nffg " + nffgName);
 		}
 
 		NodeReader src = nffgR.getNode(srcNodeName);
 		if (src == null) {
 			System.err.println("src null: " + srcNodeName);
-			throw new UnknownNameException(srcNodeName);
+			throw new UnknownNameException(
+					"the policy source node " + srcNodeName + " does not belong to the declared nffg " + nffgName);
 		}
 		NodeReader dst = nffgR.getNode(dstNodeName);
 		if (dst == null) {
 			System.err.println("dst null: " + dstNodeName);
-			throw new UnknownNameException(dstNodeName);
+			throw new UnknownNameException(
+					"the policy destination node " + dstNodeName + "does not belong to the declared nffg " + nffgName);
 		}
-		// build a PolicyT from the values
-		Policy policy = new Policy();
+		// build a Policy from the values
+		ObjectFactory factory = policyReaderTransformer.getFactory();
+		Policy policy = factory.createPolicy();
 		policy.setName(name);
-		NodeRefT srcRef = new NodeRefT();
-		NodeRefT dstRef = new NodeRefT();
+		NodeRefT srcRef = factory.createNodeRefT();
+		NodeRefT dstRef = factory.createNodeRefT();
 		srcRef.setRef(srcNodeName);
 		dstRef.setRef(dstNodeName);
 		policy.setSrc(srcRef);
 		policy.setDst(dstRef);
 		policy.setNffg(nffgName);
 		policy.setPositive(isPositive);
+		// load the policy
 		loadPolicy(policy);
 	}
 
+	/**
+	 * POST /nffgs
+	 * 
+	 * @param nffgR
+	 * @throws ServiceException
+	 * @throws AlreadyLoadedException
+	 */
 	void loadNffg(NffgReader nffgR) throws ServiceException, AlreadyLoadedException {
-		// call transformer from NffgReader to NffgT
+		// call transformer from NffgReader to Nffg
 		Nffg nffg = nffgReaderTransformer.apply(nffgR);
 		Response res;
-		// POST /nffgs
 		try {
 			res = target.path("nffgs").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(nffg, MediaType.APPLICATION_XML));
@@ -118,24 +108,35 @@ public class Client1NFFGClient implements NFFGClient {
 			// if other errors throw ServiceException
 			throw new ServiceException("something bad happened: " + e.getMessage());
 		}
-		if (res.getStatus() == 403) {
+		if (res.getStatus() == 409) {
 			// if already loaded throw AlreadyLoadedException
-			throw new AlreadyLoadedException("nffg with name " + nffg.getName() + "already exists");
+			throw new AlreadyLoadedException("nffg with name " + nffg.getName() + "already exists in the service");
 		}
 	}
 
+	/**
+	 * PUT /policies/{policy_name}
+	 * 
+	 * @param policy
+	 * @throws ServiceException
+	 */
 	void loadPolicy(Policy policy) throws ServiceException {
-		// PUT /policies/{policy_name}
 		// if some errors with communication with server, throw ServiceException
 		// TODO catch 404, ...
 		Policy res = target.path("policies").path(policy.getName()).request(MediaType.APPLICATION_XML)
 				.put(Entity.entity(policy, MediaType.APPLICATION_XML), Policy.class);
 	}
 
+	/**
+	 * DELETE /policies/{policyName}
+	 * 
+	 * @param name
+	 * @throws UnknownNameException
+	 * @throws ServiceException
+	 */
 	@Override
 	public void unloadReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
 		// TODO Auto-generated method stub
-		// DELETE /policies/{policyName}
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
 		Response res = target.path("policies").path(name).request(MediaType.APPLICATION_XML).delete();
@@ -144,10 +145,17 @@ public class Client1NFFGClient implements NFFGClient {
 		}
 	}
 
+	/**
+	 * POST /policies/{policyName}/result
+	 * 
+	 * @param name
+	 * @return
+	 * @throws UnknownNameException
+	 * @throws ServiceException
+	 */
 	@Override
 	public boolean testReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
 		// TODO Auto-generated method stub
-		// POST /policies/{policyName}/result
 		// if 404 throw UnknownNameException
 		// if other errors throw ServiceException
 		// return result.verificationResult
