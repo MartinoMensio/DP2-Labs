@@ -28,11 +28,11 @@
 	<property name="client1.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client1" />
 	<property name="client2.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client2" />
 
-	<target name="build-service" depends="compile-wjc,compile-jaxb,build-lab3">
+	<target name="build-service" depends="compile-wjc,compile-jaxb">
 		<!-- TODO -->
 		<javac srcdir="${service.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
-	<target name="build-client" depends="compile-jaxb,build-lab3">
+	<target name="build-client" depends="compile-jaxb">
 		<!-- TODO -->
 		<javac srcdir="${client1.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 		<javac srcdir="${client2.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
@@ -41,7 +41,7 @@
 		<delete dir="${jaxb.dir}" />
 		<delete dir="${wjc.dir}" />
 	</target>
-
+<!--
 	<target name="build-lab3">
 		<javac destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath">
 			<src path="${src.dir}" />
@@ -49,7 +49,7 @@
 			<exclude name="it/polito/dp2/NFFG/lab3/tests/**" />
 		</javac>
 	</target>
-
+-->
 	<!-- TODO split in two directories the wjc and jaxb artifacts -->
 	<target name="compile-wjc" depends="generate-wjc,generate-jaxb">
 		<!-- Removing the file that has problems -->
