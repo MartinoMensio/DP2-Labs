@@ -169,14 +169,13 @@ public class Service {
 		try {
 			if (data.getPoliciesMap().values().stream().filter(n -> n.getNffg().equals(nffgName)).count() > 0) {
 				if (force == false) {
-					// TODO use custom exception
-					throw new ForbiddenException("force queryParam required");
+					throw new ForbiddenException(
+							"Some policies are linked to this nffg. To remove the nffg append ?force=true on the path");
 				}
 				// delete all the policies belonging to this nffg
 				data.getPoliciesMap().entrySet().removeIf(e -> e.getValue().getNffg().equals(nffgName));
 			}
 			nffgStorage = data.getNffgsMap().remove(nffgName);
-			// TODO should delete all the IDs from neo4j ??
 		} finally {
 			l.unlockWrite(stamp);
 		}

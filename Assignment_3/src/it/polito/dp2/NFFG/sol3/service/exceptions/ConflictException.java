@@ -10,7 +10,7 @@ import javax.ws.rs.core.*;
  * @author Martino Mensio
  *
  */
-public class ConflictException extends WebApplicationException {
+public class ConflictException extends ClientErrorException {
 
 	/**
 	 * 
@@ -18,7 +18,6 @@ public class ConflictException extends WebApplicationException {
 	private static final long serialVersionUID = 1L;
 
 	public ConflictException(String string) {
-		super(Response.status(Response.Status.CONFLICT).entity("Conflict: " + string).type(MediaType.TEXT_PLAIN)
-				.build());
+		super("Conflict: " + string, Response.Status.CONFLICT);
 	}
 }
