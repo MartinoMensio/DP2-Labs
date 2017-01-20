@@ -1,7 +1,6 @@
 package it.polito.dp2.NFFG.sol3.service.neo4j;
 
 import java.net.*;
-import java.util.*;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
@@ -14,45 +13,30 @@ import javax.ws.rs.core.*;
  */
 public class Neo4JXMLClient {
 
+	private static ObjectFactory factory = new ObjectFactory();
 	private WebTarget target;
 
-	// TODO maybe add some condensed method to handle different calls to
-	// elementary calls
-
 	public Neo4JXMLClient(URI neo4jLocation) {
-		// TODO Auto-generated constructor stub
 		target = ClientBuilder.newClient().target(neo4jLocation).path("resource");
 	}
 
-	public List<Node> getNodes() {
-		// TODO
-		// GET /resource/nodes
-		return null;
-	}
-
-	public Node getNode(String nodeId) {
-		// TODO
-		// GET /resource/nodes/{nodeId}
-		return null;
-	}
-
+	/**
+	 * POST /resource/node
+	 * 
+	 * @param node
+	 * @return
+	 */
 	public Node addNode(Node node) {
-		// TODO
-		// POST /resource/node
 		Node result = target.path("node").request(MediaType.APPLICATION_XML)
 				.post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
 		// TODO check exceptions
 		return result;
 	}
 
-	public void deleteNode(String nodeId) {
-		// TODO
-		// DELETE /resource/nodes/{nodeId}
-	}
-
+	/**
+	 * DELETE /resource/nodes
+	 */
 	public void deleteAllNodes() {
-		// TODO
-		// DELETE /resource/nodes
 		try {
 			Response resdel = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
 
@@ -67,12 +51,14 @@ public class Neo4JXMLClient {
 		}
 	}
 
+	/**
+	 * POST /resource/nodes/{nodeId}/label with NFFG label
+	 * 
+	 * @param nodeId
+	 */
 	public void addNffgLabelToNode(String nodeId) {
-		// TODO
+		Labels label = factory.createLabels();
 		// NFFG needs a label "NFFG"
-		// POST /resource/nodes/{nodeId}/label
-		// TODO use factory
-		Labels label = new Labels();
 		label.getValue().add("NFFG");
 		Response res = target.path("node").path(nodeId).path("label").request(MediaType.APPLICATION_XML)
 				.post(Entity.entity(label, MediaType.APPLICATION_XML));
@@ -92,36 +78,52 @@ public class Neo4JXMLClient {
 		return addRelationshipToNode(nffgId, rel);
 	}
 
+	/**
+	 * Creates a relationship with destNode=dstNodeId type="Link". Then the
+	 * relationship is added to the source node
+	 * 
+	 * @param srcNodeId
+	 * @param dstNodeId
+	 * @return
+	 */
 	public Relationship addLinkBetweenNodes(String srcNodeId, String dstNodeId) {
-		// TODO (look at addRelationshipToNode)
-		// POST /resource/nodes/{srcNodeId}/relationship with
-		// destNode={dstNodeId} type="Link"
-		Relationship rel = new Relationship();
+		Relationship rel = factory.createRelationship();
 		rel.setDstNode(dstNodeId);
 		rel.setType("Link");
 		return addRelationshipToNode(srcNodeId, rel);
 	}
 
+	/**
+	 * POST /resource/nodes/{nodeId}/relationship used by addBelongs and addLink
+	 * 
+	 * @param nodeId
+	 * @param rel
+	 * @return
+	 */
 	public Relationship addRelationshipToNode(String nodeId, Relationship rel) {
-		// TODO
-		// used by addBelongs and addLink
 		Relationship result = target.path("node").path(nodeId).path("relationship").request(MediaType.APPLICATION_XML)
 				.post(Entity.entity(rel, MediaType.APPLICATION_XML), Relationship.class);
 		// TODO check exceptions
 		return result;
 	}
 
+	/**
+	 * GET /resource/node/{srcNodeId}/paths?dst={dstNodeId}
+	 * 
+	 * @param srcNodeId
+	 * @param dstNodeId
+	 * @return
+	 */
 	public boolean testReachability(String srcNodeId, String dstNodeId) {
-		// TODO
 		Paths res = target.path("node").path(srcNodeId).path("paths").queryParam("dst", dstNodeId)
 				.request(MediaType.APPLICATION_XML).get(Paths.class);
 		// TODO exceptions
 		return !res.getPath().isEmpty();
 	}
-	
+
 	public String addNamedNode(String nodeName) {
-		Node nodeReq = new Node();
-		Property nameProp = new Property();
+		Node nodeReq = factory.createNode();
+		Property nameProp = factory.createProperty();
 		nameProp.setName("name");
 		nameProp.setValue(nodeName);
 		nodeReq.getProperty().add(nameProp);
