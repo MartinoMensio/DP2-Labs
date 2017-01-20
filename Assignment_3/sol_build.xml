@@ -20,7 +20,7 @@
 	<property name="schema.dir" value="${basedir}/xsd" />
 	<property name="gen.dir" value="${basedir}/gen-src" />
 	<property name="jaxb.dir" value="${gen.dir}/jaxb" />
-	<property name="wjc.dir" value="${gen.dir}/wjc" />
+	<property name="neo4j.dir" value="${gen.dir}/neo4j" />
 	<property name="lib.dir" location="${basedir}/lib" />
 	<property name="NEO4JURL" value="http://localhost:8080/Neo4JXML/rest" />
 	<property name="WADL" value="${NEO4JURL}/application.wadl" />
@@ -28,7 +28,7 @@
 	<property name="client1.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client1" />
 	<property name="client2.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client2" />
 
-	<target name="build-service" depends="compile-wjc,compile-jaxb">
+	<target name="build-service" depends="compile-neo4j,compile-jaxb">
 		<!-- TODO -->
 		<javac srcdir="${service.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
@@ -39,7 +39,7 @@
 	</target>
 	<target name="clean">
 		<delete dir="${jaxb.dir}" />
-		<delete dir="${wjc.dir}" />
+		<delete dir="${neo4j.dir}" />
 	</target>
 <!--
 	<target name="build-lab3">
@@ -50,15 +50,15 @@
 		</javac>
 	</target>
 -->
-	<!-- TODO split in two directories the wjc and jaxb artifacts -->
-	<target name="compile-wjc" depends="generate-wjc,generate-jaxb">
+	<!-- TODO split in two directories the neo4j and jaxb artifacts -->
+	<target name="compile-neo4j" depends="generate-neo4j,generate-jaxb">
 		<!-- Removing the file that has problems -->
 		<!--<delete>
-			<fileset dir="${wjc.dir}/it/polito/dp2/NFFG/sol3/service/wjc">
+			<fileset dir="${neo4j.dir}/it/polito/dp2/NFFG/sol3/service/neo4j">
 				<include name="Localhost_Neo4JXMLRest.java" />
 			</fileset>
 		</delete>-->
-		<javac srcdir="${wjc.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
+		<javac srcdir="${neo4j.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
 	<target name="compile-jaxb" depends="generate-jaxb">
 		<javac srcdir="${jaxb.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
@@ -90,8 +90,8 @@
 		</classpath>
 	</taskdef>
 	<!-- Target chk-artifacts -->
-	<target name="-chk-wjc">
-		<uptodate property="generate-wjc.notRequired" targetfile="${wjc.dir}/.wjc_flagfile">
+	<target name="-chk-neo4j">
+		<uptodate property="generate-neo4j.notRequired" targetfile="${neo4j.dir}/.neo4j_flagfile">
 			<!-- regenerate artifacts if this build file is modified (or if the flagfile is removed) -->
 			<srcfiles dir="${basedir}" includes="sol_build.xml" />
 			<!-- update also in case some customization files are updated -->
@@ -100,16 +100,16 @@
 	</target>
 
 	<!-- define the client artifacts generation target -->
-	<target name="generate-wjc" depends="-chk-wjc" unless="generate-wjc.notRequired">
-		<mkdir dir="${wjc.dir}" />
+	<target name="generate-neo4j" depends="-chk-neo4j" unless="generate-neo4j.notRequired">
+		<mkdir dir="${neo4j.dir}" />
 		<echo message="Compiling the WADL descriptions..." />
-		<wjc target="${wjc.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service.wjc" description="${WADL}">
-			<produces dir="${wjc.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
+		<wjc target="${neo4j.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service.neo4j" description="${WADL}">
+			<produces dir="${neo4j.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
 			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
 			<depends dir="${basedir}" includes="sol_build.xml" />
 			<!-- use customizations -->
 			<customizations dir="${custom.dir}" includes="*.xjb" />
 		</wjc>
-		<touch file="${wjc.dir}/.wjc_flagfile" />
+		<touch file="${neo4j.dir}/.neo4j_flagfile" />
 	</target>
 </project>

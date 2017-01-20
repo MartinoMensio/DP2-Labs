@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol3.service.wjc;
+package it.polito.dp2.NFFG.sol3.service.neo4j;
 
 import java.net.*;
 import java.util.*;

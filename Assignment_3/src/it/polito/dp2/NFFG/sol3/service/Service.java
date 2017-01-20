@@ -10,7 +10,7 @@ import javax.xml.datatype.*;
 
 import it.polito.dp2.NFFG.sol3.service.exceptions.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;
+import it.polito.dp2.NFFG.sol3.service.neo4j.Neo4JXMLClient;
 
 /**
  * Core functionality: orchestrator + response builder. Called by the web

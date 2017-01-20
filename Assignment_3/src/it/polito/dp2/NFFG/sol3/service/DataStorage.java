@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.concurrent.*;
 
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.wjc.Neo4JXMLClient;
+import it.polito.dp2.NFFG.sol3.service.neo4j.Neo4JXMLClient;
 
 /**
  * Class for persistence
