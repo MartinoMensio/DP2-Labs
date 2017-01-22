@@ -240,31 +240,26 @@
 </tbody>
 </table>
 
-<h3>
-<a id="user-content-nffgsnffg_nameonline_result" class="anchor" href="#nffgsnffg_nameonline_result" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs/{nffg_name}/online_result</code>
-</h3>
-
-<p>Verification endpoint for client policies, not stored on the service</p>
+<p>The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is <code>force</code> and the behaviour of the service is the following:</p>
 
 <table>
 <thead>
 <tr>
-<th>method</th>
-<th>request type</th>
-<th>response type</th>
-<th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>DELETE</th>
+<th>with queryParam</th>
+<th>without queryParam</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>POST</td>
-<td>policy</td>
-<td>policy</td>
-<td>verify this policy</td>
-<td>200 OK</td>
-<td>404: wrong id, 422: validation error</td>
+<td>NFFG without policies</td>
+<td>success</td>
+<td>success</td>
+</tr>
+<tr>
+<td>NFFG with policies</td>
+<td>success</td>
+<td>FAIL</td>
 </tr>
 </tbody>
 </table>
@@ -347,7 +342,7 @@
 <td>policy</td>
 <td>update/create the policy</td>
 <td>200 OK, 201 CREATED</td>
-<td>422: no nffg with this name or validation error</td>
+<td>422: validation error or invalid reference to stored resources</td>
 </tr>
 </tbody>
 </table>
@@ -380,6 +375,97 @@
 </tr>
 </tbody>
 </table>
+
+<h3>
+<a id="user-content-verifier" class="anchor" href="#verifier" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/verifier</code>
+</h3>
+
+<p>Verification endpoint for client policies, not stored on the service</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>policy</td>
+<td>policy</td>
+<td>verify this policy</td>
+<td>200 OK</td>
+<td>422: validation error or invalid reference to stored resources (nffg or node)</td>
+</tr>
+</tbody>
+</table>
+
+<h2>
+<a id="user-content-4-implementation-details" class="anchor" href="#4-implementation-details" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4. Implementation details</h2>
+
+<h3>
+<a id="user-content-concurrency-management" class="anchor" href="#concurrency-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concurrency management</h3>
+
+<p>The synchronization without considering the removal of NFFGs is simply obtained by using ConcurrentMap.</p>
+
+<ul>
+<li>All the getters perform atomic operations on a single map (nffgs or policies). Then some filters can be applied on the set of values, but this operation is performed after the read of the data, so it is not a problem</li>
+<li>
+<code>storeNffg</code> performs a single atomic operation on the nffgs map: a <code>putIfAbsent</code> that is checking the existence and storing the new nffg in atomic way</li>
+<li>
+<code>storePolicy</code> is checking the references to nffg and nodes (src and dst) then is putting the new policy into the policies map. But since an NFFG cannot be deleted, after the check the references cannot be invalidated in any ways, so also in this case there is no need of additional synchronization</li>
+<li>
+<code>deletePolicy</code> is removing the policy from the map of policies in a single atomic operation</li>
+<li>
+<code>updatePolicyResult</code> is first getting the policy from its name then is verifying its result. Also if this is not a single operation and a deletion can occur in between, this is not a problem because in this case the serialized view of the events would be that the deletion occurred after the update of the result, without side effects because the update of the result does not operate on the map but only on an object that is stored inside it, and can be safely removed from the map preventing other threads to reach this policy that still exist for the thread that is handling the update</li>
+<li>
+<code>verifyResultOnTheFly</code> is first validating the references contained in the policy (nffg, src, dst) and then verifying the result. Since the referenced nffg cannot be deleted (or updated) the data are still valid also if these operations are not performed atomically</li>
+</ul>
+
+<p>Considering also the deletion, the modifications done are the following:</p>
+
+<ul>
+<li>a RWLock is added for operations that modify the policies in order to make the assumptions above explained to be still valid:
+
+<ul>
+<li>the exclusive lock is used by the <code>deleteNffg</code> method. In this way, when this lock is acquired no other threads can operate on the policies (modification)</li>
+<li>the shared lock is used by methods that modify the policies map</li>
+<li>the getters need no synchronization if the modification keep the state always valid during the execution of single operations</li>
+</ul>
+</li>
+</ul>
+
+<p>In details the usage of locks by each method:</p>
+
+<ul>
+<li>
+<code>deleteNffg</code> in the critical section protected by exclusive lock is:
+
+<ul>
+<li>checking if some policies are linked and in this case can block the execution if the request does not force the removal</li>
+<li>removing all the policies linked to this nffg from the policies map</li>
+<li>removing the nffg from the nffgs map</li>
+</ul>
+</li>
+<li>
+<code>storePolicy</code> uses a shared lock to validate the references and then storing in the policies map the new one. In this way the removal cannot occur between the two operations, and therefore the references are still valid</li>
+<li>
+<code>deletePolcy</code> uses a shared lock because the iteration that is occurring in the <code>deleteNffg</code> over the collection of policies acts on the valueSet that is not explicitly concurrent-safe also if it coming from a ConcurrentMap. In order to avoid any problems, the deletion of a single policy is done in a protected block</li>
+<li>
+<code>updatePolicyResult</code> uses the shared lock because after getting the policy from the name the verification is accessing the related nffg in order to use the ids, that must not be deleted between the two operations</li>
+<li>
+<code>verifyResultOnTheFly</code> uses the shared lock because after checking the references, the nffg must continue to be stored inside the nffgs map</li>
+<li>
+<code>storeNffg</code> does not need any locks because acts on completely new data. If the nffg stored with the same name is still being removed but not yet from the map, the serialized view of events will have the store before the deletion, without causing side effects.</li>
+<li>the getters don't require any lock because they read the data from a single map in atomic way. They also don't modify the data so they don't produce side effects.</li>
+<li>
+<code>getPolicies</code> is the only critical getter, that could give back a partial set of policies because the method <code>removeIf</code> called on the entrySet by the <code>deleteNffg</code> could be iterating and having removed only some policies belonging to the nffg that is being deleted. To avoid this problem, this method also uses the shared lock</li>
+</ul>
 
 </body>
 </html>
