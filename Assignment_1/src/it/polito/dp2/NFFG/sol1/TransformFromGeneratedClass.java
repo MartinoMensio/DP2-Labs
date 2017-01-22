@@ -82,7 +82,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 *            the NffgT object from unmarshaling
 	 * @return the NffgReader object
 	 */
-	private NffgReader transformNffg(NffgT nffg) {
+	private NffgReader transformNffg(Nffg nffg) {
 		Sol1NffgReader nffgR = new Sol1NffgReader(nffg.getName(),
 				Utils.CalendarFromXMLGregorianCalendar(nffg.getUpdated()));
 		// process nodes
@@ -123,7 +123,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 *            the NodeT object from unmarshaling
 	 * @return the NodeReader object
 	 */
-	private NodeReader transformNode(NodeT node) {
+	private NodeReader transformNode(Node node) {
 		return new Sol1NodeReader(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
 	}
 
@@ -135,7 +135,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 *            the NffgT object from unmarshaling
 	 * @return the PolicyReader object
 	 */
-	private PolicyReader transformPolicy(PolicyT policy, NffgReader nffgR) {
+	private PolicyReader transformPolicy(Policy policy, NffgReader nffgR) {
 		NodeReader src = nffgR.getNode(policy.getSrc().getRef());
 		NodeReader dst = nffgR.getNode(policy.getDst().getRef());
 		Sol1VerificationResultReader result = null;
@@ -170,7 +170,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 *            the ResultT object from unmarshaling
 	 * @return the Sol1VerificationResultReader object
 	 */
-	private Sol1VerificationResultReader transformResult(ResultT result) {
+	private Sol1VerificationResultReader transformResult(Result result) {
 		return new Sol1VerificationResultReader(result.isSatisfied(), result.getContent(),
 				Utils.CalendarFromXMLGregorianCalendar(result.getVerified()));
 	}
@@ -183,7 +183,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 *            the List<FunctionalityT> object
 	 * @return the Set<FunctionalType> object
 	 */
-	private Set<FunctionalType> transformFunctionalities(List<FunctionalityT> list) {
+	private Set<FunctionalType> transformFunctionalities(List<Functionality> list) {
 		return list.stream().map(a -> {
 			return FunctionalType.fromValue(a.value());
 		}).collect(Collectors.toSet());

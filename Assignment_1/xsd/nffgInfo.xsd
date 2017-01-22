@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://dp2.polito.it/nffgInfo" xmlns:tns="http://dp2.polito.it/nffgInfo" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://dp2.polito.it/nffgInfo"
+	xmlns:tns="http://dp2.polito.it/nffgInfo" elementFormDefault="qualified">
 	<element name="verifier">
 		<complexType>
 			<sequence>
-				<element name="nffg" maxOccurs="unbounded" type="tns:nffg_t">
+				<element name="nffg" maxOccurs="unbounded" type="tns:nffg">
 					<keyref name="link_src_keyref" refer="tns:node_key">
 						<selector xpath="tns:links/tns:link/tns:src" />
 						<field xpath="@ref" />
@@ -33,18 +34,19 @@
 		</key>
 	</element>
 
-	<complexType name="named_element_t">
-		<attribute name="name" type="tns:name_t" use="required" />
+	<complexType name="named_element">
+		<attribute name="name" type="tns:name" use="required" />
 	</complexType>
 
-	<complexType name="nffg_t">
+	<complexType name="nffg">
 		<complexContent>
-			<extension base="tns:named_element_t">
+			<extension base="tns:named_element">
 				<sequence>
 					<element name="nodes">
 						<complexType>
 							<sequence>
-								<element name="node" minOccurs="0" maxOccurs="unbounded" type="tns:node_t" />
+								<element name="node" minOccurs="0" maxOccurs="unbounded"
+									type="tns:node" />
 							</sequence>
 						</complexType>
 						<key name="node_key">
@@ -55,7 +57,8 @@
 					<element name="links">
 						<complexType>
 							<sequence>
-								<element name="link" minOccurs="0" maxOccurs="unbounded" type="tns:link_t" />
+								<element name="link" minOccurs="0" maxOccurs="unbounded"
+									type="tns:link" />
 							</sequence>
 						</complexType>
 						<key name="link_key">
@@ -66,7 +69,8 @@
 					<element name="policies">
 						<complexType>
 							<sequence>
-								<element name="policy" minOccurs="0" maxOccurs="unbounded" type="tns:policy_t" />
+								<element name="policy" minOccurs="0" maxOccurs="unbounded"
+									type="tns:policy" />
 							</sequence>
 						</complexType>
 					</element>
@@ -76,40 +80,42 @@
 		</complexContent>
 	</complexType>
 
-	<complexType name="node_t">
+	<complexType name="node">
 		<complexContent>
-			<extension base="tns:named_element_t">
+			<extension base="tns:named_element">
 				<sequence>
-					<element name="functionality" type="tns:functionality_t" />
+					<element name="functionality" type="tns:functionality" />
 				</sequence>
 			</extension>
 		</complexContent>
 	</complexType>
 
-	<complexType name="link_t">
+	<complexType name="link">
 		<complexContent>
-			<extension base="tns:named_element_t">
+			<extension base="tns:named_element">
 				<sequence>
-					<element name="src" type="tns:node_ref_t" />
-					<element name="dst" type="tns:node_ref_t" />
+					<element name="src" type="tns:node_ref" />
+					<element name="dst" type="tns:node_ref" />
 				</sequence>
 			</extension>
 		</complexContent>
 	</complexType>
 
-	<complexType name="policy_t">
+	<complexType name="policy">
 		<complexContent>
-			<extension base="tns:link_t">
+			<extension base="tns:link">
 				<sequence>
-					<element name="functionality" minOccurs="0" maxOccurs="unbounded" type="tns:functionality_t" />
-					<element name="result" type="tns:result_t" minOccurs="0" />
+					<element name="functionality" minOccurs="0" maxOccurs="unbounded"
+						type="tns:functionality" />
+					<element name="result" type="tns:result" minOccurs="0" />
 				</sequence>
-				<attribute name="positive" type="boolean" use="optional" default="true" />
+				<attribute name="positive" type="boolean" use="optional"
+					default="true" />
 			</extension>
 		</complexContent>
 	</complexType>
 
-	<simpleType name="functionality_t">
+	<simpleType name="functionality">
 		<restriction base="string">
 			<enumeration value="CACHE" />
 			<enumeration value="DPI" />
@@ -124,17 +130,17 @@
 		</restriction>
 	</simpleType>
 
-	<complexType name="node_ref_t">
-		<attribute name="ref" type="tns:name_t" use="required" />
+	<complexType name="node_ref">
+		<attribute name="ref" type="tns:name" use="required" />
 	</complexType>
 
-	<simpleType name="name_t">
+	<simpleType name="name">
 		<restriction base="string">
 			<pattern value="[a-zA-Z_][a-zA-Z\d_]*" />
 		</restriction>
 	</simpleType>
 
-	<complexType name="result_t" mixed="true">
+	<complexType name="result" mixed="true">
 		<attribute name="satisfied" type="boolean" use="required" />
 		<attribute name="verified" type="dateTime" use="required" />
 	</complexType>

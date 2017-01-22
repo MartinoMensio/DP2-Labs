@@ -49,7 +49,7 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	public Verifier transform() {
 		Verifier v = factory.createVerifier();
 		// get the live list of nffgs
-		List<NffgT> nffg_list = v.getNffg();
+		List<Nffg> nffg_list = v.getNffg();
 		// add the nffgs to the live list
 		nffg_list.addAll(input.getNffgs()
 				// use parallel stream to possibly perform parallel execution of
@@ -72,18 +72,18 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 *            the NffgReader object
 	 * @return the NffgT object for marshaling
 	 */
-	private NffgT transformNffg(NffgReader nffgR) {
+	private Nffg transformNffg(NffgReader nffgR) {
 		// create an empty nffg element
-		NffgT nffg = factory.createNffgT();
+		Nffg nffg = factory.createNffg();
 		// set the name
 		nffg.setName(nffgR.getName());
 		// set the time
 		nffg.setUpdated(Utils.XMLGregorianCalendarFromCalendar(nffgR.getUpdateTime()));
 
 		// nodes
-		NffgT.Nodes nodes = factory.createNffgTNodes();
+		Nffg.Nodes nodes = factory.createNffgNodes();
 		// get the live list
-		List<NodeT> node_list = nodes.getNode();
+		List<Node> node_list = nodes.getNode();
 		// add to the live list the nodes
 		node_list.addAll(nffgR.getNodes()
 				// the transformation of nodes can be performed in parallel
@@ -95,9 +95,9 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		nffg.setNodes(nodes);
 
 		// links
-		NffgT.Links links = factory.createNffgTLinks();
+		Nffg.Links links = factory.createNffgLinks();
 		// get the live list
-		List<LinkT> link_list = links.getLink();
+		List<Link> link_list = links.getLink();
 		link_list.addAll(nffgR.getNodes().parallelStream()
 				// from a stream of nodes to a stream of links
 				// NodeReader::getLinks provides links that have this node as
@@ -109,9 +109,9 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		nffg.setLinks(links);
 
 		// policies
-		NffgT.Policies policies = factory.createNffgTPolicies();
+		Nffg.Policies policies = factory.createNffgPolicies();
 		// get the live list
-		List<PolicyT> policy_list = policies.getPolicy();
+		List<Policy> policy_list = policies.getPolicy();
 		// get the policies for the specific nffg
 		policy_list.addAll(input.getPolicies(nffgR.getName()).parallelStream()
 				// transform the policy
@@ -130,12 +130,12 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 *            the NodeReader object
 	 * @return the NodeT object for marshaling
 	 */
-	private NodeT transformNode(NodeReader nodeR) {
-		NodeT node = factory.createNodeT();
+	private Node transformNode(NodeReader nodeR) {
+		Node node = factory.createNode();
 		// set the name
 		node.setName(nodeR.getName());
 		// and the functionality
-		node.setFunctionality(FunctionalityT.fromValue(nodeR.getFuncType().value()));
+		node.setFunctionality(Functionality.fromValue(nodeR.getFuncType().value()));
 		return node;
 	}
 
@@ -147,13 +147,13 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 *            the LinkReader object
 	 * @return the LinkT object for marshaling
 	 */
-	private LinkT transformLink(LinkReader linkR) {
-		LinkT link = factory.createLinkT();
+	private Link transformLink(LinkReader linkR) {
+		Link link = factory.createLink();
 		// set the name
 		link.setName(linkR.getName());
 
-		NodeRefT src = factory.createNodeRefT();
-		NodeRefT dst = factory.createNodeRefT();
+		NodeRef src = factory.createNodeRef();
+		NodeRef dst = factory.createNodeRef();
 		// build the source
 		src.setRef(linkR.getSourceNode().getName());
 		link.setSrc(src);
@@ -173,8 +173,8 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 *            the PolicyReader object
 	 * @return the PolicyT object for marshaling
 	 */
-	private PolicyT transformPolicy(PolicyReader policyR) {
-		PolicyT policy = factory.createPolicyT();
+	private Policy transformPolicy(PolicyReader policyR) {
+		Policy policy = factory.createPolicy();
 		// set the name
 		policy.setName(policyR.getName());
 		// and the expected result
@@ -182,8 +182,8 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		// and the actual result
 		policy.setResult(transformResult(policyR.getResult()));
 
-		NodeRefT src = factory.createNodeRefT();
-		NodeRefT dst = factory.createNodeRefT();
+		NodeRef src = factory.createNodeRef();
+		NodeRef dst = factory.createNodeRef();
 		// TraversalPolicyReader is a subclass of ReachabilityPolicyReader
 		ReachabilityPolicyReader reach_p = (ReachabilityPolicyReader) policyR;
 		// set the source
@@ -196,10 +196,10 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 		// for traversal policies, also add the functionalities to be traversed
 		if (policyR instanceof TraversalPolicyReader) {
 			TraversalPolicyReader trav_p = (TraversalPolicyReader) policyR;
-			List<FunctionalityT> func_list = policy.getFunctionality();
+			List<Functionality> func_list = policy.getFunctionality();
 			func_list.addAll(trav_p.getTraversedFuctionalTypes().parallelStream()
 					// transform the functionality
-					.map(functionality -> FunctionalityT.fromValue(functionality.value()))
+					.map(functionality -> Functionality.fromValue(functionality.value()))
 					.collect(Collectors.toList()));
 		}
 
@@ -215,12 +215,12 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 *            the PolicyReader object
 	 * @return the PolicyT object for marshaling
 	 */
-	private ResultT transformResult(VerificationResultReader resultR) {
+	private Result transformResult(VerificationResultReader resultR) {
 		// the result is optional
 		if (resultR == null) {
 			return null;
 		}
-		ResultT result = factory.createResultT();
+		Result result = factory.createResult();
 		// set the last verification date
 		result.setVerified(Utils.XMLGregorianCalendarFromCalendar(resultR.getVerificationTime()));
 		// set the actual verification result
