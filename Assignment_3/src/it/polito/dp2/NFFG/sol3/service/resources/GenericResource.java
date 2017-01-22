@@ -12,7 +12,7 @@ import it.polito.dp2.NFFG.sol3.service.*;
  *
  */
 @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+@Consumes({ MediaType.APPLICATION_XML })
 public abstract class GenericResource {
 
 	protected Service service;
