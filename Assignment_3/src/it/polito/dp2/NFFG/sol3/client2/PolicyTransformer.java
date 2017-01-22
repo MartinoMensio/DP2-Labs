@@ -48,7 +48,7 @@ public class PolicyTransformer implements Function<Policy, Client2PolicyReader> 
 				Utils.CalendarFromXMLGregorianCalendar(result.getVerified()));
 	}
 
-	private Set<FunctionalType> transformFunctionalities(List<FunctionalityT> list) {
+	private Set<FunctionalType> transformFunctionalities(List<Functionality> list) {
 		return list.stream().map(a -> {
 			return FunctionalType.fromValue(a.value());
 		}).collect(Collectors.toSet());

@@ -30,17 +30,17 @@ public class NffgReaderToJaxb implements Function<NffgReader, Nffg> {
 	Node transformNode(NodeReader nodeR) {
 		Node result = factory.createNode();
 		result.setName(nodeR.getName());
-		result.setFunctionality(FunctionalityT.fromValue(nodeR.getFuncType().value()));
+		result.setFunctionality(Functionality.fromValue(nodeR.getFuncType().value()));
 		return result;
 	}
 
 	Link transformLink(LinkReader linkR) {
 		Link result = factory.createLink();
 		result.setName(linkR.getName());
-		NodeRefT src = factory.createNodeRefT();
+		NodeRef src = factory.createNodeRef();
 		src.setRef(linkR.getSourceNode().getName());
 		result.setSrc(src);
-		NodeRefT dst = factory.createNodeRefT();
+		NodeRef dst = factory.createNodeRef();
 		dst.setRef(linkR.getDestinationNode().getName());
 		result.setDst(dst);
 		return result;

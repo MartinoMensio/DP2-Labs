@@ -76,8 +76,8 @@ public class Client1NFFGClient implements NFFGClient {
 		ObjectFactory factory = policyReaderTransformer.getFactory();
 		Policy policy = factory.createPolicy();
 		policy.setName(name);
-		NodeRefT srcRef = factory.createNodeRefT();
-		NodeRefT dstRef = factory.createNodeRefT();
+		NodeRef srcRef = factory.createNodeRef();
+		NodeRef dstRef = factory.createNodeRef();
 		srcRef.setRef(srcNodeName);
 		dstRef.setRef(dstNodeName);
 		policy.setSrc(srcRef);

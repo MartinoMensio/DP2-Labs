@@ -20,10 +20,10 @@ public class PolicyReaderToJaxb implements Function<PolicyReader, Policy> {
 		policy.setName(policyR.getName());
 		policy.setNffg(policyR.getNffg().getName());
 		policy.setPositive(policyR.isPositive());
-		NodeRefT src = factory.createNodeRefT();
+		NodeRef src = factory.createNodeRef();
 		src.setRef(reachPolicyR.getSourceNode().getName());
 		policy.setSrc(src);
-		NodeRefT dst = factory.createNodeRefT();
+		NodeRef dst = factory.createNodeRef();
 		dst.setRef(reachPolicyR.getSourceNode().getName());
 		policy.setDst(dst);
 		VerificationResultReader resultR = policyR.getResult();

@@ -36,7 +36,7 @@
 				<extension base="tns:link">
 					<sequence>
 						<element name="functionality" minOccurs="0" maxOccurs="unbounded"
-							type="tns:functionality_t" />
+							type="tns:functionality" />
 						<element name="result" type="tns:result" minOccurs="0" />
 					</sequence>
 					<attribute name="nffg" type="tns:name" use="required" />
@@ -56,7 +56,7 @@
 		<complexContent>
 			<extension base="tns:named_element">
 				<sequence>
-					<element name="functionality" type="tns:functionality_t" />
+					<element name="functionality" type="tns:functionality" />
 				</sequence>
 			</extension>
 		</complexContent>
@@ -66,8 +66,8 @@
 		<complexContent>
 			<extension base="tns:named_element">
 				<sequence>
-					<element name="src" type="tns:node_ref_t" />
-					<element name="dst" type="tns:node_ref_t" />
+					<element name="src" type="tns:node_ref" />
+					<element name="dst" type="tns:node_ref" />
 				</sequence>
 			</extension>
 		</complexContent>
@@ -77,11 +77,11 @@
 		<attribute name="name" type="tns:name" use="required" />
 	</complexType>
 
-	<complexType name="node_ref_t">
+	<complexType name="node_ref">
 		<attribute name="ref" type="tns:name" use="required" />
 	</complexType>
 
-	<simpleType name="functionality_t">
+	<simpleType name="functionality">
 		<restriction base="string">
 			<enumeration value="CACHE" />
 			<enumeration value="DPI" />
