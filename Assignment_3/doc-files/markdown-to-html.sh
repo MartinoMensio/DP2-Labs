@@ -1,2 +1,2 @@
 # requires markdown-to-html (from npm)
-github-markdown --stylesheet markdown.css ../doc/nffgVerifier.md > ../WebContent/index.html
+github-markdown --stylesheet markdown.css --title "NffgService API" ../doc/nffgVerifier.md > ../WebContent/index.html
