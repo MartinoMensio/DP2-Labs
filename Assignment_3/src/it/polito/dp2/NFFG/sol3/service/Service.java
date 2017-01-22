@@ -21,6 +21,8 @@ import it.polito.dp2.NFFG.sol3.service.neo4j.Neo4JXMLClient;
  */
 public class Service {
 
+	private ObjectFactory factory;
+	
 	private Neo4JXMLClient neoClient;
 
 	private DataStorage data;
@@ -43,6 +45,7 @@ public class Service {
 	private StampedLock l;
 
 	private Service(URI neo4jLocation, DataStorage data) {
+		factory = new ObjectFactory();
 		neoClient = new Neo4JXMLClient(neo4jLocation);
 		this.data = data;
 		l = new StampedLock();
@@ -279,7 +282,7 @@ public class Service {
 					"in the verification process there was an error retrieving the neo4j nodes id");
 		}
 		boolean reachabilityStatus = neoClient.testReachability(srcId, dstId);
-		Result result = new Result();
+		Result result = factory.createResult();
 		boolean satisfied = reachabilityStatus == policy.isPositive();
 		result.setSatisfied(satisfied);
 		result.setContent("the policy is " + (satisfied ? "" : "not ") + "satisfied: expectation=" + policy.isPositive()
