@@ -13,7 +13,6 @@ import javax.xml.validation.*;
 
 import org.xml.sax.*;
 
-import it.polito.dp2.NFFG.sol3.service.exceptions.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 @Provider
@@ -61,8 +60,7 @@ public class ValidatingReader<T> implements MessageBodyReader<T> {
 			String validationErrorMessage = "Validation error";
 			if (linked != null && linked instanceof SAXParseException)
 				validationErrorMessage += ": " + linked.getMessage();
-			// TODO distinguish malformed from invalid (reference to schema)
-			throw new ValidationFailedException(validationErrorMessage);
+			throw new BadRequestException(validationErrorMessage);
 		}
 	}
 
