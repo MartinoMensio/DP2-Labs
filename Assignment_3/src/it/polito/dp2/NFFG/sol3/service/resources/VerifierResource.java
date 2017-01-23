@@ -23,10 +23,6 @@ public class VerifierResource extends GenericResource {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "verification done"),
 			@ApiResponse(code = 422, message = "policy is not compliant with the schema or invalid reference to stored resources") })
 	public Policy verifyResultOnTheFly(Policy policy, @PathParam("nffg_name") String nffgName) {
-		// TODO validate policy
-		if (policy == null) {
-			throw new ValidationFailedException("policy is not compliant with the schema");
-		}
 		Policy result = service.verifyResultOnTheFly(policy);
 		return result;
 	}

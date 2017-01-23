@@ -82,9 +82,9 @@ NFFGs collection
 | method | request type | response type | explaination                | result      | errors
 | ------ | ------------ | ------------- | ------------                | ----------- | ------
 | GET    | -            | nffgs         | get the collection of NFFGs | 200 OK      | -
-| POST   | nffg         | nffg          | create a new NFFG           | 201 CREATED | 422 validation error, 409 already existing
+| POST   | nffg         | nffg          | create a new NFFG           | 201 CREATED | 400 validation error, 409 already existing
 
-The POST request must contain the field `name`, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 403 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 422 error.
+The POST request must contain the field `name`, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 409 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 400 error.
 
 ### `/nffgs/{nffg_name}`
 
@@ -123,7 +123,7 @@ A single policy identified by its id.
 | ------ | ------------ | ------------- | ------------             | ------              | ------
 | GET    | -            | policy        | get the policy           | 200 OK              | 404: no policy exists with this name
 | DELETE | -            | -             | delete the policy        | 200 OK              | 404: no policy exists with this name
-| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 422: validation error or invalid reference to stored resources
+| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 400: validation error, 422 invalid reference to stored resources
 
 ### `/policies/{policy_name}/result`
 
@@ -139,7 +139,7 @@ Verification endpoint for client policies, not stored on the service
 
 | method | request type | response type | explaination           | result | errors
 | ------ | ------------ | ------------- | ------------           | ------ | ------
-| POST   | policy       | policy        | verify this policy     | 200 OK | 422: validation error or invalid reference to stored resources (nffg or node)
+| POST   | policy       | policy        | verify this policy     | 200 OK | 400: validation error, 422 invalid reference to stored resources (nffg or node)
 
 ## 4. Implementation details
 

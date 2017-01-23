@@ -35,11 +35,8 @@ public class NffgsResource extends GenericResource {
 			@ApiResponse(code = 409, message = "conflict because of already stored nffg with same name"),
 			@ApiResponse(code = 422, message = "validation failed") })
 	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) {
-		// TODO validate nffg
-		if (nffg == null) {
-			// validation error
-			throw new ValidationFailedException("nffg is not compliant with the schema");
-		}
+		// TODO check again links ref ??
+
 		Nffg response = service.storeNffg(nffg);
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();

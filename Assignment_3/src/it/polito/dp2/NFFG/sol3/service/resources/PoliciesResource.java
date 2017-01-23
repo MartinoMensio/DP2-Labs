@@ -36,10 +36,6 @@ public class PoliciesResource extends GenericResource {
 			@ApiResponse(code = 422, message = "validation of policy failed or or invalid reference to stored resources") })
 	@Path("{policy_name}")
 	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
-		// TODO validate policy
-		if (policy == null) {
-			throw new ValidationFailedException("policy is not compliant with the schema");
-		}
 		// Overwrite the policy name in the request
 		policy.setName(policyName);
 		Policy response = service.storePolicy(policy);

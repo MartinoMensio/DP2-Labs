@@ -306,14 +306,14 @@ public class Service {
 	public void validateReferences(Policy policy) {
 		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
 		if (nffgStorage == null) {
-			throw new ValidationFailedException("the policy refers to inexistent nffg named " + policy.getNffg());
+			throw new MissingReferenceException("the policy refers to inexistent nffg named " + policy.getNffg());
 		}
 		if (nffgStorage.getId(policy.getSrc().getRef()) == null) {
-			throw new ValidationFailedException("the policy source node named " + policy.getSrc().getRef()
+			throw new MissingReferenceException("the policy source node named " + policy.getSrc().getRef()
 					+ " does not belong to stored nffg named " + policy.getNffg());
 		}
 		if (nffgStorage.getId(policy.getDst().getRef()) == null) {
-			throw new ValidationFailedException("the policy destination node named " + policy.getDst().getRef()
+			throw new MissingReferenceException("the policy destination node named " + policy.getDst().getRef()
 					+ " does not belong to stored nffg named " + policy.getNffg());
 		}
 	}
