@@ -2,6 +2,7 @@ package it.polito.dp2.NFFG.sol3.client1;
 
 import java.net.URI;
 
+import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
@@ -98,20 +99,20 @@ public class Client1NFFGClient implements NFFGClient {
 	void loadNffg(NffgReader nffgR) throws ServiceException, AlreadyLoadedException {
 		// call transformer from NffgReader to Nffg
 		Nffg nffg = nffgReaderTransformer.apply(nffgR);
-		Response res;
 		try {
-			res = target.path("nffgs").request(MediaType.APPLICATION_XML)
+			Response res = target.path("nffgs").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(nffg, MediaType.APPLICATION_XML));
+			if (res.getStatus() == 409) {
+				// if already loaded throw AlreadyLoadedException
+				throw new AlreadyLoadedException("nffg with name " + nffg.getName() + "already exists in the service");
+			}
+			if (res.getStatus() != 201) {
+				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 201");
+			}
+		} catch (ProcessingException e) {
+			throw new ServiceException("Something bad happened: " + e.getMessage());
+		}
 
-		} catch (Exception e) {
-			// TODO: handle exception
-			// if other errors throw ServiceException
-			throw new ServiceException("something bad happened: " + e.getMessage());
-		}
-		if (res.getStatus() == 409) {
-			// if already loaded throw AlreadyLoadedException
-			throw new AlreadyLoadedException("nffg with name " + nffg.getName() + "already exists in the service");
-		}
 	}
 
 	/**
@@ -121,10 +122,17 @@ public class Client1NFFGClient implements NFFGClient {
 	 * @throws ServiceException
 	 */
 	void loadPolicy(Policy policy) throws ServiceException {
-		// if some errors with communication with server, throw ServiceException
-		// TODO catch 404, ...
-		Policy res = target.path("policies").path(policy.getName()).request(MediaType.APPLICATION_XML)
-				.put(Entity.entity(policy, MediaType.APPLICATION_XML), Policy.class);
+		Response res;
+		try {
+			res = target.path("policies").path(policy.getName()).request(MediaType.APPLICATION_XML)
+					.put(Entity.entity(policy, MediaType.APPLICATION_XML));
+			if (res.getStatus() != 200 && res.getStatus() != 201) {
+				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200 or 201");
+			}
+		} catch (ProcessingException e) {
+			throw new ServiceException("Something bad happened: " + e.getMessage());
+		}
+
 	}
 
 	/**
@@ -136,12 +144,17 @@ public class Client1NFFGClient implements NFFGClient {
 	 */
 	@Override
 	public void unloadReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
-		// TODO Auto-generated method stub
-		// if 404 throw UnknownNameException
-		// if other errors throw ServiceException
-		Response res = target.path("policies").path(name).request(MediaType.APPLICATION_XML).delete();
-		if (res.getStatus() == 404) {
-			throw new UnknownNameException(name);
+		Response res;
+		try {
+			res = target.path("policies").path(name).request(MediaType.APPLICATION_XML).delete();
+			if (res.getStatus() == 404) {
+				throw new UnknownNameException("Policy with name " + name + " was not stored in the service");
+			}
+			if (res.getStatus() != 200) {
+				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200");
+			}
+		} catch (ProcessingException e) {
+			throw new ServiceException("Something bad happened: " + e.getMessage());
 		}
 	}
 
@@ -155,14 +168,20 @@ public class Client1NFFGClient implements NFFGClient {
 	 */
 	@Override
 	public boolean testReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
-		// TODO Auto-generated method stub
-		// if 404 throw UnknownNameException
-		// if other errors throw ServiceException
-		// return result.verificationResult
-		Policy result = target.path("policies").path(name).path("result").request(MediaType.APPLICATION_XML)
-				.post(Entity.entity(null, MediaType.APPLICATION_XML), Policy.class);
-		// TODO exceptions
-		return result.getResult().isSatisfied();
+		Response res;
+		try {
+			res = target.path("policies").path(name).path("result").request(MediaType.APPLICATION_XML)
+					.post(Entity.entity(null, MediaType.APPLICATION_XML));
+			if (res.getStatus() == 404) {
+				throw new UnknownNameException("Policy with name " + name + " was not stored in the service");
+			}
+			if (res.getStatus() != 200) {
+				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200");
+			}
+			return res.readEntity(Policy.class).getResult().isSatisfied();
+		} catch (ProcessingException e) {
+			throw new ServiceException("Something bad happened: " + e.getMessage());
+		}
 	}
 
 }
