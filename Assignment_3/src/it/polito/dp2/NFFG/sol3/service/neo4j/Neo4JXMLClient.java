@@ -2,8 +2,11 @@ package it.polito.dp2.NFFG.sol3.service.neo4j;
 
 import java.net.*;
 
+import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
+
+import it.polito.dp2.NFFG.sol3.service.exceptions.*;
 
 /**
  * Access to NEO4JXML service
@@ -27,10 +30,16 @@ public class Neo4JXMLClient {
 	 * @return
 	 */
 	public Node addNode(Node node) {
-		Node result = target.path("node").request(MediaType.APPLICATION_XML)
-				.post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
-		// TODO check exceptions
-		return result;
+		try {
+			Response res = target.path("node").request(MediaType.APPLICATION_XML)
+					.post(Entity.entity(node, MediaType.APPLICATION_XML));
+			if (res.getStatus() != 200) {
+				throw new NeoFailedException("POST node failed: response status code " + res.getStatus());
+			}
+			return res.readEntity(Node.class);
+		} catch (ProcessingException e) {
+			throw new NeoFailedException("POST node failed: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -38,16 +47,12 @@ public class Neo4JXMLClient {
 	 */
 	public void deleteAllNodes() {
 		try {
-			Response resdel = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
-
-			if (resdel.getStatus() != 200) {
-				// not successful
-				throw new RuntimeException("impossible to clear neo4j: HTTP " + resdel.getStatus());
+			Response res = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
+			if (res.getStatus() != 200) {
+				throw new NeoFailedException("DELETE nodes failed: response status code " + res.getStatus());
 			}
-		} catch (ResponseProcessingException e) {
-			// e.g. if the MediaType is wrong
-			throw new RuntimeException("impossible to clear neo4j because of response processing error"
-					+ ", status: HTTP " + e.getResponse().getStatus());
+		} catch (ProcessingException e) {
+			throw new NeoFailedException("DELETE nodes failed: " + e.getMessage());
 		}
 	}
 
@@ -60,11 +65,14 @@ public class Neo4JXMLClient {
 		Labels label = factory.createLabels();
 		// NFFG needs a label "NFFG"
 		label.getValue().add("NFFG");
-		Response res = target.path("node").path(nodeId).path("label").request(MediaType.APPLICATION_XML)
-				.post(Entity.entity(label, MediaType.APPLICATION_XML));
-		if (res.getStatus() != 204) {
-			// TODO change type of exception
-			throw new RuntimeException("LABEL");
+		try {
+			Response res = target.path("node").path(nodeId).path("label").request(MediaType.APPLICATION_XML)
+					.post(Entity.entity(label, MediaType.APPLICATION_XML));
+			if (res.getStatus() != 204) {
+				throw new NeoFailedException("POST label failed: response status code " + res.getStatus());
+			}
+		} catch (ProcessingException e) {
+			throw new NeoFailedException("POST label failed: " + e.getMessage());
 		}
 	}
 
@@ -106,10 +114,16 @@ public class Neo4JXMLClient {
 	 * @return
 	 */
 	public Relationship addRelationshipToNode(String nodeId, Relationship rel) {
-		Relationship result = target.path("node").path(nodeId).path("relationship").request(MediaType.APPLICATION_XML)
-				.post(Entity.entity(rel, MediaType.APPLICATION_XML), Relationship.class);
-		// TODO check exceptions
-		return result;
+		try {
+			Response res = target.path("node").path(nodeId).path("relationship").request(MediaType.APPLICATION_XML)
+					.post(Entity.entity(rel, MediaType.APPLICATION_XML));
+			if (res.getStatus() != 200) {
+				throw new NeoFailedException("POST relationship failed: response status code " + res.getStatus());
+			}
+			return res.readEntity(Relationship.class);
+		} catch (ProcessingException e) {
+			throw new NeoFailedException("POST relationship failed: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -120,10 +134,16 @@ public class Neo4JXMLClient {
 	 * @return
 	 */
 	public boolean testReachability(String srcNodeId, String dstNodeId) {
-		Paths res = target.path("node").path(srcNodeId).path("paths").queryParam("dst", dstNodeId)
-				.request(MediaType.APPLICATION_XML).get(Paths.class);
-		// TODO exceptions
-		return !res.getPath().isEmpty();
+		try {
+			Response res = target.path("node").path(srcNodeId).path("paths").queryParam("dst", dstNodeId)
+					.request(MediaType.APPLICATION_XML).get();
+			if (res.getStatus() != 200) {
+				throw new NeoFailedException("GET paths failed: response status code " + res.getStatus());
+			}
+			return !res.readEntity(Paths.class).getPath().isEmpty();
+		} catch (ProcessingException e) {
+			throw new NeoFailedException("GET paths failed: " + e.getMessage());
+		}
 	}
 
 	public String addNamedNode(String nodeName) {
@@ -132,7 +152,6 @@ public class Neo4JXMLClient {
 		nameProp.setName("name");
 		nameProp.setValue(nodeName);
 		nodeReq.getProperty().add(nameProp);
-		// TODO exceptions
 		Node nodeRes = addNode(nodeReq);
 		return nodeRes.getId();
 	}

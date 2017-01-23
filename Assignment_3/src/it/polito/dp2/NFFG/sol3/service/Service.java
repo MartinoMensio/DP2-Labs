@@ -22,7 +22,7 @@ import it.polito.dp2.NFFG.sol3.service.neo4j.Neo4JXMLClient;
 public class Service {
 
 	private ObjectFactory factory;
-	
+
 	private Neo4JXMLClient neoClient;
 
 	private DataStorage data;
@@ -75,6 +75,14 @@ public class Service {
 	}
 
 	public Nffg storeNffg(Nffg nffg) {
+		// check anyway the nodes referred by the links, just in the case XML
+		// validation is disabled
+		Set<String> refs = Stream.concat(nffg.getLink().stream().map(l -> l.getSrc().getRef()),
+				nffg.getLink().stream().map(l -> l.getDst().getRef())).collect(Collectors.toSet());
+		if (!nffg.getNode().stream().map(Node::getName).collect(Collectors.toSet()).containsAll(refs)) {
+			throw new BadRequestException("the nffg contains reference to non existing nodes in some links");
+		}
+
 		Map<String, String> idMappings = new HashMap<>();
 
 		// set updateTime before storing the nffg
@@ -142,14 +150,14 @@ public class Service {
 				String srcNodeId = idMappings.get(link.getSrc().getRef());
 				String dstNodeId = idMappings.get(link.getDst().getRef());
 				if (srcNodeId == null || dstNodeId == null) {
-					throw new Exception();
+					throw new NeoFailedException("error caused by id not found");
 				}
 				neoClient.addLinkBetweenNodes(srcNodeId, dstNodeId);
 			}
-		} catch (Exception e) {
+		} catch (NeoFailedException e) {
 			// something went wrong
 			nffgStorage.setKO();
-			return null;
+			throw e;
 		}
 		// now that the id map is filled, can unlock the readers of it
 		nffgStorage.setOK();
@@ -278,7 +286,7 @@ public class Service {
 		String dstId = nffgStorage.getId(policy.getDst().getRef());
 		if (srcId == null || dstId == null) {
 			// TODO more specific
-			throw new InternalServerErrorException(
+			throw new NeoFailedException(
 					"in the verification process there was an error retrieving the neo4j nodes id");
 		}
 		boolean reachabilityStatus = neoClient.testReachability(srcId, dstId);
