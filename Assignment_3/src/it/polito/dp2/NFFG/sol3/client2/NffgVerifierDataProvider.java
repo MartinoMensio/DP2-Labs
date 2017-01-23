@@ -52,9 +52,8 @@ public class NffgVerifierDataProvider {
 	}
 
 	List<Nffg> downloadNffgs() throws NffgVerifierException {
-		Response res;
 		try {
-			res = target.path("nffgs").request(MediaType.APPLICATION_XML).get();
+			Response res = target.path("nffgs").request(MediaType.APPLICATION_XML).get();
 			if (res.getStatus() != 200) {
 				throw new NffgVerifierException(
 						"Download of NFFGs failed. Response status code was " + res.getStatus() + " instead of 200");
@@ -67,9 +66,8 @@ public class NffgVerifierDataProvider {
 	}
 
 	List<Policy> downloadPolicies() throws NffgVerifierException {
-		Response res;
 		try {
-			res = target.path("policies").request(MediaType.APPLICATION_XML).get();
+			Response res = target.path("policies").request(MediaType.APPLICATION_XML).get();
 			if (res.getStatus() != 200) {
 				throw new NffgVerifierException(
 						"Download of policies failed. Response status code was " + res.getStatus() + " instead of 200");

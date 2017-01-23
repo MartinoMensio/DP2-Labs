@@ -122,9 +122,8 @@ public class Client1NFFGClient implements NFFGClient {
 	 * @throws ServiceException
 	 */
 	void loadPolicy(Policy policy) throws ServiceException {
-		Response res;
 		try {
-			res = target.path("policies").path(policy.getName()).request(MediaType.APPLICATION_XML)
+			Response res = target.path("policies").path(policy.getName()).request(MediaType.APPLICATION_XML)
 					.put(Entity.entity(policy, MediaType.APPLICATION_XML));
 			if (res.getStatus() != 200 && res.getStatus() != 201) {
 				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200 or 201");
@@ -144,9 +143,8 @@ public class Client1NFFGClient implements NFFGClient {
 	 */
 	@Override
 	public void unloadReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
-		Response res;
 		try {
-			res = target.path("policies").path(name).request(MediaType.APPLICATION_XML).delete();
+			Response res = target.path("policies").path(name).request(MediaType.APPLICATION_XML).delete();
 			if (res.getStatus() == 404) {
 				throw new UnknownNameException("Policy with name " + name + " was not stored in the service");
 			}
@@ -168,9 +166,8 @@ public class Client1NFFGClient implements NFFGClient {
 	 */
 	@Override
 	public boolean testReachabilityPolicy(String name) throws UnknownNameException, ServiceException {
-		Response res;
 		try {
-			res = target.path("policies").path(name).path("result").request(MediaType.APPLICATION_XML)
+			Response res = target.path("policies").path(name).path("result").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(null, MediaType.APPLICATION_XML));
 			if (res.getStatus() == 404) {
 				throw new UnknownNameException("Policy with name " + name + " was not stored in the service");
