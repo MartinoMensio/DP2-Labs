@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol1;
+package it.polito.dp2.NFFG.sol1.library;
 
 import java.util.*;
 
@@ -10,12 +10,12 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Sol1TraversalPolicyReader extends Sol1ReachabilityPolicyReader implements TraversalPolicyReader {
+public class TraversalPolicyReaderImpl extends ReachabilityPolicyReaderImpl implements TraversalPolicyReader {
 
 	// the set of functionalities to be traversed
 	private Set<FunctionalType> functionalities;
 
-	public Sol1TraversalPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected,
+	public TraversalPolicyReaderImpl(String name, NffgReader nffg, VerificationResultReader result, Boolean expected,
 			NodeReader src, NodeReader dst, Set<FunctionalType> functionalities) {
 		super(name, nffg, result, expected, src, dst);
 		this.functionalities = functionalities;

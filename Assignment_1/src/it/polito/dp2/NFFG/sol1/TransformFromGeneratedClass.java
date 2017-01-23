@@ -5,6 +5,7 @@ import java.util.stream.*;
 
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol1.jaxb.*;
+import it.polito.dp2.NFFG.sol1.library.*;
 
 /**
  * This class implements the transformation for objects belonging to the class
@@ -44,7 +45,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 */
 	@Override
 	public NffgVerifier transform() {
-		Sol1NffgVerifier verifier = new Sol1NffgVerifier();
+		NffgVerifierImpl verifier = new NffgVerifierImpl();
 		try {
 			input.getNffg().forEach(nffg -> {
 				NffgReader nffgR = transformNffg(nffg);
@@ -83,7 +84,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 * @return the NffgReader object
 	 */
 	private NffgReader transformNffg(Nffg nffg) {
-		Sol1NffgReader nffgR = new Sol1NffgReader(nffg.getName(),
+		NffgReaderImpl nffgR = new NffgReaderImpl(nffg.getName(),
 				Utils.CalendarFromXMLGregorianCalendar(nffg.getUpdated()));
 		// process nodes
 		nffg.getNodes().getNode().forEach(n -> {
@@ -97,13 +98,13 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 		// and process links
 		nffg.getLinks().getLink().forEach(l -> {
 			// get references to the source and destination nodes.
-			// The source must be later modified, so need to use the getSol1Node
+			// The source must be later modified, so need to use the getNodeReaderImpl
 			// method
-			Sol1NodeReader src = nffgR.getSol1Node(l.getSrc().getRef());
+			NodeReaderImpl src = nffgR.getNodeReaderImpl(l.getSrc().getRef());
 			NodeReader dst = nffgR.getNode(l.getDst().getRef());
 			// build the link
-			LinkReader linkR = new Sol1LinkReader(l.getName(), src, dst);
-			// add the circular reference to the getSol1Node
+			LinkReader linkR = new LinkReaderImpl(l.getName(), src, dst);
+			// add the circular reference to the getNodeReaderImpl
 			try {
 				src.addOutgoingLink(linkR);
 			} catch (NffgVerifierException e) {
@@ -124,7 +125,7 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 * @return the NodeReader object
 	 */
 	private NodeReader transformNode(Node node) {
-		return new Sol1NodeReader(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
+		return new NodeReaderImpl(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
 	}
 
 	/**
@@ -138,23 +139,23 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	private PolicyReader transformPolicy(Policy policy, NffgReader nffgR) {
 		NodeReader src = nffgR.getNode(policy.getSrc().getRef());
 		NodeReader dst = nffgR.getNode(policy.getDst().getRef());
-		Sol1VerificationResultReader result = null;
+		VerificationResultReaderImpl result = null;
 		// if there is a result, transform it
 		if (policy.getResult() != null) {
 			result = transformResult(policy.getResult());
 		}
-		Sol1PolicyReader policyR;
+		PolicyReaderImpl policyR;
 		// if some functionality need to be traversed it is a traversal policy,
 		// otherwise this is a reachability policy
 		if (policy.getFunctionality().isEmpty()) {
-			policyR = new Sol1ReachabilityPolicyReader(policy.getName(), nffgR, result, policy.isPositive(), src, dst);
+			policyR = new ReachabilityPolicyReaderImpl(policy.getName(), nffgR, result, policy.isPositive(), src, dst);
 		} else {
-			policyR = new Sol1TraversalPolicyReader(policy.getName(), nffgR, result, policy.isPositive(), src, dst,
+			policyR = new TraversalPolicyReaderImpl(policy.getName(), nffgR, result, policy.isPositive(), src, dst,
 					transformFunctionalities(policy.getFunctionality()));
 		}
 		if (policy.getResult() != null) {
 			// add the circular reference (thanks to the fact that this is a
-			// Sol1VerificationReader object)
+			// VerificationReaderImpl object)
 			result.setPolicy(policyR);
 		}
 		return policyR;
@@ -162,16 +163,16 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 
 	/**
 	 * Performs the transformation from object belonging to the class ResultT to
-	 * the class Sol1VerificationResultReader. Note that returns an object
+	 * the class VerificationResultReaderImpl. Note that returns an object
 	 * belonging to the class that I implemented, so that i can call the method
 	 * setPolicy to add the circular reference
 	 * 
 	 * @param result
 	 *            the ResultT object from unmarshaling
-	 * @return the Sol1VerificationResultReader object
+	 * @return the VerificationResultReaderImpl object
 	 */
-	private Sol1VerificationResultReader transformResult(Result result) {
-		return new Sol1VerificationResultReader(result.isSatisfied(), result.getContent(),
+	private VerificationResultReaderImpl transformResult(Result result) {
+		return new VerificationResultReaderImpl(result.isSatisfied(), result.getContent(),
 				Utils.CalendarFromXMLGregorianCalendar(result.getVerified()));
 	}
 

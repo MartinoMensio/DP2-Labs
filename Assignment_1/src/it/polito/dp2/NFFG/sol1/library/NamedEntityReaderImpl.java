@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol1;
+package it.polito.dp2.NFFG.sol1.library;
 
 import it.polito.dp2.NFFG.*;
 
@@ -11,11 +11,11 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Sol1NamedEntityReader implements NamedEntityReader {
+public class NamedEntityReaderImpl implements NamedEntityReader {
 
 	private String name;
 
-	public Sol1NamedEntityReader(String name) {
+	public NamedEntityReaderImpl(String name) {
 		this.name = name;
 	}
 

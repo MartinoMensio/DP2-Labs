@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol1;
+package it.polito.dp2.NFFG.sol1.library;
 
 import it.polito.dp2.NFFG.*;
 
@@ -8,12 +8,12 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Sol1ReachabilityPolicyReader extends Sol1PolicyReader implements ReachabilityPolicyReader {
+public class ReachabilityPolicyReaderImpl extends PolicyReaderImpl implements ReachabilityPolicyReader {
 
 	private NodeReader src;
 	private NodeReader dst;
 
-	public Sol1ReachabilityPolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected,
+	public ReachabilityPolicyReaderImpl(String name, NffgReader nffg, VerificationResultReader result, Boolean expected,
 			NodeReader src, NodeReader dst) {
 		super(name, nffg, result, expected);
 		this.src = src;

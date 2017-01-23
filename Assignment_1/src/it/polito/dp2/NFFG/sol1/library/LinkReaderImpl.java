@@ -1,21 +1,21 @@
-package it.polito.dp2.NFFG.sol1;
+package it.polito.dp2.NFFG.sol1.library;
 
 import it.polito.dp2.NFFG.*;
 
 /**
  * Implementation of the interface LinkReader. This class is an extension of
- * Sol1NamedEntityReader, adding the private fields for source and destination
+ * NamedEntityReaderImpl, adding the private fields for source and destination
  * nodes.
  * 
  * @author Martino Mensio
  *
  */
-public class Sol1LinkReader extends Sol1NamedEntityReader implements LinkReader {
+public class LinkReaderImpl extends NamedEntityReaderImpl implements LinkReader {
 
 	private NodeReader sourceNode;
 	private NodeReader destinationNode;
 
-	public Sol1LinkReader(String name, NodeReader sourceNode, NodeReader destionationNode) {
+	public LinkReaderImpl(String name, NodeReader sourceNode, NodeReader destionationNode) {
 		super(name);
 		this.sourceNode = sourceNode;
 		this.destinationNode = destionationNode;

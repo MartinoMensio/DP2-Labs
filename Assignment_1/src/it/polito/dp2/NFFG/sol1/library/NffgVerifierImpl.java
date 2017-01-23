@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol1;
+package it.polito.dp2.NFFG.sol1.library;
 
 import java.util.*;
 import java.util.function.*;
@@ -12,14 +12,14 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Sol1NffgVerifier implements NffgVerifier {
+public class NffgVerifierImpl implements NffgVerifier {
 
 	// the nffgs mapped by their name
 	private Map<String, NffgReader> nffgs;
 	// set of policies mapped by the name of the nffg they belong to
 	private Map<String, Set<PolicyReader>> policies;
 
-	public Sol1NffgVerifier() {
+	public NffgVerifierImpl() {
 		this.nffgs = new HashMap<>();
 		this.policies = new HashMap<>();
 	}
@@ -32,7 +32,7 @@ public class Sol1NffgVerifier implements NffgVerifier {
 	 * @throws NffgVerifierException
 	 *             if another nffg with this name is already there
 	 */
-	void addNffg(NffgReader nffg) throws NffgVerifierException {
+	public void addNffg(NffgReader nffg) throws NffgVerifierException {
 		if (nffgs.containsKey(nffg.getName())) {
 			// a duplicate nffg is found
 			throw new NffgVerifierException("A NFFG with the name " + nffg.getName() + " is already there");
@@ -54,7 +54,7 @@ public class Sol1NffgVerifier implements NffgVerifier {
 	 *             if there is no nffg with this name or if there is already a
 	 *             policy with this name
 	 */
-	void addPolicy(String nffgName, PolicyReader policy) throws NffgVerifierException {
+	public void addPolicy(String nffgName, PolicyReader policy) throws NffgVerifierException {
 		if (!nffgs.containsKey(nffgName)) {
 			// no nffg with this name
 			throw new NffgVerifierException(
