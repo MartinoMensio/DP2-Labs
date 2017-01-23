@@ -148,16 +148,20 @@ public class Service {
 			// and add the links to neo4j
 			for (Link link : nffg.getLink()) {
 				String srcNodeId = idMappings.get(link.getSrc().getRef());
+				if (srcNodeId == null) {
+					throw new InconsistentDataException(
+							"error caused by srcNodeId not found for node " + link.getSrc().getRef());
+				}
 				String dstNodeId = idMappings.get(link.getDst().getRef());
-				if (srcNodeId == null || dstNodeId == null) {
-					throw new NeoFailedException("error caused by id not found");
+				if (dstNodeId == null) {
+					throw new InconsistentDataException(
+							"error caused by dstNodeId not found for node " + link.getDst().getRef());
 				}
 				neoClient.addLinkBetweenNodes(srcNodeId, dstNodeId);
 			}
-		} catch (NeoFailedException e) {
+		} finally {
 			// something went wrong
 			nffgStorage.setKO();
-			throw e;
 		}
 		// now that the id map is filled, can unlock the readers of it
 		nffgStorage.setOK();
@@ -279,19 +283,17 @@ public class Service {
 
 		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
 		if (nffgStorage == null) {
-			// TODO more specific
-			throw new InternalServerErrorException("in the verification process the nffg was not found");
+			throw new InconsistentDataException("in the verification process the nffg was not found");
 		}
 		String srcId = nffgStorage.getId(policy.getSrc().getRef());
 		String dstId = nffgStorage.getId(policy.getDst().getRef());
 		if (srcId == null || dstId == null) {
-			// TODO more specific
-			throw new NeoFailedException(
+			throw new InconsistentDataException(
 					"in the verification process there was an error retrieving the neo4j nodes id");
 		}
 		boolean reachabilityStatus = neoClient.testReachability(srcId, dstId);
 		Result result = factory.createResult();
-		boolean satisfied = reachabilityStatus == policy.isPositive();
+		boolean satisfied = (reachabilityStatus == policy.isPositive());
 		result.setSatisfied(satisfied);
 		result.setContent("the policy is " + (satisfied ? "" : "not ") + "satisfied: expectation=" + policy.isPositive()
 				+ " actual=" + reachabilityStatus);
