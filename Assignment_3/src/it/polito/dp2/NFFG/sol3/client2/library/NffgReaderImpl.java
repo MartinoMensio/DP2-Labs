@@ -6,7 +6,7 @@ import it.polito.dp2.NFFG.*;
 
 /**
  * Implementation of the interface NffgReader. The class is an extension of
- * Client2NamedEntityReader, adding the set of nodes and the updateTime.
+ * NamedEntityReaderImpl, adding the set of nodes and the updateTime.
  * 
  * @author Martino Mensio
  *
@@ -41,13 +41,13 @@ public class NffgReaderImpl extends NamedEntityReaderImpl implements NffgReader 
 
 	/**
 	 * This method is similar to the getNode one, but it returns an object of
-	 * type Client2NodeReader instead of NodeReader. The visibility is only
+	 * type NodeReaderImpl instead of NodeReader. The visibility is only
 	 * inside the package. This method allows other classes in the package to
 	 * use the addOutgoingLink method. This is not a method of the interface.
 	 * 
 	 * @param nodeName
 	 *            the name of the node to retrieve
-	 * @return a Client2NodeReader object with the corresponding name
+	 * @return a NodeReaderImpl object with the corresponding name
 	 * 
 	 */
 	public NodeReaderImpl getNodeReaderImpl(String nodeName) {
