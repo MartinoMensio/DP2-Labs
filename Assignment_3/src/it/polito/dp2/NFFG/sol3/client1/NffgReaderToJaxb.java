@@ -20,8 +20,9 @@ public class NffgReaderToJaxb implements Function<NffgReader, Nffg> {
 		Nffg result = factory.createNffg();
 		result.setName(nffgR.getName());
 		result.setUpdated(Utils.XMLGregorianCalendarFromCalendar(nffgR.getUpdateTime()));
-		// TODO
+		// add all the nodes
 		result.getNode().addAll(nffgR.getNodes().stream().map(n -> transformNode(n)).collect(Collectors.toList()));
+		// add all the links
 		result.getLink().addAll(nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream()).map(l -> transformLink(l))
 				.collect(Collectors.toList()));
 		return result;

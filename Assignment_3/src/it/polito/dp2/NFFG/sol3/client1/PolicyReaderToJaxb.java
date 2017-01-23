@@ -15,6 +15,7 @@ public class PolicyReaderToJaxb implements Function<PolicyReader, Policy> {
 	
 	@Override
 	public Policy apply(PolicyReader policyR) {
+		// all the policies are of type reachability
 		ReachabilityPolicyReader reachPolicyR = (ReachabilityPolicyReader) policyR;
 		Policy policy = factory.createPolicy();
 		policy.setName(policyR.getName());

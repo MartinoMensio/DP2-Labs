@@ -31,15 +31,4 @@ public class Utils {
 			return null;
 		}
 	}
-
-	/**
-	 * Transforms a XMLGregorianCalendar into a Calendar object
-	 * 
-	 * @param c
-	 *            the XMLGregorianCalendar
-	 * @return the Calendar
-	 */
-	public static Calendar CalendarFromXMLGregorianCalendar(XMLGregorianCalendar c) {
-		return c.toGregorianCalendar();
-	}
 }
