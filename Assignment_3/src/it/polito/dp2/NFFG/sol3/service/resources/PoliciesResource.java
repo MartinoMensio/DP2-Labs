@@ -36,8 +36,12 @@ public class PoliciesResource extends GenericResource {
 			@ApiResponse(code = 422, message = "validation of policy failed or or invalid reference to stored resources") })
 	@Path("{policy_name}")
 	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
-		// Overwrite the policy name in the request
-		policy.setName(policyName);
+		// Check that the policy name is the same in the pathParam and in the
+		// request body, because validation is done only on the request body
+		if (!policyName.equals(policy.getName())) {
+			throw new BadRequestException(
+					"The name of the policy must be the same in the path and in the request body");
+		}
 		Policy response = service.storePolicy(policy);
 		// TODO distinguish if already stored or not ??
 		if (response != null) {
