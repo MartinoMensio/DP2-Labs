@@ -42,14 +42,14 @@ public class PoliciesResource extends GenericResource {
 			throw new BadRequestException(
 					"The name of the policy must be the same in the path and in the request body");
 		}
-		Policy response = service.storePolicy(policy);
-		// TODO distinguish if already stored or not ??
-		if (response != null) {
+		Policy old = service.storePolicy(policy);
+		if (old == null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-			URI u = builder.path(response.getName()).build();
-			return Response.created(u).entity(response).build();
-		} else
-			throw new ForbiddenException("something wrong");
+			URI u = builder.path(policy.getName()).build();
+			return Response.created(u).entity(policy).build();
+		} else {
+			return Response.ok(policy).build();
+		}
 	}
 
 	@GET

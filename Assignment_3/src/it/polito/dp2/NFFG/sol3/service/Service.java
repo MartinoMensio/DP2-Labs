@@ -210,6 +210,11 @@ public class Service {
 		}
 	}
 
+	/**
+	 * 
+	 * @param policy
+	 * @return the old value
+	 */
 	public Policy storePolicy(Policy policy) {
 		// acquire shared lock
 		long stamp = l.readLock();
@@ -217,11 +222,10 @@ public class Service {
 			validateReferences(policy);
 			// the data referenced don't change because nffg cannot be deleted
 			// here, thanks to locking
-			data.getPoliciesMap().put(policy.getName(), policy);
+			return data.getPoliciesMap().put(policy.getName(), policy);
 		} finally {
 			l.unlockRead(stamp);
 		}
-		return policy;
 	}
 
 	public Policy deletePolicy(String policyName) {
