@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol3.client2;
+package it.polito.dp2.NFFG.sol3.client2.library;
 
 import java.util.*;
 
@@ -10,13 +10,13 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Client2NodeReader extends Client2NamedEntityReader implements NodeReader {
+public class NodeReaderImpl extends NamedEntityReaderImpl implements NodeReader {
 
 	private FunctionalType functionality;
 	// the Set of outgoing links
 	private Map<String, LinkReader> outgoingLinks;
 
-	public Client2NodeReader(String name, FunctionalType functionality) {
+	public NodeReaderImpl(String name, FunctionalType functionality) {
 		super(name);
 		this.functionality = functionality;
 		outgoingLinks = new HashMap<>();
@@ -30,7 +30,7 @@ public class Client2NodeReader extends Client2NamedEntityReader implements NodeR
 	 * @throws NffgVerifierException
 	 *             if a link with this name already exists
 	 */
-	void addOutgoingLink(LinkReader link) throws NffgVerifierException {
+	public void addOutgoingLink(LinkReader link) throws NffgVerifierException {
 		if (outgoingLinks.containsKey(link.getName())) {
 			throw new NffgVerifierException(
 					"a link with the name " + link.getName() + " already exists in the nffg " + getName());

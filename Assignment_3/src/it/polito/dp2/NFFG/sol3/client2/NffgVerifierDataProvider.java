@@ -2,13 +2,14 @@ package it.polito.dp2.NFFG.sol3.client2;
 
 import java.net.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
 import it.polito.dp2.NFFG.*;
+import it.polito.dp2.NFFG.sol3.client2.library.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 public class NffgVerifierDataProvider {
@@ -25,7 +26,7 @@ public class NffgVerifierDataProvider {
 		// read the policies
 		List<Policy> policies = downloadPolicies();
 
-		Client2NffgVerifier result = new Client2NffgVerifier();
+		NffgVerifierImpl result = new NffgVerifierImpl();
 
 		// work on the nffgs
 		NffgTransformer nffgTransformer = new NffgTransformer();
@@ -38,7 +39,7 @@ public class NffgVerifierDataProvider {
 		// work on the policies
 		Map<String, List<Policy>> policiesByNffg = policies.stream().collect(Collectors.groupingBy(Policy::getNffg));
 		for (Map.Entry<String, List<Policy>> group : policiesByNffg.entrySet()) {
-			Client2NffgReader nffgR = (Client2NffgReader) result.getNffg(group.getKey());
+			NffgReaderImpl nffgR = (NffgReaderImpl) result.getNffg(group.getKey());
 			if (nffgR == null) {
 				throw new NffgVerifierException("No nffg with the name " + group.getKey());
 			}

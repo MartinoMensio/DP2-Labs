@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol3.client2;
+package it.polito.dp2.NFFG.sol3.client2.library;
 
 import java.util.*;
 
@@ -10,14 +10,14 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Client2VerificationResultReader implements VerificationResultReader {
+public class VerificationResultReaderImpl implements VerificationResultReader {
 
 	private PolicyReader policy;
 	private boolean result;
 	private String message;
 	private Calendar verificationTime;
 
-	public Client2VerificationResultReader(Boolean result, String message, Calendar verificationTime) {
+	public VerificationResultReaderImpl(Boolean result, String message, Calendar verificationTime) {
 		this.result = result;
 		this.message = message;
 		this.verificationTime = verificationTime;
@@ -32,7 +32,7 @@ public class Client2VerificationResultReader implements VerificationResultReader
 	 * 
 	 * @param policy
 	 */
-	void setPolicy(PolicyReader policy) {
+	public void setPolicy(PolicyReader policy) {
 		this.policy = policy;
 	}
 

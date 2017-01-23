@@ -3,13 +3,14 @@ package it.polito.dp2.NFFG.sol3.client2;
 import java.util.function.Function;
 
 import it.polito.dp2.NFFG.*;
+import it.polito.dp2.NFFG.sol3.client2.library.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
-public class NffgTransformer implements Function<Nffg, Client2NffgReader> {
+public class NffgTransformer implements Function<Nffg, NffgReaderImpl> {
 
 	@Override
-	public Client2NffgReader apply(Nffg nffg) {
-		Client2NffgReader nffgR = new Client2NffgReader(nffg.getName(),
+	public NffgReaderImpl apply(Nffg nffg) {
+		NffgReaderImpl nffgR = new NffgReaderImpl(nffg.getName(),
 				Utils.CalendarFromXMLGregorianCalendar(nffg.getUpdated()));
 		// process nodes
 		nffg.getNode().forEach(n -> {
@@ -25,10 +26,10 @@ public class NffgTransformer implements Function<Nffg, Client2NffgReader> {
 			// get references to the source and destination nodes.
 			// The source must be later modified, so need to use the getSol1Node
 			// method
-			Client2NodeReader src = nffgR.getClient2Node(l.getSrc().getRef());
+			NodeReaderImpl src = nffgR.getNodeReaderImpl(l.getSrc().getRef());
 			NodeReader dst = nffgR.getNode(l.getDst().getRef());
 			// build the link
-			LinkReader linkR = new Client2LinkReader(l.getName(), src, dst);
+			LinkReader linkR = new LinkReaderImpl(l.getName(), src, dst);
 			// add the circular reference to the getSol1Node
 			try {
 				src.addOutgoingLink(linkR);
@@ -42,7 +43,7 @@ public class NffgTransformer implements Function<Nffg, Client2NffgReader> {
 	}
 
 	private NodeReader transformNode(Node node) {
-		return new Client2NodeReader(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
+		return new NodeReaderImpl(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
 	}
 
 }

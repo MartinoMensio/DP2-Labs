@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol3.client2;
+package it.polito.dp2.NFFG.sol3.client2.library;
 
 import it.polito.dp2.NFFG.*;
 
@@ -8,13 +8,13 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Client2PolicyReader extends Client2NamedEntityReader implements PolicyReader {
+public class PolicyReaderImpl extends NamedEntityReaderImpl implements PolicyReader {
 
 	private NffgReader nffg;
 	private VerificationResultReader result;
 	private boolean expected;
 
-	public Client2PolicyReader(String name, NffgReader nffg, VerificationResultReader result, Boolean expected) {
+	public PolicyReaderImpl(String name, NffgReader nffg, VerificationResultReader result, Boolean expected) {
 		super(name);
 		this.nffg = nffg;
 		this.result = result;

@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol3.client2;
+package it.polito.dp2.NFFG.sol3.client2.library;
 
 import java.util.*;
 
@@ -11,13 +11,13 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Client2NffgReader extends Client2NamedEntityReader implements NffgReader {
+public class NffgReaderImpl extends NamedEntityReaderImpl implements NffgReader {
 
 	// the nodes mapped by their name
 	private Map<String, NodeReader> nodes;
 	private Calendar updateTime;
 
-	public Client2NffgReader(String name, Calendar updateTime) {
+	public NffgReaderImpl(String name, Calendar updateTime) {
 		super(name);
 		this.updateTime = updateTime;
 		this.nodes = new HashMap<>();
@@ -31,7 +31,7 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 	 * @throws NffgVerifierException
 	 *             on duplicate node (by name)
 	 */
-	void addNode(NodeReader node) throws NffgVerifierException {
+	public void addNode(NodeReader node) throws NffgVerifierException {
 		if (nodes.containsKey(node.getName())) {
 			throw new NffgVerifierException(
 					"a node with the name " + node.getName() + " is already stored in the NFFG " + getName());
@@ -50,10 +50,10 @@ public class Client2NffgReader extends Client2NamedEntityReader implements NffgR
 	 * @return a Client2NodeReader object with the corresponding name
 	 * 
 	 */
-	Client2NodeReader getClient2Node(String nodeName) {
+	public NodeReaderImpl getNodeReaderImpl(String nodeName) {
 		NodeReader tmp = nodes.get(nodeName);
-		if (tmp != null && tmp instanceof Client2NodeReader) {
-			return (Client2NodeReader) tmp;
+		if (tmp != null && tmp instanceof NodeReaderImpl) {
+			return (NodeReaderImpl) tmp;
 		}
 		return null;
 	}

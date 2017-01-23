@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol3.client2;
+package it.polito.dp2.NFFG.sol3.client2.library;
 
 import it.polito.dp2.NFFG.*;
 
@@ -10,12 +10,12 @@ import it.polito.dp2.NFFG.*;
  * @author Martino Mensio
  *
  */
-public class Client2LinkReader extends Client2NamedEntityReader implements LinkReader {
+public class LinkReaderImpl extends NamedEntityReaderImpl implements LinkReader {
 
 	private NodeReader sourceNode;
 	private NodeReader destinationNode;
 
-	public Client2LinkReader(String name, NodeReader sourceNode, NodeReader destionationNode) {
+	public LinkReaderImpl(String name, NodeReader sourceNode, NodeReader destionationNode) {
 		super(name);
 		this.sourceNode = sourceNode;
 		this.destinationNode = destionationNode;
