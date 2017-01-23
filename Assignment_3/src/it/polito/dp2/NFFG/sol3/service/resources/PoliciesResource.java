@@ -8,8 +8,6 @@ import javax.ws.rs.core.*;
 
 import com.wordnik.swagger.annotations.*;
 
-import it.polito.dp2.NFFG.sol3.service.exceptions.*;
-import it.polito.dp2.NFFG.sol3.service.exceptions.NotFoundException;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
@@ -60,7 +58,7 @@ public class PoliciesResource extends GenericResource {
 	public Policy getPolicy(@PathParam("policy_name") String policyName) {
 		Policy policy = service.getPolicy(policyName);
 		if (policy == null) {
-			throw new NotFoundException(policyName);
+			throw new NotFoundException("Policy with name " + policyName + " is not stored in the service");
 		}
 		return policy;
 	}
@@ -73,7 +71,7 @@ public class PoliciesResource extends GenericResource {
 	public Response deletePolicy(@PathParam("policy_name") String policyName) {
 		Policy policy = service.deletePolicy(policyName);
 		if (policy == null) {
-			throw new NotFoundException(policyName);
+			throw new NotFoundException("Policy with name " + policyName + " is not stored in the service");
 		}
 		return Response.ok(policy).build();
 	}
@@ -87,7 +85,7 @@ public class PoliciesResource extends GenericResource {
 		Policy policy = service.updatePolicyResult(policyName);
 		if (policy == null) {
 			// policy not found in the service
-			throw new NotFoundException(policyName);
+			throw new NotFoundException("Policy with name " + policyName + " is not stored in the service");
 		}
 		return policy;
 	}

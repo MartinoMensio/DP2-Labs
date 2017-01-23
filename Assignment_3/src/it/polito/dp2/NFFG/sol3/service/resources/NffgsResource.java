@@ -9,7 +9,6 @@ import javax.ws.rs.core.*;
 import com.wordnik.swagger.annotations.*;
 
 import it.polito.dp2.NFFG.sol3.service.exceptions.*;
-import it.polito.dp2.NFFG.sol3.service.exceptions.NotFoundException;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
@@ -35,8 +34,6 @@ public class NffgsResource extends GenericResource {
 			@ApiResponse(code = 409, message = "conflict because of already stored nffg with same name"),
 			@ApiResponse(code = 422, message = "validation failed") })
 	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) {
-		// TODO check again links ref ??
-
 		Nffg response = service.storeNffg(nffg);
 		if (response != null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
@@ -51,10 +48,10 @@ public class NffgsResource extends GenericResource {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"),
 			@ApiResponse(code = 404, message = "NFFG not found") })
 	@Path("{nffg_name}")
-	public Nffg getNffg(@PathParam("nffg_name") String nffgName) throws NotFoundException {
+	public Nffg getNffg(@PathParam("nffg_name") String nffgName) {
 		Nffg result = service.getNffg(nffgName);
 		if (result == null) {
-			throw new NotFoundException(nffgName);
+			throw new NotFoundException("Nffg with name " + nffgName + " is not stored in the service");
 		}
 		return result;
 	}
@@ -68,7 +65,7 @@ public class NffgsResource extends GenericResource {
 			@DefaultValue("false") @QueryParam("force") Boolean force) {
 		Nffg nffg = service.deleteNffg(nffgName, force);
 		if (nffg == null) {
-			throw new NotFoundException(nffgName);
+			throw new NotFoundException("Policy with name " + nffgName + " is not stored in the service");
 		}
 		return Response.ok(nffg).build();
 	}
