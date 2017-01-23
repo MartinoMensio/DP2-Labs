@@ -1,8 +1,14 @@
 package it.polito.dp2.NFFG.sol3.service.exceptions;
 
-import javax.ws.rs.core.*;
+import javax.ws.rs.*;
 
-public class NeoFailedException extends javax.ws.rs.InternalServerErrorException {
+/**
+ * Exception for errors in communication with neo4j
+ * 
+ * @author Martino Mensio
+ *
+ */
+public class NeoFailedException extends InternalServerErrorException {
 
 	/**
 	 * 
