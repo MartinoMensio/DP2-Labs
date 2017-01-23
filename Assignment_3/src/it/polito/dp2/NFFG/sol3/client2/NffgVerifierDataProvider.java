@@ -2,6 +2,7 @@ package it.polito.dp2.NFFG.sol3.client2;
 
 import java.net.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.*;
@@ -11,9 +12,9 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 public class NffgVerifierDataProvider {
-	
+
 	private WebTarget target;
-	
+
 	public NffgVerifierDataProvider(URI uri) {
 		target = ClientBuilder.newClient().target(uri);
 	}
@@ -28,24 +29,24 @@ public class NffgVerifierDataProvider {
 
 		// work on the nffgs
 		NffgTransformer nffgTransformer = new NffgTransformer();
-		for(Nffg nffg : nffgs) {
+		for (Nffg nffg : nffgs) {
 			// transform them to NffgReader
 			NffgReader nffgR = nffgTransformer.apply(nffg);
 			// and add them to the NffgVerifier
 			result.addNffg(nffgR);
 		}
-
-		policies.stream().forEach(policy -> {
-			Client2NffgReader nffgR = (Client2NffgReader) result.getNffg(policy.getNffg());
+		// work on the policies
+		Map<String, List<Policy>> policiesByNffg = policies.stream().collect(Collectors.groupingBy(Policy::getNffg));
+		for (Map.Entry<String, List<Policy>> group : policiesByNffg.entrySet()) {
+			Client2NffgReader nffgR = (Client2NffgReader) result.getNffg(group.getKey());
 			if (nffgR == null) {
-				throw new RuntimeException("Nffg name does not match on policy " + policy.getName());
+				throw new NffgVerifierException("No nffg with the name " + group.getKey());
 			}
-			try {
-				result.addPolicy(nffgR.getName(), new PolicyTransformer(nffgR).apply(policy));
-			} catch (NffgVerifierException e) {
-				throw new RuntimeException(e);
+			PolicyTransformer policyTransformer = new PolicyTransformer(nffgR);
+			for (Policy policy : group.getValue()) {
+				result.addPolicy(nffgR.getName(), policyTransformer.apply(policy));
 			}
-		});
+		}
 		return result;
 	}
 
