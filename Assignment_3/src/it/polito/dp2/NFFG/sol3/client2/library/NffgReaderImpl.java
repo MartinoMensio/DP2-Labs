@@ -41,9 +41,9 @@ public class NffgReaderImpl extends NamedEntityReaderImpl implements NffgReader 
 
 	/**
 	 * This method is similar to the getNode one, but it returns an object of
-	 * type NodeReaderImpl instead of NodeReader. The visibility is only
-	 * inside the package. This method allows other classes in the package to
-	 * use the addOutgoingLink method. This is not a method of the interface.
+	 * type NodeReaderImpl instead of NodeReader. The visibility is only inside
+	 * the package. This method allows other classes in the package to use the
+	 * addOutgoingLink method. This is not a method of the interface.
 	 * 
 	 * @param nodeName
 	 *            the name of the node to retrieve

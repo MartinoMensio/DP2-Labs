@@ -28,11 +28,13 @@ public class NffgReaderImpl extends NamedEntityReaderImpl implements NffgReader 
 	 * the interface.
 	 * 
 	 * @param node
-	 * @throws NffgVerifierException on  duplicate node (by name)
+	 * @throws NffgVerifierException
+	 *             on duplicate node (by name)
 	 */
 	public void addNode(NodeReader node) throws NffgVerifierException {
-		if(nodes.containsKey(node.getName())) {
-			throw new NffgVerifierException("a node with the name " + node.getName() + " is already stored in the NFFG " + getName());
+		if (nodes.containsKey(node.getName())) {
+			throw new NffgVerifierException(
+					"a node with the name " + node.getName() + " is already stored in the NFFG " + getName());
 		}
 		nodes.put(node.getName(), node);
 	}

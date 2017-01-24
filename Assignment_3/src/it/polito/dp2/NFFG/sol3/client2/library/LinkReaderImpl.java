@@ -4,8 +4,8 @@ import it.polito.dp2.NFFG.*;
 
 /**
  * Implementation of the interface LinkReader. This class is an extension of
- * NamedEntityReaderImpl, adding the private fields for source and
- * destination nodes.
+ * NamedEntityReaderImpl, adding the private fields for source and destination
+ * nodes.
  * 
  * @author Martino Mensio
  *
