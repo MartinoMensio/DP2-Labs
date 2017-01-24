@@ -36,15 +36,14 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 
 		} catch (SAXException e) {
 			// schema problem
-			System.err.println("invalid schema: " + e.getMessage());
+			throw new NffgVerifierException("invalid schema: " + e.getMessage());
 		} catch (JAXBException e) {
 			// unmarshaling problem
-			System.err.println("unexpected problem occurs during the unmarshalling: " + e.getMessage());
+			throw new NffgVerifierException("unexpected problem occurs during the unmarshalling: " + e.getMessage());
 		} catch (Exception e) {
 			// last chance
-			System.err.println(e.getMessage());
+			throw new NffgVerifierException(e.getMessage());
 		}
-		return null;
 	}
 
 }
