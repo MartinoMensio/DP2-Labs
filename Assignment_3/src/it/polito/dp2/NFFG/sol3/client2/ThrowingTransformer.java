@@ -1,4 +1,4 @@
-package it.polito.dp2.NFFG.sol1;
+package it.polito.dp2.NFFG.sol3.client2;
 
 /**
  * This is a generic interface for performing transformation from an object
@@ -23,3 +23,4 @@ public interface ThrowingTransformer<T extends Object, R extends Object, E exten
 	 */
 	public R transform(T input) throws E;
 }
+

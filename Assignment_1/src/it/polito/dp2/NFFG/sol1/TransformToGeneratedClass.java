@@ -16,18 +16,12 @@ import it.polito.dp2.NFFG.sol1.jaxb.*;
  */
 public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifier, Verifier, RuntimeException> {
 
-	private NffgVerifier input;
-
 	private ObjectFactory factory = new ObjectFactory();
 
 	/**
 	 * The constructor is private, use instead the factory method
-	 * 
-	 * @param input
-	 *            the NffgVerifier object to be transformed
 	 */
-	private TransformToGeneratedClass(NffgVerifier input) {
-		this.input = input;
+	private TransformToGeneratedClass() {
 	}
 
 	/**
@@ -37,16 +31,15 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 	 *            the NffgVerifier object to be transformed
 	 * @return an object belonging to the ThrowingTransformer interface
 	 */
-	public static ThrowingTransformer<NffgVerifier, Verifier, RuntimeException> newTransformer(NffgVerifier input) {
-		// TODO Auto-generated method stub
-		return new TransformToGeneratedClass(input);
+	public static ThrowingTransformer<NffgVerifier, Verifier, RuntimeException> newTransformer() {
+		return new TransformToGeneratedClass();
 	}
 
 	/**
 	 * implements the transformation of the root element (verifier)
 	 */
 	@Override
-	public Verifier transform() {
+	public Verifier transform(NffgVerifier input) {
 		Verifier v = factory.createVerifier();
 		// get the live list of nffgs
 		List<Nffg> nffg_list = v.getNffg();
@@ -59,7 +52,7 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 				// resources and could fasten the transform operations.
 				.parallelStream()
 				// transform the nffg
-				.map(nffgR -> transformNffg(nffgR)).collect(Collectors.toList()));
+				.map(nffgR -> transformNffg(nffgR, input)).collect(Collectors.toList()));
 
 		return v;
 	}
@@ -70,9 +63,11 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 	 * 
 	 * @param nffgR
 	 *            the NffgReader object
+	 * @param input
+	 *            the NffgVerifier
 	 * @return the NffgT object for marshaling
 	 */
-	private Nffg transformNffg(NffgReader nffgR) {
+	private Nffg transformNffg(NffgReader nffgR, NffgVerifier input) {
 		// create an empty nffg element
 		Nffg nffg = factory.createNffg();
 		// set the name
@@ -199,8 +194,7 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 			List<Functionality> func_list = policy.getFunctionality();
 			func_list.addAll(trav_p.getTraversedFuctionalTypes().parallelStream()
 					// transform the functionality
-					.map(functionality -> Functionality.fromValue(functionality.value()))
-					.collect(Collectors.toList()));
+					.map(functionality -> Functionality.fromValue(functionality.value())).collect(Collectors.toList()));
 		}
 
 		return policy;

@@ -1,23 +1,26 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.*;
 
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.client2.library.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
-public class PolicyTransformer implements Function<Policy, PolicyReaderImpl> {
+public class PolicyTransformer implements ThrowingTransformer<Policy, PolicyReaderImpl, RuntimeException> {
 
 	private NffgReaderImpl nffgR;
 
-	public PolicyTransformer(NffgReaderImpl nffgR) {
+	private PolicyTransformer(NffgReaderImpl nffgR) {
 		this.nffgR = nffgR;
+	}
+	
+	public static ThrowingTransformer<Policy, PolicyReaderImpl, RuntimeException> newNffgTransformer(NffgReaderImpl nffgR) {
+		return new PolicyTransformer(nffgR);
 	}
 
 	@Override
-	public PolicyReaderImpl apply(Policy policy) {
+	public PolicyReaderImpl transform(Policy policy) {
 		NodeReader src = nffgR.getNode(policy.getSrc().getRef());
 		NodeReader dst = nffgR.getNode(policy.getDst().getRef());
 		VerificationResultReaderImpl result = null;

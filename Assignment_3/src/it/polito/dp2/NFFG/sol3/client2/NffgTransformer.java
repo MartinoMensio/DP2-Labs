@@ -1,15 +1,20 @@
 package it.polito.dp2.NFFG.sol3.client2;
 
-import java.util.function.Function;
-
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.client2.library.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
-public class NffgTransformer implements Function<Nffg, NffgReaderImpl> {
+public class NffgTransformer implements ThrowingTransformer<Nffg, NffgReaderImpl, NffgVerifierException> {
 
+	private NffgTransformer() {	
+	}
+	
+	public static ThrowingTransformer<Nffg, NffgReaderImpl, NffgVerifierException> newNffgTransformer() {
+		return new NffgTransformer();
+	}
+	
 	@Override
-	public NffgReaderImpl apply(Nffg nffg) {
+	public NffgReaderImpl transform(Nffg nffg) throws NffgVerifierException {
 		NffgReaderImpl nffgR = new NffgReaderImpl(nffg.getName(),
 				Utils.CalendarFromXMLGregorianCalendar(nffg.getUpdated()));
 		// process nodes

@@ -82,7 +82,7 @@ public class NffgInfoSerializer {
 
 		// apply the transformation from data from interfaces to objects of the
 		// generated classes
-		Verifier v = TransformToGeneratedClass.newTransformer(monitor).transform();
+		Verifier v = TransformToGeneratedClass.newTransformer().transform(monitor);
 
 		// serialize (+schema)
 

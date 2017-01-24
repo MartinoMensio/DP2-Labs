@@ -32,7 +32,7 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 
 			// and transform objects from the generated classes to the
 			// interfaces (personal implementation)
-			return TransformFromGeneratedClass.newTransformer(verifier).transform();
+			return TransformFromGeneratedClass.newTransformer().transform(verifier);
 
 		} catch (SAXException e) {
 			// schema problem

@@ -29,10 +29,11 @@ public class NffgVerifierDataProvider {
 		NffgVerifierImpl result = new NffgVerifierImpl();
 
 		// work on the nffgs
-		NffgTransformer nffgTransformer = new NffgTransformer();
+		ThrowingTransformer<Nffg, NffgReaderImpl, NffgVerifierException> nffgTransformer = NffgTransformer
+				.newNffgTransformer();
 		for (Nffg nffg : nffgs) {
 			// transform them to NffgReader
-			NffgReader nffgR = nffgTransformer.apply(nffg);
+			NffgReader nffgR = nffgTransformer.transform(nffg);
 			// and add them to the NffgVerifier
 			result.addNffg(nffgR);
 		}
@@ -43,9 +44,10 @@ public class NffgVerifierDataProvider {
 			if (nffgR == null) {
 				throw new NffgVerifierException("No nffg with the name " + group.getKey());
 			}
-			PolicyTransformer policyTransformer = new PolicyTransformer(nffgR);
+			ThrowingTransformer<Policy, PolicyReaderImpl, RuntimeException> policyTransformer = PolicyTransformer
+					.newNffgTransformer(nffgR);
 			for (Policy policy : group.getValue()) {
-				result.addPolicy(nffgR.getName(), policyTransformer.apply(policy));
+				result.addPolicy(nffgR.getName(), policyTransformer.transform(policy));
 			}
 		}
 		return result;

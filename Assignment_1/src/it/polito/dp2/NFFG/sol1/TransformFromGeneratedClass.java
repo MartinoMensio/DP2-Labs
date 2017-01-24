@@ -17,16 +17,13 @@ import it.polito.dp2.NFFG.sol1.library.*;
  */
 public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier, NffgVerifier, NffgVerifierException> {
 
-	private Verifier input;
-
 	/**
 	 * The constructor is private, use instead the factory method
 	 * 
 	 * @param input
 	 *            the Verifier object to be transformed
 	 */
-	private TransformFromGeneratedClass(Verifier input) {
-		this.input = input;
+	private TransformFromGeneratedClass() {
 	}
 
 	/**
@@ -36,15 +33,15 @@ public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier
 	 *            the Verifier object to be transformed
 	 * @return an object belonging to the ThrowingTransformer interface
 	 */
-	public static ThrowingTransformer<Verifier, NffgVerifier, NffgVerifierException> newTransformer(Verifier input) {
-		return new TransformFromGeneratedClass(input);
+	public static ThrowingTransformer<Verifier, NffgVerifier, NffgVerifierException> newTransformer() {
+		return new TransformFromGeneratedClass();
 	}
 
 	/**
 	 * implements the transformation of the root element (verifier)
 	 */
 	@Override
-	public NffgVerifier transform() throws NffgVerifierException {
+	public NffgVerifier transform(Verifier input) throws NffgVerifierException {
 		NffgVerifierImpl verifier = new NffgVerifierImpl();
 		for (Nffg nffg : input.getNffg()) {
 			NffgReader nffgR = transformNffg(nffg);
