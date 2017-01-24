@@ -18,7 +18,7 @@ import it.polito.dp2.NFFG.lab2.*;
  * @author Martino Mensio
  *
  */
-public class Sol2ReachabilityTester implements ReachabilityTester {
+public class ReachabilityTesterImpl implements ReachabilityTester {
 
 	private NffgVerifier monitor;
 	private String graphName;
@@ -27,7 +27,7 @@ public class Sol2ReachabilityTester implements ReachabilityTester {
 
 	private ObjectFactory factory = new ObjectFactory();
 
-	public Sol2ReachabilityTester(NffgVerifier nffgR, URI uri) {
+	public ReachabilityTesterImpl(NffgVerifier nffgR, URI uri) {
 		this.monitor = nffgR;
 		graphName = null;
 		target = ClientBuilder.newClient().target(uri).path("resource");

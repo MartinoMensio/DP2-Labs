@@ -21,7 +21,7 @@ public class NFFGClientFactory extends it.polito.dp2.NFFG.lab3.NFFGClientFactory
 				url = "http://localhost:8080/NffgService/rest/";
 			}
 			URI uri = new URI(url);
-			return new Client1NFFGClient(factory.newNffgVerifier(), uri);
+			return new NFFGClientImpl(factory.newNffgVerifier(), uri);
 		} catch (URISyntaxException e) {
 			throw new NFFGClientException("Invalid URI: " + e.getMessage());
 		} catch (NffgVerifierException e) {
