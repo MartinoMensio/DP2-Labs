@@ -13,7 +13,13 @@ import it.polito.dp2.NFFG.lab2.*;
 
 /**
  * Implementation of the ReachabilityTester interface. The loadNffg method
- * exploits the functionality of parallelStream
+ * exploits the functionality of parallelStream in order to perform multiple
+ * request at the same time. Since the network operations are orders of
+ * magnitude slower than other local elaboration of data, this makes the use of
+ * parallelStream a big difference. Since the parallelization is based on stream
+ * API, the checked exceptions cannot be used to go out of the lambda scope, so
+ * it is necessary to do some tricks to convert the checked exception to a
+ * RuntimeException and viceversa.
  * 
  * @author Martino Mensio
  *
@@ -62,8 +68,9 @@ public class ReachabilityTesterImpl implements ReachabilityTester {
 		// clear map of node ids (in case of failures)
 		nodeIds = null;
 
-		// node uploading
 		try {
+			// node uploading (see note on the class about streams and
+			// exceptions)
 			nodeIds = nffgR.getNodes().parallelStream().collect(Collectors.toConcurrentMap(NodeReader::getName, n -> {
 				try {
 					return uploadNode(n);
@@ -72,13 +79,9 @@ public class ReachabilityTesterImpl implements ReachabilityTester {
 					throw new RuntimeException(e);
 				}
 			}));
-		} catch (Exception e) {
-			// transform again Exception to ServiceException
-			throw new ServiceException(e);
-		}
 
-		// links uploading
-		try {
+			// links uploading (see note on the class about streams and
+			// exceptions)
 			nffgR.getNodes().stream().flatMap(n -> n.getLinks().stream()).parallel().forEach(l -> {
 				try {
 					uploadLink(l);
@@ -88,6 +91,7 @@ public class ReachabilityTesterImpl implements ReachabilityTester {
 				}
 			});
 		} catch (Exception e) {
+			nodeIds = null;
 			// transform again Exception to ServiceException
 			throw new ServiceException(e);
 		}
