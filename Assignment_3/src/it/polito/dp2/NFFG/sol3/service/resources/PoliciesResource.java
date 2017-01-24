@@ -26,6 +26,14 @@ public class PoliciesResource extends GenericResource {
 	public List<Policy> getPolicies(@QueryParam("nffg") String nffgName) {
 		return service.getPolicies(nffgName);
 	}
+	
+	@DELETE
+	@ApiOperation(value = "delete the collection of policies", notes = "")
+	@ApiResponses(value = {@ApiResponse(code = 204, message = "no content")})
+	public Response deleteAllPolicies() {
+		service.deleteAllPolicies();
+		return Response.noContent().build();
+	}
 
 	@PUT
 	@ApiOperation(value = "store a policy to a specified resource", notes = "both for creation and update, identified by policy name")

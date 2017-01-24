@@ -273,6 +273,25 @@ public class Service {
 			l.unlockRead(stamp);
 		}
 	}
+	
+	public void deleteAllPolicies() {
+		long stamp = l.readLock();
+		try {
+			data.getPoliciesMap().clear();
+		} finally {
+			l.unlockRead(stamp);
+		}
+	}
+	
+	public void deleteAll() {
+		long stamp = l.writeLock();
+		try {
+			data.getPoliciesMap().clear();
+			data.getNffgsMap().clear();
+		} finally {
+			l.unlockWrite(stamp);
+		}
+	}
 
 	/**
 	 * Called by other methods above. This is a slave method. Considering

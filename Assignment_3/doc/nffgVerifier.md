@@ -48,20 +48,22 @@ Single policies can be created and updated using the same procedure: a PUT reque
 
 The tree structure of the resources previously shown is reflected on the URLs used. Curly braces are used in the following when the path contains an identifier.
 
-| URL                     | resource type | method | usage
-| ---                     | ------------- | ------ | --------
-| `/nffgs`                | nffgs         | GET    | obtain the collection of NFFGs
-|                         |               | POST   | store a new NFFG
-| `/nffgs/{nffg_name}`    | nffg          | GET    | obtain a single NFFG given its name
-|                         |               | DELETE | delete a single NFFG given its name
-| `/nffgs/{nffg_name}/policies`  | policy | GET    | obtain the collection of policies belonging to a NFFG whose name is given
-| `/nffgs/{nffg_name}/online_result` | result |POST| obtain the result of a policy provided in the request testing it against an existing NFFG given its name
-| `/policies`              | policies     | GET    | obtain the collection of all the policies
-| `/policies/{policy_name}`| policy       | GET    | obtain a single policy given its name
-|                          |              | PUT   | store a policy on this resource (both creation or update)
-|                          |              | DELETE | delete a single policy given its name
-| `/policies/{policy_name}/result` | result | GET   | obtain (if any) the stored result for the stored policy given its name
-|                          |              | POST   | recompute and obtain the result of a stored policy
+| URL                             | resource type | method | usage
+| ---                             | ------------- | ------ | --------
+| `/`                             | -             | DELETE | delete all the data stored in the service
+| `/nffgs`                        | nffgs         | GET    | obtain the collection of NFFGs
+|                                 |               | POST   | store a new NFFG
+| `/nffgs/{nffg_name}`            | nffg          | GET    | obtain a single NFFG given its name
+|                                 |               | DELETE | delete a single NFFG given its name
+| `/nffgs/{nffg_name}/policies`   | policy        | GET    | obtain the collection of policies belonging to a NFFG whose name is given
+| `/policies`                     | policies      | GET    | obtain the collection of all the policies
+|                                 |               | DELETE | delete all the policies
+| `/policies/{policy_name}`       | policy        | GET    | obtain a single policy given its name
+|                                 |               | PUT    | store a policy on this resource (both creation or update)
+|                                 |               | DELETE | delete a single policy given its name
+| `/policies/{policy_name}/result`| result        | GET    | obtain (if any) the stored result for the stored policy given its name
+|                                 |               | POST   | recompute and obtain the result of a stored policy
+| `/verifier`                     | result        | POST   | obtain the result of a policy provided in the request testing it against an existing NFFG given its name
 
 ### IDs
 
@@ -74,6 +76,12 @@ For the NFFGs creation, the POST method is used because the creation is not idem
 All the operations are available with Content-Type (both requests and responses) `application/xml` or `application/json`. The types used are the ones contained in the XSD.
 
 Errors on all the resources: 406 500 400 
+
+### `/`
+
+| method | request type | response type | explaination                | result         | errors
+| ------ | ------------ | ------------- | ------------                | -----------    | ------
+| DELETE | -            | -             | delete all the data         | 204 no content | -
 
 ### `/nffgs`
 
@@ -106,9 +114,10 @@ The DELETE has an optional queryParam that is required in the case that some pol
 
 Policies collection
 
-| method | request type | response type | explaination                   | result | errors
-| ------ | ------------ | ------------- | ------------                   | ------ | ------
-| GET    | -            | policies      | get the collection of policies | 200 OK |
+| method | request type | response type | explaination                   | result         | errors
+| ------ | ------------ | ------------- | ------------                   | ------         | ------
+| GET    | -            | policies      | get the collection of policies | 200 OK         |
+| DELETE | -            | -             | delete all the policies        | 204 no content |
 
 queryParam:
 
@@ -151,6 +160,7 @@ The synchronization without considering the removal of NFFGs is simply obtained 
 - `storeNffg` performs a single atomic operation on the nffgs map: a `putIfAbsent` that is checking the existence and storing the new nffg in atomic way
 - `storePolicy` is checking the references to nffg and nodes (src and dst) then is putting the new policy into the policies map. But since an NFFG cannot be deleted, after the check the references cannot be invalidated in any ways, so also in this case there is no need of additional synchronization
 - `deletePolicy` is removing the policy from the map of policies in a single atomic operation
+- `deleteAllPolicies` is clearing the policy map in a single atomic operation
 - `updatePolicyResult` is first getting the policy from its name then is verifying its result. Also if this is not a single operation and a deletion can occur in between, this is not a problem because in this case the serialized view of the events would be that the deletion occurred after the update of the result, without side effects because the update of the result does not operate on the map but only on an object that is stored inside it, and can be safely removed from the map preventing other threads to reach this policy that still exist for the thread that is handling the update
 - `verifyResultOnTheFly` is first validating the references contained in the policy (nffg, src, dst) and then verifying the result. Since the referenced nffg cannot be deleted (or updated) the data are still valid also if these operations are not performed atomically
 
@@ -165,8 +175,10 @@ In details the usage of locks by each method:
   - checking if some policies are linked and in this case can block the execution if the request does not force the removal
   - removing all the policies linked to this nffg from the policies map
   - removing the nffg from the nffgs map
+- `deleteAll` also uses the exclusive lock
 - `storePolicy` uses a shared lock to validate the references and then storing in the policies map the new one. In this way the removal cannot occur between the two operations, and therefore the references are still valid
 - `deletePolcy` uses a shared lock because the iteration that is occurring in the `deleteNffg` over the collection of policies acts on the valueSet that is not explicitly concurrent-safe also if it coming from a ConcurrentMap. In order to avoid any problems, the deletion of a single policy is done in a protected block
+- `deleteAllPolicies` uses the shared lock for the same reason as above
 - `updatePolicyResult` uses the shared lock because after getting the policy from the name the verification is accessing the related nffg in order to use the ids, that must not be deleted between the two operations
 - `verifyResultOnTheFly` uses the shared lock because after checking the references, the nffg must continue to be stored inside the nffgs map
 - `storeNffg` does not need any locks because acts on completely new data. If the nffg stored with the same name is still being removed but not yet from the map, the serialized view of events will have the store before the deletion, without causing side effects.
