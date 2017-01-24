@@ -35,7 +35,8 @@ public class ValidatingReader<T> implements MessageBodyReader<T> {
 			unmarshaller.setSchema(schema);
 
 		} catch (SAXException | JAXBException | IOException se) {
-			// TODO
+			// set unmarshaller to null so that readFrom can find the error
+			unmarshaller = null;
 		}
 	}
 
