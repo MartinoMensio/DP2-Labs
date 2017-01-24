@@ -6,45 +6,36 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 public class NffgTransformer implements ThrowingTransformer<Nffg, NffgReaderImpl, NffgVerifierException> {
 
-	private NffgTransformer() {	
+	private NffgTransformer() {
 	}
-	
+
 	public static ThrowingTransformer<Nffg, NffgReaderImpl, NffgVerifierException> newNffgTransformer() {
 		return new NffgTransformer();
 	}
-	
+
 	@Override
 	public NffgReaderImpl transform(Nffg nffg) throws NffgVerifierException {
 		NffgReaderImpl nffgR = new NffgReaderImpl(nffg.getName(),
 				Utils.CalendarFromXMLGregorianCalendar(nffg.getUpdated()));
 		// process nodes
-		nffg.getNode().forEach(n -> {
-			try {
-				nffgR.addNode(transformNode(n));
-			} catch (NffgVerifierException e) {
-				// to go through lambda must use an unchecked exception
-				throw new RuntimeException(e);
-			}
-		});
+		for (Node node : nffg.getNode()) {
+			nffgR.addNode(transformNode(node));
+		}
 		// and process links
-		nffg.getLink().forEach(l -> {
+		for (Link link : nffg.getLink()) {
 			// get references to the source and destination nodes.
 			// The source must be later modified, so need to use the getSol1Node
 			// method
-			NodeReaderImpl src = nffgR.getNodeReaderImpl(l.getSrc().getRef());
-			NodeReader dst = nffgR.getNode(l.getDst().getRef());
+			NodeReaderImpl src = nffgR.getNodeReaderImpl(link.getSrc().getRef());
+			NodeReader dst = nffgR.getNode(link.getDst().getRef());
 			// build the link
-			LinkReader linkR = new LinkReaderImpl(l.getName(), src, dst);
+			LinkReader linkR = new LinkReaderImpl(link.getName(), src, dst);
 			// add the circular reference to the getSol1Node
-			try {
-				src.addOutgoingLink(linkR);
-			} catch (NffgVerifierException e) {
-				// to go through lambda must use an unchecked exception
-				throw new RuntimeException(e);
-			}
-		});
+			src.addOutgoingLink(linkR);
+		}
 
 		return nffgR;
+
 	}
 
 	private NodeReader transformNode(Node node) {
