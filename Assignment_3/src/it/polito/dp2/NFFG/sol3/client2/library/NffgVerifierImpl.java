@@ -58,7 +58,7 @@ public class NffgVerifierImpl implements NffgVerifier {
 		if (!nffgs.containsKey(nffgName)) {
 			// no nffg with this name
 			throw new NffgVerifierException(
-					"The policy " + policy.getName() + "refers to the NFFG " + nffgName + " that does not exist");
+					"The policy " + policy.getName() + " refers to the NFFG " + nffgName + " that does not exist");
 		}
 		// get a flat map of policies mapped by their name
 		Map<String, PolicyReader> flatPolicies = policies.values().stream().flatMap(Set::stream)
@@ -108,4 +108,3 @@ public class NffgVerifierImpl implements NffgVerifier {
 	}
 
 }
-

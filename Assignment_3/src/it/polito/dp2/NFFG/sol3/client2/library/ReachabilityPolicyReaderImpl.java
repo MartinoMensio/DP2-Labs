@@ -13,8 +13,8 @@ public class ReachabilityPolicyReaderImpl extends PolicyReaderImpl implements Re
 	private NodeReader src;
 	private NodeReader dst;
 
-	public ReachabilityPolicyReaderImpl(String name, NffgReader nffg, VerificationResultReader result,
-			Boolean expected, NodeReader src, NodeReader dst) {
+	public ReachabilityPolicyReaderImpl(String name, NffgReader nffg, VerificationResultReader result, Boolean expected,
+			NodeReader src, NodeReader dst) {
 		super(name, nffg, result, expected);
 		this.src = src;
 		this.dst = dst;
