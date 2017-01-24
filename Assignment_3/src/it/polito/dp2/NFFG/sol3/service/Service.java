@@ -2,6 +2,7 @@ package it.polito.dp2.NFFG.sol3.service;
 
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 import java.util.stream.*;
 
@@ -83,7 +84,7 @@ public class Service {
 			throw new BadRequestException("the nffg contains reference to non existing nodes in some links");
 		}
 
-		Map<String, String> idMappings = new HashMap<>();
+		ConcurrentMap<String, String> idMappings = new ConcurrentHashMap<>();
 
 		// set updateTime before storing the nffg
 		GregorianCalendar now = new GregorianCalendar();
@@ -136,17 +137,17 @@ public class Service {
 			String nffgId = neoClient.addNamedNode(nffg.getName());
 			neoClient.addNffgLabelToNode(nffgId);
 
-			// adding all the nodes to neo4j
-			for (Node node : nffg.getNode()) {
+			// adding all the nodes to neo4j in parallel
+			nffg.getNode().parallelStream().forEach(node -> {
 				String nodeId = neoClient.addNamedNode(node.getName());
 				// store the ID of the node
 				idMappings.put(node.getName(), nodeId);
 				// add the belongs relationship
 				neoClient.addBelongsToNffg(nffgId, nodeId);
-			}
+			});
 
-			// and add the links to neo4j
-			for (Link link : nffg.getLink()) {
+			// and add the links to neo4j in parallel
+			nffg.getLink().parallelStream().forEach(link -> {
 				String srcNodeId = idMappings.get(link.getSrc().getRef());
 				if (srcNodeId == null) {
 					throw new InconsistentDataException(
@@ -158,7 +159,7 @@ public class Service {
 							"error caused by dstNodeId not found for node " + link.getDst().getRef());
 				}
 				neoClient.addLinkBetweenNodes(srcNodeId, dstNodeId);
-			}
+			});
 		} finally {
 			// something went wrong
 			nffgStorage.setKO();
