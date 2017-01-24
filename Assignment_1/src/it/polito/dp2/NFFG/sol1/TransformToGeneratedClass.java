@@ -14,7 +14,7 @@ import it.polito.dp2.NFFG.sol1.jaxb.*;
  * @author Martino Mensio
  *
  */
-public class TransformToGeneratedClass implements Transformer<NffgVerifier, Verifier> {
+public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifier, Verifier, RuntimeException> {
 
 	private NffgVerifier input;
 
@@ -35,9 +35,9 @@ public class TransformToGeneratedClass implements Transformer<NffgVerifier, Veri
 	 * 
 	 * @param input
 	 *            the NffgVerifier object to be transformed
-	 * @return an object belonging to the Transformer interface
+	 * @return an object belonging to the ThrowingTransformer interface
 	 */
-	public static Transformer<NffgVerifier, Verifier> newTransformer(NffgVerifier input) {
+	public static ThrowingTransformer<NffgVerifier, Verifier, RuntimeException> newTransformer(NffgVerifier input) {
 		// TODO Auto-generated method stub
 		return new TransformToGeneratedClass(input);
 	}

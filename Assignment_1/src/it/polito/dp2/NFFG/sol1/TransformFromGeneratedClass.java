@@ -15,7 +15,7 @@ import it.polito.dp2.NFFG.sol1.library.*;
  * @author Martino Mensio
  *
  */
-public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVerifier> {
+public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier, NffgVerifier, NffgVerifierException> {
 
 	private Verifier input;
 
@@ -34,9 +34,9 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 * 
 	 * @param input
 	 *            the Verifier object to be transformed
-	 * @return an object belonging to the Transformer interface
+	 * @return an object belonging to the ThrowingTransformer interface
 	 */
-	public static Transformer<Verifier, NffgVerifier> newTransformer(Verifier input) {
+	public static ThrowingTransformer<Verifier, NffgVerifier, NffgVerifierException> newTransformer(Verifier input) {
 		return new TransformFromGeneratedClass(input);
 	}
 
@@ -44,34 +44,17 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 * implements the transformation of the root element (verifier)
 	 */
 	@Override
-	public NffgVerifier transform() {
+	public NffgVerifier transform() throws NffgVerifierException {
 		NffgVerifierImpl verifier = new NffgVerifierImpl();
-		try {
-			input.getNffg().forEach(nffg -> {
-				NffgReader nffgR = transformNffg(nffg);
-				try {
-					verifier.addNffg(nffgR);
-					nffg.getPolicies().getPolicy().forEach(p -> {
-						try {
-							verifier.addPolicy(nffg.getName(), transformPolicy(p, nffgR));
-						} catch (NffgVerifierException e) {
-							// to go through lambda must use an unchecked exception
-							throw new RuntimeException(e);
-						}
-					});
-				} catch (Exception e) {
-					// to go through lambda must use an unchecked exception
-					throw new RuntimeException(e);
-				}
-
-			});
-		} catch (Exception e2) {
-			// this catches all exceptions
-			System.err.println("Error in transformation:");
-			System.err.println(e2.getMessage());
-			return null;
+		for (Nffg nffg : input.getNffg()) {
+			NffgReader nffgR = transformNffg(nffg);
+			// add the nffg
+			verifier.addNffg(nffgR);
+			for (Policy policy : nffg.getPolicies().getPolicy()) {
+				// add the policy
+				verifier.addPolicy(nffg.getName(), transformPolicy(policy, nffgR));
+			}
 		}
-
 		return verifier;
 	}
 
@@ -83,36 +66,25 @@ public class TransformFromGeneratedClass implements Transformer<Verifier, NffgVe
 	 *            the NffgT object from unmarshaling
 	 * @return the NffgReader object
 	 */
-	private NffgReader transformNffg(Nffg nffg) {
+	private NffgReader transformNffg(Nffg nffg) throws NffgVerifierException {
 		NffgReaderImpl nffgR = new NffgReaderImpl(nffg.getName(),
 				Utils.CalendarFromXMLGregorianCalendar(nffg.getUpdated()));
 		// process nodes
-		nffg.getNodes().getNode().forEach(n -> {
-			try {
-				nffgR.addNode(transformNode(n));
-			} catch (NffgVerifierException e) {
-				// to go through lambda must use an unchecked exception
-				throw new RuntimeException(e);
-			}
-		});
+		for (Node node : nffg.getNodes().getNode()) {
+			nffgR.addNode(transformNode(node));
+		}
 		// and process links
-		nffg.getLinks().getLink().forEach(l -> {
+		for (Link link : nffg.getLinks().getLink()) {
 			// get references to the source and destination nodes.
-			// The source must be later modified, so need to use the getNodeReaderImpl
-			// method
-			NodeReaderImpl src = nffgR.getNodeReaderImpl(l.getSrc().getRef());
-			NodeReader dst = nffgR.getNode(l.getDst().getRef());
+			// The source must be later modified, so need to use the
+			// getNodeReaderImpl method
+			NodeReaderImpl src = nffgR.getNodeReaderImpl(link.getSrc().getRef());
+			NodeReader dst = nffgR.getNode(link.getDst().getRef());
 			// build the link
-			LinkReader linkR = new LinkReaderImpl(l.getName(), src, dst);
+			LinkReader linkR = new LinkReaderImpl(link.getName(), src, dst);
 			// add the circular reference to the getNodeReaderImpl
-			try {
-				src.addOutgoingLink(linkR);
-			} catch (NffgVerifierException e) {
-				// to go through lambda must use an unchecked exception
-				throw new RuntimeException(e);
-			}
-		});
-
+			src.addOutgoingLink(linkR);
+		}
 		return nffgR;
 	}
 

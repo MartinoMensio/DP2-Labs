@@ -10,12 +10,16 @@ package it.polito.dp2.NFFG.sol1;
  *            the input class to be transformed
  * @param <R>
  *            the output class
+ * @param <E>
+ *            the exception that the transform method can throw (use
+ *            RuntimeException in case no checked exceptions are thrown)
  */
-public interface Transformer<T extends Object, R extends Object> {
+public interface ThrowingTransformer<T extends Object, R extends Object, E extends Exception> {
 	/**
 	 * The method transform is responsible for doing the transformation.
 	 * 
 	 * @return
+	 * @throws E
 	 */
-	public R transform();
+	public R transform() throws E;
 }
