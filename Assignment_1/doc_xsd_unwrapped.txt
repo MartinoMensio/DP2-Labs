@@ -1,18 +1,18 @@
-For the xsd, I tried to follow the structure of the dtd. There are some differences but it was not required to have the same structure. For example, the functionalityType is an attribute of the element "functionality" inside the DTD, while for the schema it is placed as its content.
+For the xsd, I tried to follow the structure of the dtd. There are some differences but it was not required to have the same structure. For example, the functionality type is an attribute of the element "functionality" inside the DTD, while for the schema it is placed as its content.
 
 KEYs and KEYREFs:
 The main diferences are the scopes of keys, that can be more restricted than the global scope.
 The keys for nodes and links are defined inside the "nodes" element and inside the "links" element respectively. Since an nffg has a single element "nodes" and a single element "links", the key is equivalent as if it was placed inside the nffg element directly.
-Instead the keyrefs to the nodes (both for links and for policies) are defined inside the "nffg" node, and refer the corresponding elements inside the isolated scope of the nffg.
+Instead the keyrefs to the nodes (both for links and for policies) are defined inside the "nffg" element, and refer the corresponding elements inside the isolated scope of the nffg.
 The keys for the nffgs and policies instead, since they must identify the nffg/policy in the global scope of the verifier, are placed in the "verifier" element.
 I placed the policies as child elements of an nffg, to avoid data redundancy (saying for each policy that it belongs to a certain nffg), but the key is on the verifier element so that different policies cannot have the same name, also if they belong to different nffgs.
 The placement of the policy inside the nffg also makes it easier to write the keyrefs of their source and destination nodes, because they must identify the nodes inside the specific nffg they belong to.
 
 Types:
-Types have been used in a way for reducing redundancy. All elements with a "name" attribute are extensions of the "named_element_t" type. The type "policy_t" is an extension of the "link_t", since it contains the same elements (src, dst) but has more details inside.
+Types have been used in a way for reducing redundancy. All elements with a "name" attribute are extensions of the "named_element" type. The type "policy" is an extension of the "link", since it contains the same elements (src, dst) but has more details inside.
 A type has been created for each of the entities in place: nffg, node, link, policy, functionality, result. Other types have been created for utility purposes.
-The "node_ref_t" is a type that represents an element without content and with a simple attribute "ref" of a specific type. I used this type for all the references to other elements.
-The "name_t" is a type that represent the constraint on names. In the specifications given, the string must be composed of an alphabetic letter followed by alphanumeric characters, but running the tests I discovered that also the character '_' had to be allowed, so I included it into the pattern.
+The "node_ref" is a type that represents an element without content and with a simple attribute "ref" of a specific type. I used this type for all the references to other elements.
+The "name" is a type that represent the constraint on names. In the specifications given, the string must be composed of an alphabetic letter followed by alphanumeric characters.
 
 As for the DTD, I considedered a single type of policy, and depending on its content (the number of functionalities to be traversed) the application will determine if it is a reachability or a traversal one.
 

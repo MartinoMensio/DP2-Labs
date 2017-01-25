@@ -98,7 +98,7 @@
 
 	<simpleType name="name">
 		<restriction base="string">
-			<pattern value="[a-zA-Z_][a-zA-Z\d_]*" />
+			<pattern value="[a-zA-Z][a-zA-Z\d]*" />
 		</restriction>
 	</simpleType>
 </schema>

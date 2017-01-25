@@ -108,10 +108,10 @@
 					verified successfully
 				</result>
 			</policy>
-			<policy name="Policy22" positive="false">
+			<policy name="Policy22" positive="true">
 				<src ref="WebServer1" />
 				<dst ref="WebClient1" />
-				<result satisfied="false" verified="2016-11-21T23:23:00+01:00">
+				<result satisfied="true" verified="2016-11-21T23:23:00+01:00">
 					This policy has not been
 					verified successfully, because it is a negative policy but the
 					property was satisfied
