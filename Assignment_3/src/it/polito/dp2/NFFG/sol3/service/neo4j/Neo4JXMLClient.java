@@ -34,7 +34,8 @@ public class Neo4JXMLClient {
 			Response res = target.path("node").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(node, MediaType.APPLICATION_XML));
 			if (res.getStatus() != 200) {
-				throw new NeoFailedException("POST node failed: response status code " + res.getStatus());
+				throw new NeoFailedException(
+						"POST node failed: expected status code 200 but it was " + res.getStatus());
 			}
 			return res.readEntity(Node.class);
 		} catch (Exception e) {
@@ -52,7 +53,8 @@ public class Neo4JXMLClient {
 		try {
 			Response res = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
 			if (res.getStatus() != 200) {
-				throw new NeoFailedException("DELETE nodes failed: response status code " + res.getStatus());
+				throw new NeoFailedException(
+						"DELETE nodes failed: expected status code 200 but it was " + res.getStatus());
 			}
 		} catch (Exception e) {
 			if (e instanceof NeoFailedException) {
@@ -75,7 +77,8 @@ public class Neo4JXMLClient {
 			Response res = target.path("node").path(nodeId).path("label").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(label, MediaType.APPLICATION_XML));
 			if (res.getStatus() != 204) {
-				throw new NeoFailedException("POST label failed: response status code " + res.getStatus());
+				throw new NeoFailedException(
+						"POST label failed: expected status code 204 but it was " + res.getStatus());
 			}
 		} catch (Exception e) {
 			if (e instanceof NeoFailedException) {
@@ -127,7 +130,8 @@ public class Neo4JXMLClient {
 			Response res = target.path("node").path(nodeId).path("relationship").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(rel, MediaType.APPLICATION_XML));
 			if (res.getStatus() != 200) {
-				throw new NeoFailedException("POST relationship failed: response status code " + res.getStatus());
+				throw new NeoFailedException(
+						"POST relationship failed: expected status code 200 but it was " + res.getStatus());
 			}
 			return res.readEntity(Relationship.class);
 		} catch (Exception e) {
@@ -150,7 +154,8 @@ public class Neo4JXMLClient {
 			Response res = target.path("node").path(srcNodeId).path("paths").queryParam("dst", dstNodeId)
 					.request(MediaType.APPLICATION_XML).get();
 			if (res.getStatus() != 200) {
-				throw new NeoFailedException("GET paths failed: response status code " + res.getStatus());
+				throw new NeoFailedException(
+						"GET paths failed: expected status code 200 but it was " + res.getStatus());
 			}
 			return !res.readEntity(Paths.class).getPath().isEmpty();
 		} catch (Exception e) {

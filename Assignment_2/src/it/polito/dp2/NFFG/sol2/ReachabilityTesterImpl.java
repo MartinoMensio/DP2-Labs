@@ -2,9 +2,8 @@ package it.polito.dp2.NFFG.sol2;
 
 import java.net.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
-import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
@@ -118,19 +117,17 @@ public class ReachabilityTesterImpl implements ReachabilityTester {
 
 		// request the paths from source to destination
 		try {
-			Paths res = target.path("node").path(srcId).path("paths").queryParam("dst", dstId)
-					.request(MediaType.APPLICATION_XML).get(Paths.class);
-			// System.out.println("found " + res.getPath().size() + "paths");
-			return !res.getPath().isEmpty();
-		} catch (ResponseProcessingException e) {
-			throw new ServiceException(
-					"impossible to process the Paths response: response processing error, status: HTTP "
-							+ e.getResponse().getStatus());
-		} catch (ProcessingException e) {
-			throw new ServiceException("impossible to process the Paths response: processing error");
-		} catch (WebApplicationException e) {
-			throw new ServiceException(
-					"impossible to process the Paths response: webapp error HTTP " + e.getResponse().getStatus());
+			Response res = target.path("node").path(srcId).path("paths").queryParam("dst", dstId)
+					.request(MediaType.APPLICATION_XML).get();
+			if (res.getStatus() != 200) {
+				throw new ServiceException("GET paths failed: expected status code 200 but it was " + res.getStatus());
+			}
+			return !res.readEntity(Paths.class).getPath().isEmpty();
+		} catch (Exception e) {
+			if (e instanceof ServiceException) {
+				throw e;
+			}
+			throw new ServiceException("GET paths failed: " + e.getMessage());
 		}
 	}
 
@@ -142,16 +139,16 @@ public class ReachabilityTesterImpl implements ReachabilityTester {
 	private void deleteAllNodes() throws ServiceException {
 		// deletion of previous graph (nodes and links)
 		try {
-			Response resdel = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
-
-			if (resdel.getStatus() != 200) {
-				// not successful
-				throw new ServiceException("impossible to delete the previous graph: HTTP " + resdel.getStatus());
+			Response res = target.path("nodes").request(MediaType.APPLICATION_XML).delete();
+			if (res.getStatus() != 200) {
+				throw new ServiceException(
+						"DELETE nodes failed: expected status code 200 but it was " + res.getStatus());
 			}
-		} catch (ResponseProcessingException e) {
-			// e.g. if the MediaType is wrong
-			throw new ServiceException("impossible to delete the previous graph because of response processing error"
-					+ ", status: HTTP " + e.getResponse().getStatus());
+		} catch (Exception e) {
+			if (e instanceof ServiceException) {
+				throw e;
+			}
+			throw new ServiceException("DELETE node failed: " + e.getMessage());
 		}
 	}
 
@@ -162,18 +159,17 @@ public class ReachabilityTesterImpl implements ReachabilityTester {
 		nameP.setValue(nodeR.getName());
 		node.getProperty().add(nameP);
 		try {
-			Node res = target.path("node").request(MediaType.APPLICATION_XML)
-					.post(Entity.entity(node, MediaType.APPLICATION_XML), Node.class);
-
-			return res.getId();
-		} catch (ResponseProcessingException e) {
-			throw new ServiceException("response processing error with node named " + nodeR.getName()
-					+ ", status: HTTP " + e.getResponse().getStatus());
-		} catch (ProcessingException e) {
-			throw new ServiceException("processing error with node named " + nodeR.getName());
-		} catch (WebApplicationException e) {
-			throw new ServiceException("webapp error on node " + nodeR.getName() + " because of error  HTTP "
-					+ e.getResponse().getStatus());
+			Response res = target.path("node").request(MediaType.APPLICATION_XML)
+					.post(Entity.entity(node, MediaType.APPLICATION_XML));
+			if (res.getStatus() != 200) {
+				throw new ServiceException("POST node failed: expected status code 200 but was " + res.getStatus());
+			}
+			return res.readEntity(Node.class).getId();
+		} catch (Exception e) {
+			if (e instanceof ServiceException) {
+				throw e;
+			}
+			throw new ServiceException("POST node failed: " + e.getMessage());
 		}
 	}
 
@@ -188,13 +184,13 @@ public class ReachabilityTesterImpl implements ReachabilityTester {
 
 			if (res.getStatus() != 200) {
 				throw new ServiceException(
-						"error on link " + linkR.getName() + " because of error HTTP " + res.getStatus());
+						"POST relationship failed: expected status code 200 but was " + res.getStatus());
 			}
-		} catch (ResponseProcessingException e) {
-			throw new ServiceException("response processing error with link named " + linkR.getName()
-					+ ", status: HTTP " + e.getResponse().getStatus());
-		} catch (ProcessingException e) {
-			throw new ServiceException("processing error with link named " + linkR.getName());
+		} catch (Exception e) {
+			if (e instanceof ServiceException) {
+				throw e;
+			}
+			throw new ServiceException("POST relationship failed: " + e.getMessage());
 		}
 	}
 

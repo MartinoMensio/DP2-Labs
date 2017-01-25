@@ -58,7 +58,7 @@ public class NffgVerifierDataProvider {
 			Response res = target.path("nffgs").request(MediaType.APPLICATION_XML).get();
 			if (res.getStatus() != 200) {
 				throw new NffgVerifierException(
-						"Download of NFFGs failed. Response status code was " + res.getStatus() + " instead of 200");
+						"GET nffgs failed: expected status code 200 but it was " + res.getStatus());
 			}
 			return res.readEntity(new GenericType<List<Nffg>>() {
 			});
@@ -66,7 +66,7 @@ public class NffgVerifierDataProvider {
 			if (e instanceof NffgVerifierException) {
 				throw e;
 			}
-			throw new NffgVerifierException("Download of NFFGs failed. Reason: " + e.getMessage());
+			throw new NffgVerifierException("GET nffgs failed: " + e.getMessage());
 		}
 	}
 
@@ -75,7 +75,7 @@ public class NffgVerifierDataProvider {
 			Response res = target.path("policies").request(MediaType.APPLICATION_XML).get();
 			if (res.getStatus() != 200) {
 				throw new NffgVerifierException(
-						"Download of policies failed. Response status code was " + res.getStatus() + " instead of 200");
+						"GET policies failed: expected status code 200 but it was " + res.getStatus());
 			}
 			return res.readEntity(new GenericType<List<Policy>>() {
 			});
@@ -83,7 +83,7 @@ public class NffgVerifierDataProvider {
 			if (e instanceof NffgVerifierException) {
 				throw e;
 			}
-			throw new NffgVerifierException("Download of policies failed. Reason: " + e.getMessage());
+			throw new NffgVerifierException("GET policies failed: " + e.getMessage());
 		}
 	}
 }

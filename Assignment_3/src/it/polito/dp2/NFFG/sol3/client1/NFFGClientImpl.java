@@ -2,7 +2,6 @@ package it.polito.dp2.NFFG.sol3.client1;
 
 import java.net.URI;
 
-import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
@@ -107,13 +106,13 @@ public class NFFGClientImpl implements NFFGClient {
 				throw new AlreadyLoadedException("nffg with name " + nffg.getName() + "already exists in the service");
 			}
 			if (res.getStatus() != 201) {
-				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 201");
+				throw new ServiceException("POST nffgs failed: expected status code 201 but it was " + res.getStatus());
 			}
 		} catch (Exception e) {
 			if (e instanceof AlreadyLoadedException || e instanceof ServiceException) {
 				throw e;
 			}
-			throw new ServiceException("Something bad happened: " + e.getMessage());
+			throw new ServiceException("POST nffgs failed: " + e.getMessage());
 		}
 
 	}
@@ -129,13 +128,14 @@ public class NFFGClientImpl implements NFFGClient {
 			Response res = target.path("policies").path(policy.getName()).request(MediaType.APPLICATION_XML)
 					.put(Entity.entity(policy, MediaType.APPLICATION_XML));
 			if (res.getStatus() != 200 && res.getStatus() != 201) {
-				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200 or 201");
+				throw new ServiceException(
+						"PUT policy failed: expected status code 200 or 201 instead it was " + res.getStatus());
 			}
 		} catch (Exception e) {
 			if (e instanceof ServiceException) {
 				throw e;
 			}
-			throw new ServiceException("Something bad happened: " + e.getMessage());
+			throw new ServiceException("PUT policy failed: " + e.getMessage());
 		}
 
 	}
@@ -155,13 +155,14 @@ public class NFFGClientImpl implements NFFGClient {
 				throw new UnknownNameException("Policy with name " + name + " was not stored in the service");
 			}
 			if (res.getStatus() != 200) {
-				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200");
+				throw new ServiceException(
+						"DELETE policy failed: expected status code 200 but it was " + res.getStatus());
 			}
 		} catch (Exception e) {
 			if (e instanceof UnknownNameException || e instanceof ServiceException) {
 				throw e;
 			}
-			throw new ServiceException("Something bad happened: " + e.getMessage());
+			throw new ServiceException("DELETE policy failed: " + e.getMessage());
 		}
 	}
 
@@ -182,14 +183,16 @@ public class NFFGClientImpl implements NFFGClient {
 				throw new UnknownNameException("Policy with name " + name + " was not stored in the service");
 			}
 			if (res.getStatus() != 200) {
-				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200");
+				throw new ServiceException(
+						"POST policy result failed: expected status code 200 but it was " + res.getStatus());
 			}
 			return res.readEntity(Policy.class).getResult().isSatisfied();
 		} catch (Exception e) {
 			if (e instanceof UnknownNameException || e instanceof ServiceException) {
 				throw e;
 			}
-			throw new ServiceException("Something bad happened: " + e.getMessage());
+			throw new ServiceException(
+					"POST policy result failed: expected status code 201 but it was : " + e.getMessage());
 		}
 	}
 
