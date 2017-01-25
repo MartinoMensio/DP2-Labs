@@ -31,7 +31,7 @@ public class Neo4JXMLClient {
 	 */
 	public Node addNode(Node node) {
 		try {
-			Response res = target.path("nodea").request(MediaType.APPLICATION_XML)
+			Response res = target.path("node").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(node, MediaType.APPLICATION_XML));
 			if (res.getStatus() != 200) {
 				throw new NeoFailedException("POST node failed: response status code " + res.getStatus());
