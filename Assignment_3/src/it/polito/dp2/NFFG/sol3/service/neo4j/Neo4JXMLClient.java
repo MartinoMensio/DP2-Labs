@@ -31,13 +31,16 @@ public class Neo4JXMLClient {
 	 */
 	public Node addNode(Node node) {
 		try {
-			Response res = target.path("node").request(MediaType.APPLICATION_XML)
+			Response res = target.path("nodea").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(node, MediaType.APPLICATION_XML));
 			if (res.getStatus() != 200) {
 				throw new NeoFailedException("POST node failed: response status code " + res.getStatus());
 			}
 			return res.readEntity(Node.class);
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof NeoFailedException) {
+				throw e;
+			}
 			throw new NeoFailedException("POST node failed: " + e.getMessage());
 		}
 	}
@@ -51,7 +54,10 @@ public class Neo4JXMLClient {
 			if (res.getStatus() != 200) {
 				throw new NeoFailedException("DELETE nodes failed: response status code " + res.getStatus());
 			}
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof NeoFailedException) {
+				throw e;
+			}
 			throw new NeoFailedException("DELETE nodes failed: " + e.getMessage());
 		}
 	}
@@ -71,7 +77,10 @@ public class Neo4JXMLClient {
 			if (res.getStatus() != 204) {
 				throw new NeoFailedException("POST label failed: response status code " + res.getStatus());
 			}
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof NeoFailedException) {
+				throw e;
+			}
 			throw new NeoFailedException("POST label failed: " + e.getMessage());
 		}
 	}
@@ -121,7 +130,10 @@ public class Neo4JXMLClient {
 				throw new NeoFailedException("POST relationship failed: response status code " + res.getStatus());
 			}
 			return res.readEntity(Relationship.class);
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof NeoFailedException) {
+				throw e;
+			}
 			throw new NeoFailedException("POST relationship failed: " + e.getMessage());
 		}
 	}
@@ -141,7 +153,10 @@ public class Neo4JXMLClient {
 				throw new NeoFailedException("GET paths failed: response status code " + res.getStatus());
 			}
 			return !res.readEntity(Paths.class).getPath().isEmpty();
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof NeoFailedException) {
+				throw e;
+			}
 			throw new NeoFailedException("GET paths failed: " + e.getMessage());
 		}
 	}
