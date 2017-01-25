@@ -7,7 +7,7 @@
 	<property name="PORT" value="8080" />
 	<property name="URL" value="http://localhost:${PORT}/Neo4JXML/rest" />
 	<property name="WADL" value="${URL}/application.wadl" />
-	<property name="lab2.location" location="." />
+	<property name="lab2.location" location="${basedir}" />
 	<property name="gen.dir" location="${lab2.location}/gen-src" />
 	<property name="lib.dir" location="${lab2.location}/lib" />
 	<property name="custom.dir" location="${lab2.location}/custom" />
