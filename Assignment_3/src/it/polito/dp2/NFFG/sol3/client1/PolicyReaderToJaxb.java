@@ -5,14 +5,21 @@ import java.util.function.Function;
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
+/**
+ * This class takes a PolicyReader object and returns a corresponding object
+ * belonging to the generated class Policy
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class PolicyReaderToJaxb implements Function<PolicyReader, Policy> {
 
-	ObjectFactory factory = new ObjectFactory();
-	
+	private ObjectFactory factory = new ObjectFactory();
+
 	public ObjectFactory getFactory() {
 		return factory;
 	}
-	
+
 	@Override
 	public Policy apply(PolicyReader policyR) {
 		// all the policies are of type reachability

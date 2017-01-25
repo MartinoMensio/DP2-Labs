@@ -7,6 +7,13 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.client2.library.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
+/**
+ * This class takes a Policy object and returns a corresponding object belonging
+ * to the PolicyReaderImpl class
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class PolicyTransformer implements ThrowingTransformer<Policy, PolicyReaderImpl, NffgVerifierException> {
 
 	private NffgReaderImpl nffgR;

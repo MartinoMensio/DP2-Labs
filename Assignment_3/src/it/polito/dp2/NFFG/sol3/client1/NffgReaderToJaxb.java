@@ -7,6 +7,8 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
 /**
+ * This class takes a NffgReader object and returns a corresponding object
+ * belonging to the generated class Nffg
  * 
  * @author Martino Mensio
  *
@@ -28,14 +30,14 @@ public class NffgReaderToJaxb implements Function<NffgReader, Nffg> {
 		return result;
 	}
 
-	Node transformNode(NodeReader nodeR) {
+	private Node transformNode(NodeReader nodeR) {
 		Node result = factory.createNode();
 		result.setName(nodeR.getName());
 		result.setFunctionality(Functionality.fromValue(nodeR.getFuncType().value()));
 		return result;
 	}
 
-	Link transformLink(LinkReader linkR) {
+	private Link transformLink(LinkReader linkR) {
 		Link result = factory.createLink();
 		result.setName(linkR.getName());
 		NodeRef src = factory.createNodeRef();

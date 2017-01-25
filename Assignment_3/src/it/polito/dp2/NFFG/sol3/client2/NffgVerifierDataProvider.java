@@ -4,7 +4,6 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.*;
 
-import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
@@ -12,6 +11,13 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.client2.library.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
+/**
+ * This class retrieves the data from the service and provides an object
+ * belonging to the interface NffgVerifier
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class NffgVerifierDataProvider {
 
 	private WebTarget target;
@@ -53,7 +59,7 @@ public class NffgVerifierDataProvider {
 		return result;
 	}
 
-	List<Nffg> downloadNffgs() throws NffgVerifierException {
+	private List<Nffg> downloadNffgs() throws NffgVerifierException {
 		try {
 			Response res = target.path("nffgs").request(MediaType.APPLICATION_XML).get();
 			if (res.getStatus() != 200) {
@@ -70,7 +76,7 @@ public class NffgVerifierDataProvider {
 		}
 	}
 
-	List<Policy> downloadPolicies() throws NffgVerifierException {
+	private List<Policy> downloadPolicies() throws NffgVerifierException {
 		try {
 			Response res = target.path("policies").request(MediaType.APPLICATION_XML).get();
 			if (res.getStatus() != 200) {

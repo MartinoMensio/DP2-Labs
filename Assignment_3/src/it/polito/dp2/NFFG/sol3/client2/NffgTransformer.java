@@ -4,6 +4,13 @@ import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol3.client2.library.*;
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
+/**
+ * This class takes a Nffg object and returns a corresponding object belonging
+ * to the NffgReader class
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class NffgTransformer implements ThrowingTransformer<Nffg, NffgReaderImpl, NffgVerifierException> {
 
 	private NffgTransformer() {
