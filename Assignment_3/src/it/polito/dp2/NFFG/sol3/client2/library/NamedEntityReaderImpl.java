@@ -15,7 +15,10 @@ public class NamedEntityReaderImpl implements NamedEntityReader {
 
 	private String name;
 
-	public NamedEntityReaderImpl(String name) {
+	public NamedEntityReaderImpl(String name) throws NffgVerifierException {
+		if (name == null) {
+			throw new NffgVerifierException("something null when creating a NamedEntityReader");
+		}
 		this.name = name;
 	}
 

@@ -56,11 +56,11 @@ public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier
 	}
 
 	/**
-	 * Performs the transformation from object belonging to the class NffgT to
+	 * Performs the transformation from object belonging to the class Nffg to
 	 * the class NffgReader
 	 * 
 	 * @param nffg
-	 *            the NffgT object from unmarshaling
+	 *            the Nffg object from unmarshaling
 	 * @return the NffgReader object
 	 */
 	private NffgReader transformNffg(Nffg nffg) throws NffgVerifierException {
@@ -86,26 +86,28 @@ public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier
 	}
 
 	/**
-	 * Performs the transformation from object belonging to the class NodeT to
+	 * Performs the transformation from object belonging to the class Node to
 	 * the class NodeReader
 	 * 
 	 * @param node
-	 *            the NodeT object from unmarshaling
+	 *            the Node object from unmarshaling
 	 * @return the NodeReader object
+	 * @throws NffgVerifierException 
 	 */
-	private NodeReader transformNode(Node node) {
+	private NodeReader transformNode(Node node) throws NffgVerifierException {
 		return new NodeReaderImpl(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
 	}
 
 	/**
-	 * Performs the transformation from object belonging to the class PolicyT to
+	 * Performs the transformation from object belonging to the class Policy to
 	 * the class PolicyReader
 	 * 
 	 * @param policy
-	 *            the NffgT object from unmarshaling
+	 *            the Nffg object from unmarshaling
 	 * @return the PolicyReader object
+	 * @throws NffgVerifierException 
 	 */
-	private PolicyReader transformPolicy(Policy policy, NffgReader nffgR) {
+	private PolicyReader transformPolicy(Policy policy, NffgReader nffgR) throws NffgVerifierException {
 		NodeReader src = nffgR.getNode(policy.getSrc().getRef());
 		NodeReader dst = nffgR.getNode(policy.getDst().getRef());
 		VerificationResultReaderImpl result = null;
@@ -131,16 +133,17 @@ public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier
 	}
 
 	/**
-	 * Performs the transformation from object belonging to the class ResultT to
+	 * Performs the transformation from object belonging to the class Result to
 	 * the class VerificationResultReaderImpl. Note that returns an object
 	 * belonging to the class that I implemented, so that i can call the method
 	 * setPolicy to add the circular reference
 	 * 
 	 * @param result
-	 *            the ResultT object from unmarshaling
+	 *            the Result object from unmarshaling
 	 * @return the VerificationResultReaderImpl object
+	 * @throws NffgVerifierException 
 	 */
-	private VerificationResultReaderImpl transformResult(Result result) {
+	private VerificationResultReaderImpl transformResult(Result result) throws NffgVerifierException {
 		return new VerificationResultReaderImpl(result.isSatisfied(), result.getContent(),
 				Utils.CalendarFromXMLGregorianCalendar(result.getVerified()));
 	}

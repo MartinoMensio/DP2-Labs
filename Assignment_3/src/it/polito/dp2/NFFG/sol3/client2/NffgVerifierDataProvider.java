@@ -44,7 +44,7 @@ public class NffgVerifierDataProvider {
 			if (nffgR == null) {
 				throw new NffgVerifierException("No nffg with the name " + group.getKey());
 			}
-			ThrowingTransformer<Policy, PolicyReaderImpl, RuntimeException> policyTransformer = PolicyTransformer
+			ThrowingTransformer<Policy, PolicyReaderImpl, NffgVerifierException> policyTransformer = PolicyTransformer
 					.newNffgTransformer(nffgR);
 			for (Policy policy : group.getValue()) {
 				result.addPolicy(nffgR.getName(), policyTransformer.transform(policy));

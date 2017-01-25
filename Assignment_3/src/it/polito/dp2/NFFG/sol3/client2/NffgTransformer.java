@@ -38,7 +38,7 @@ public class NffgTransformer implements ThrowingTransformer<Nffg, NffgReaderImpl
 
 	}
 
-	private NodeReader transformNode(Node node) {
+	private NodeReader transformNode(Node node) throws NffgVerifierException {
 		return new NodeReaderImpl(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
 	}
 

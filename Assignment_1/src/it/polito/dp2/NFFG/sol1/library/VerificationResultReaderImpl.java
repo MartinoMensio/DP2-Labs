@@ -17,7 +17,11 @@ public class VerificationResultReaderImpl implements VerificationResultReader {
 	private String message;
 	private Calendar verificationTime;
 
-	public VerificationResultReaderImpl(Boolean result, String message, Calendar verificationTime) {
+	public VerificationResultReaderImpl(Boolean result, String message, Calendar verificationTime)
+			throws NffgVerifierException {
+		if (result == null || message == null || verificationTime == null) {
+			throw new NffgVerifierException("something null when creating a VerificationResultReader");
+		}
 		this.result = result;
 		this.message = message;
 		this.verificationTime = verificationTime;
@@ -31,8 +35,12 @@ public class VerificationResultReaderImpl implements VerificationResultReader {
 	 * has been added. This method does not belong to the interface
 	 * 
 	 * @param policy
+	 * @throws NffgVerifierException
 	 */
-	public void setPolicy(PolicyReader policy) {
+	public void setPolicy(PolicyReader policy) throws NffgVerifierException {
+		if (policy == null) {
+			throw new NffgVerifierException("cannot set null policy to VerificationResultReader");
+		}
 		this.policy = policy;
 	}
 

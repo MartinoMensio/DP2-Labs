@@ -16,8 +16,11 @@ public class NodeReaderImpl extends NamedEntityReaderImpl implements NodeReader 
 	// the Set of outgoing links
 	private Map<String, LinkReader> outgoingLinks;
 
-	public NodeReaderImpl(String name, FunctionalType functionality) {
+	public NodeReaderImpl(String name, FunctionalType functionality) throws NffgVerifierException {
 		super(name);
+		if (functionality == null) {
+			throw new NffgVerifierException("something null when creating a NodeReader");
+		}
 		this.functionality = functionality;
 		outgoingLinks = new HashMap<>();
 	}
@@ -31,6 +34,9 @@ public class NodeReaderImpl extends NamedEntityReaderImpl implements NodeReader 
 	 *             if a link with this name already exists
 	 */
 	public void addOutgoingLink(LinkReader link) throws NffgVerifierException {
+		if (link == null) {
+			throw new NffgVerifierException("cannot add a null link to NodeReader");
+		}
 		if (outgoingLinks.containsKey(link.getName())) {
 			throw new NffgVerifierException(
 					"a link with the name " + link.getName() + " already exists in the nffg " + getName());

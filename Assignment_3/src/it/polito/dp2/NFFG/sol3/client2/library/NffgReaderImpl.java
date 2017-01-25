@@ -17,8 +17,11 @@ public class NffgReaderImpl extends NamedEntityReaderImpl implements NffgReader 
 	private Map<String, NodeReader> nodes;
 	private Calendar updateTime;
 
-	public NffgReaderImpl(String name, Calendar updateTime) {
+	public NffgReaderImpl(String name, Calendar updateTime) throws NffgVerifierException {
 		super(name);
+		if (updateTime == null) {
+			throw new NffgVerifierException("something null when creating a NffgReader");
+		}
 		this.updateTime = updateTime;
 		this.nodes = new HashMap<>();
 	}
@@ -32,6 +35,9 @@ public class NffgReaderImpl extends NamedEntityReaderImpl implements NffgReader 
 	 *             on duplicate node (by name)
 	 */
 	public void addNode(NodeReader node) throws NffgVerifierException {
+		if (node == null) {
+			throw new NffgVerifierException("cannot add a null node to NffgReader");
+		}
 		if (nodes.containsKey(node.getName())) {
 			throw new NffgVerifierException(
 					"a node with the name " + node.getName() + " is already stored in the NFFG " + getName());

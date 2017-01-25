@@ -33,6 +33,9 @@ public class NffgVerifierImpl implements NffgVerifier {
 	 *             if another nffg with this name is already there
 	 */
 	public void addNffg(NffgReader nffg) throws NffgVerifierException {
+		if (nffg == null) {
+			throw new NffgVerifierException("cannot add a null nffg to NffgVerifier");
+		}
 		if (nffgs.containsKey(nffg.getName())) {
 			// a duplicate nffg is found
 			throw new NffgVerifierException("A NFFG with the name " + nffg.getName() + " is already there");
@@ -55,6 +58,12 @@ public class NffgVerifierImpl implements NffgVerifier {
 	 *             policy with this name
 	 */
 	public void addPolicy(String nffgName, PolicyReader policy) throws NffgVerifierException {
+		if (policy == null) {
+			throw new NffgVerifierException("cannot add a null policy to NffgVerifier");
+		}
+		if (nffgName == null) {
+			throw new NffgVerifierException("cannot add a policy referred to a null nffg");
+		}
 		if (!nffgs.containsKey(nffgName)) {
 			// no nffg with this name
 			throw new NffgVerifierException(

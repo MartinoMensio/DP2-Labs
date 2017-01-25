@@ -14,8 +14,13 @@ public class PolicyReaderImpl extends NamedEntityReaderImpl implements PolicyRea
 	private VerificationResultReader result;
 	private boolean expected;
 
-	public PolicyReaderImpl(String name, NffgReader nffg, VerificationResultReader result, Boolean expected) {
+	public PolicyReaderImpl(String name, NffgReader nffg, VerificationResultReader result, Boolean expected)
+			throws NffgVerifierException {
 		super(name);
+		// result is optional
+		if (nffg == null || expected == null) {
+			throw new NffgVerifierException("something null when creating a PolicyReader");
+		}
 		this.nffg = nffg;
 		this.result = result;
 		this.expected = expected;
