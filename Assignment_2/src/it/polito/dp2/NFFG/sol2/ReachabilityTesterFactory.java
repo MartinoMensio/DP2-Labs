@@ -22,6 +22,8 @@ public class ReachabilityTesterFactory extends it.polito.dp2.NFFG.lab2.Reachabil
 		try {
 			URI uri = new URI(System.getProperty("it.polito.dp2.NFFG.lab2.URL"));
 			return new ReachabilityTesterImpl(factory.newNffgVerifier(), uri);
+		} catch (NullPointerException e) {
+			throw new ReachabilityTesterException("The system property is not set");
 		} catch (URISyntaxException e) {
 			throw new ReachabilityTesterException("Invalid URI: " + e.getMessage());
 		} catch (NffgVerifierException e) {

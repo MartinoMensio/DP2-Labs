@@ -49,25 +49,20 @@ public class NffgInfoSerializer {
 		this.outFile = outFile;
 	}
 
-	public NffgInfoSerializer(NffgVerifier monitor) {
-		super();
-		this.monitor = monitor;
-	}
-
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		NffgInfoSerializer wf;
+		NffgInfoSerializer serializer;
 		try {
 			if (args.length < 1) {
 				// use stdout
-				wf = new NffgInfoSerializer();
+				serializer = new NffgInfoSerializer();
 			} else {
 				// Try to use the provided filename
-				wf = new NffgInfoSerializer(args[0]);
+				serializer = new NffgInfoSerializer(args[0]);
 			}
-			wf.serialize();
+			serializer.serialize();
 		} catch (NffgVerifierException e) {
 			System.err.println("Could not instantiate data generator.");
 			e.printStackTrace();

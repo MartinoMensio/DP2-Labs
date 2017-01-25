@@ -59,13 +59,13 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 
 	/**
 	 * Performs the transformation from object belonging to the class NffgReader
-	 * to the class NffgT
+	 * to the class Nffg
 	 * 
 	 * @param nffgR
 	 *            the NffgReader object
 	 * @param input
 	 *            the NffgVerifier
-	 * @return the NffgT object for marshaling
+	 * @return the Nffg object for marshaling
 	 */
 	private Nffg transformNffg(NffgReader nffgR, NffgVerifier input) {
 		// create an empty nffg element
@@ -119,11 +119,11 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 
 	/**
 	 * Performs the transformation from object belonging to the class NodeReader
-	 * to the class NodeT
+	 * to the class Node
 	 * 
 	 * @param nodeR
 	 *            the NodeReader object
-	 * @return the NodeT object for marshaling
+	 * @return the Node object for marshaling
 	 */
 	private Node transformNode(NodeReader nodeR) {
 		Node node = factory.createNode();
@@ -136,11 +136,11 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 
 	/**
 	 * Performs the transformation from object belonging to the class LinkReader
-	 * to the class LinkT
+	 * to the class Link
 	 * 
 	 * @param linkR
 	 *            the LinkReader object
-	 * @return the LinkT object for marshaling
+	 * @return the Link object for marshaling
 	 */
 	private Link transformLink(LinkReader linkR) {
 		Link link = factory.createLink();
@@ -162,11 +162,11 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 	/**
 	 * 
 	 * Performs the transformation from object belonging to the class
-	 * PolicyReader to the class PolicyT
+	 * PolicyReader to the class Policy
 	 * 
 	 * @param policyR
 	 *            the PolicyReader object
-	 * @return the PolicyT object for marshaling
+	 * @return the Policy object for marshaling
 	 */
 	private Policy transformPolicy(PolicyReader policyR) {
 		Policy policy = factory.createPolicy();
@@ -203,11 +203,11 @@ public class TransformToGeneratedClass implements ThrowingTransformer<NffgVerifi
 	/**
 	 * 
 	 * Performs the transformation from object belonging to the class
-	 * VerificationResultReader to the class ResultT
+	 * VerificationResultReader to the class Result
 	 * 
 	 * @param policyR
 	 *            the PolicyReader object
-	 * @return the PolicyT object for marshaling
+	 * @return the Policy object for marshaling
 	 */
 	private Result transformResult(VerificationResultReader resultR) {
 		// the result is optional

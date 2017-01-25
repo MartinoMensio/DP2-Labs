@@ -16,6 +16,9 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 	public NffgVerifier newNffgVerifier() throws NffgVerifierException {
 
 		String fileName = System.getProperty("it.polito.dp2.NFFG.sol1.NffgInfo.file");
+		if (fileName == null) {
+			throw new NffgVerifierException("The system property is not set");
+		}
 
 		Verifier verifier = null;
 
@@ -40,8 +43,10 @@ public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory 
 		} catch (JAXBException e) {
 			// unmarshaling problem
 			throw new NffgVerifierException("unexpected problem occurs during the unmarshalling: " + e.getMessage());
+		} catch (NffgVerifierException e) {
+			throw e;
 		} catch (Exception e) {
-			// last chance
+			// last chance for all the runtime exceptions
 			throw new NffgVerifierException(e.getMessage());
 		}
 	}
