@@ -2,7 +2,7 @@ package it.polito.dp2.NFFG.sol1;
 
 /**
  * This is a generic interface for performing transformation from an object
- * belonging to a class T to a class R.
+ * belonging to a class T to a class R that can throw exceptions of type E.
  * 
  * @author Martino Mensio
  *

@@ -92,7 +92,7 @@ public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier
 	 * @param node
 	 *            the Node object from unmarshaling
 	 * @return the NodeReader object
-	 * @throws NffgVerifierException 
+	 * @throws NffgVerifierException
 	 */
 	private NodeReader transformNode(Node node) throws NffgVerifierException {
 		return new NodeReaderImpl(node.getName(), FunctionalType.fromValue(node.getFunctionality().value()));
@@ -105,7 +105,7 @@ public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier
 	 * @param policy
 	 *            the Nffg object from unmarshaling
 	 * @return the PolicyReader object
-	 * @throws NffgVerifierException 
+	 * @throws NffgVerifierException
 	 */
 	private PolicyReader transformPolicy(Policy policy, NffgReader nffgR) throws NffgVerifierException {
 		NodeReader src = nffgR.getNode(policy.getSrc().getRef());
@@ -141,7 +141,7 @@ public class TransformFromGeneratedClass implements ThrowingTransformer<Verifier
 	 * @param result
 	 *            the Result object from unmarshaling
 	 * @return the VerificationResultReaderImpl object
-	 * @throws NffgVerifierException 
+	 * @throws NffgVerifierException
 	 */
 	private VerificationResultReaderImpl transformResult(Result result) throws NffgVerifierException {
 		return new VerificationResultReaderImpl(result.isSatisfied(), result.getContent(),

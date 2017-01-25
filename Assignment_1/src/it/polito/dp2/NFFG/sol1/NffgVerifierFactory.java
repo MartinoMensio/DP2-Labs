@@ -10,6 +10,14 @@ import org.xml.sax.*;
 import it.polito.dp2.NFFG.*;
 import it.polito.dp2.NFFG.sol1.jaxb.*;
 
+/**
+ * This factory provides a NffgVerifier object reading the data from an XML file
+ * specified on the system property
+ * {@code it.polito.dp2.NFFG.sol1.NffgInfo.file}
+ * 
+ * @author Martino Mensio
+ *
+ */
 public class NffgVerifierFactory extends it.polito.dp2.NFFG.NffgVerifierFactory {
 
 	@Override
