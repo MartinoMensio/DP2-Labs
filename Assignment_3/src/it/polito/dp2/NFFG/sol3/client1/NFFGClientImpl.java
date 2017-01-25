@@ -109,7 +109,10 @@ public class NFFGClientImpl implements NFFGClient {
 			if (res.getStatus() != 201) {
 				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 201");
 			}
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof AlreadyLoadedException || e instanceof ServiceException) {
+				throw e;
+			}
 			throw new ServiceException("Something bad happened: " + e.getMessage());
 		}
 
@@ -128,7 +131,10 @@ public class NFFGClientImpl implements NFFGClient {
 			if (res.getStatus() != 200 && res.getStatus() != 201) {
 				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200 or 201");
 			}
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof ServiceException) {
+				throw e;
+			}
 			throw new ServiceException("Something bad happened: " + e.getMessage());
 		}
 
@@ -151,7 +157,10 @@ public class NFFGClientImpl implements NFFGClient {
 			if (res.getStatus() != 200) {
 				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200");
 			}
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof UnknownNameException || e instanceof ServiceException) {
+				throw e;
+			}
 			throw new ServiceException("Something bad happened: " + e.getMessage());
 		}
 	}
@@ -176,7 +185,10 @@ public class NFFGClientImpl implements NFFGClient {
 				throw new ServiceException("Response status code was " + res.getStatus() + " instead of 200");
 			}
 			return res.readEntity(Policy.class).getResult().isSatisfied();
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof UnknownNameException || e instanceof ServiceException) {
+				throw e;
+			}
 			throw new ServiceException("Something bad happened: " + e.getMessage());
 		}
 	}

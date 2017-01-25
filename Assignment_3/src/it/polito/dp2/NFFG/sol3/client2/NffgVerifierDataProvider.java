@@ -62,7 +62,10 @@ public class NffgVerifierDataProvider {
 			}
 			return res.readEntity(new GenericType<List<Nffg>>() {
 			});
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof NffgVerifierException) {
+				throw e;
+			}
 			throw new NffgVerifierException("Download of NFFGs failed. Reason: " + e.getMessage());
 		}
 	}
@@ -76,7 +79,10 @@ public class NffgVerifierDataProvider {
 			}
 			return res.readEntity(new GenericType<List<Policy>>() {
 			});
-		} catch (ProcessingException e) {
+		} catch (Exception e) {
+			if (e instanceof NffgVerifierException) {
+				throw e;
+			}
 			throw new NffgVerifierException("Download of policies failed. Reason: " + e.getMessage());
 		}
 	}
