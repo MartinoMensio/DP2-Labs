@@ -60,8 +60,8 @@ public class Service {
 			url = "http://localhost:8080/Neo4JXML/rest";
 		}
 		try {
-			return new Service(URI.create(url), DataStorage.getData());
-		} catch (IllegalArgumentException e) {
+			return new Service(new URI(url), DataStorage.getData());
+		} catch (URISyntaxException e) {
 			return null;
 		}
 	}
