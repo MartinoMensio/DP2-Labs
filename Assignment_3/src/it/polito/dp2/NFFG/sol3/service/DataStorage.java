@@ -1,6 +1,5 @@
 package it.polito.dp2.NFFG.sol3.service;
 
-import java.net.*;
 import java.util.concurrent.*;
 
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;

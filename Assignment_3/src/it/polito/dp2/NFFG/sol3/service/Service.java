@@ -14,8 +14,8 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 import it.polito.dp2.NFFG.sol3.service.neo4j.Neo4JXMLClient;
 
 /**
- * Core functionality: orchestrator + response builder. Called by the web
- * interface, this class interacts with the persistence and the Neo4JXML client
+ * Core functionality: called by the web interface, this class interacts with
+ * the DataStorage and the Neo4JXML client and keeps the data consistent
  * 
  * @author Martino Mensio
  *
@@ -36,19 +36,20 @@ public class Service {
 	 * <ul>
 	 * <li>as shared lock: by all the methods that manipulate policies and
 	 * therefore need that the corresponding NFFG is not removed while they are
-	 * performing some actions on the stored data</li>
+	 * performing some actions on the stored data (readers of the nffgsMap)</li>
 	 * <li>as exclusive lock: by the remove NFFG method, in order to make
-	 * atomically the deletion of the nffg with its policies</li>
+	 * atomically the deletion of the nffg with its policies and by the clearAll
+	 * method</li>
 	 * </ul>
 	 * The usage of shared lock was chosen in order to allow multiple thread
 	 * that own it to go into the sections of code.
 	 */
 	private StampedLock l;
 
-	private Service(URI neo4jLocation, DataStorage data) {
+	private Service(URI neo4jLocation) {
 		factory = new ObjectFactory();
 		neoClient = new Neo4JXMLClient(neo4jLocation);
-		this.data = data;
+		this.data = new DataStorage();
 		l = new StampedLock();
 		try {
 			neoClient.deleteAllNodes();
@@ -59,6 +60,7 @@ public class Service {
 		}
 	}
 
+	// the singleton instance
 	public final static Service standardService = createStandardService();
 
 	private static Service createStandardService() {
@@ -68,21 +70,48 @@ public class Service {
 		}
 		try {
 			URI uri = new URI(url);
-			return new Service(uri, new DataStorage());
+			return new Service(uri);
 		} catch (URISyntaxException e) {
 			return null;
 		}
 	}
 
+	/**
+	 * read the stored nffgs
+	 * 
+	 * @return a list containing the nffgs
+	 */
 	public List<Nffg> getNffgs() {
+		// atomicity achieved by calling the values method
 		return data.getNffgsMap().values().stream().map(NffgStorage::getNffg).collect(Collectors.toList());
 	}
 
+	/**
+	 * read a single stored nffg
+	 * 
+	 * @param name
+	 *            the name of the nffg to be read
+	 * @return the nffg corresponding to the name, or null if no result
+	 */
 	public Nffg getNffg(String name) {
 		NffgStorage nffgStorage = data.getNffgsMap().get(name);
 		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
+	/**
+	 * save a single nffg (setting its attribute "updated"
+	 * 
+	 * @param nffg
+	 *            to be stored
+	 * @return the nffg that has been stored or {@code null} if the nffg cannot
+	 *         be stored because of the constraint of uniqueness on the name
+	 * @throws BadRequestException
+	 *             if some links refer to non existing nodes
+	 * @throws NeoFailedException
+	 *             if some communication with the neo4j service failed. Notice
+	 *             that in this case the nffg is stored anyway but cannot be
+	 *             used to test reachability
+	 */
 	public Nffg storeNffg(Nffg nffg) {
 		// check anyway the nodes referred by the links, just in the case XML
 		// validation is disabled
@@ -168,9 +197,10 @@ public class Service {
 				}
 				neoClient.addLinkBetweenNodes(srcNodeId, dstNodeId);
 			});
-		} finally {
+		} catch (Exception e) {
 			// something went wrong
 			nffgStorage.setKO();
+			throw e;
 		}
 		// now that the id map is filled, can unlock the readers of it
 		nffgStorage.setOK();
@@ -179,11 +209,19 @@ public class Service {
 	}
 
 	/**
-	 * This is the only method that requires additional synchronization, because
-	 * invalidates the references done in policies.
+	 * deletes a single nffg from the This method requires additional
+	 * synchronization (exclusive lock), because invalidates the references done
+	 * in policies.
 	 * 
 	 * @param nffgName
-	 * @return
+	 *            the name of the nffg to be deleted
+	 * @param force
+	 *            if true enables the deletion of nffg referred by some policies
+	 *            (see documentation)
+	 * @return the nffg that has been deleted or {@code null} if the nffg was
+	 *         not stored
+	 * @throws ForbiddenException
+	 *             if some policies are linked to this nffg and force was false
 	 */
 	public Nffg deleteNffg(String nffgName, boolean force) {
 		NffgStorage nffgStorage = null;
@@ -196,7 +234,8 @@ public class Service {
 					throw new ForbiddenException(
 							"Some policies are linked to this nffg. To remove the nffg append ?force=true on the path");
 				}
-				// delete all the policies belonging to this nffg
+				// delete all the policies belonging to this nffg (the operation
+				// removeIf on the entrySet is not atomic)
 				data.getPoliciesMap().entrySet().removeIf(e -> e.getValue().getNffg().equals(nffgName));
 			}
 			nffgStorage = data.getNffgsMap().remove(nffgName);
@@ -206,6 +245,16 @@ public class Service {
 		return (nffgStorage != null) ? nffgStorage.getNffg() : null;
 	}
 
+	/**
+	 * performs the verification of a policy without storing it in the service
+	 * 
+	 * @param policy
+	 *            to be verified
+	 * @return the verified policy
+	 * @throws MissingReferenceException
+	 *             if some data inside the policy refer to something that is not
+	 *             stored inside the service (nffg, src, dst)
+	 */
 	public Policy verifyResultOnTheFly(Policy policy) {
 		// acquire shared lock
 		long stamp = l.readLock();
@@ -220,9 +269,16 @@ public class Service {
 	}
 
 	/**
+	 * saves a single policy
 	 * 
 	 * @param policy
-	 * @return the old value
+	 *            to be stored
+	 * @return the previous value corresponding to the policy name. This means
+	 *         {@code null} if the policy has been created or the old value if
+	 *         the policy has been updated
+	 * @throws MissingReferenceException
+	 *             if some data inside the policy refer to something that is not
+	 *             stored inside the service (nffg, src, dst)
 	 */
 	public Policy storePolicy(Policy policy) {
 		// acquire shared lock
@@ -237,6 +293,14 @@ public class Service {
 		}
 	}
 
+	/**
+	 * deletes a single policy
+	 * 
+	 * @param policyName
+	 *            the name of the policy to be deleted
+	 * @return the deleted policy or {@code null} if no policy was stored with
+	 *         this name
+	 */
 	public Policy deletePolicy(String policyName) {
 		// acquire shared lock
 		long stamp = l.readLock();
@@ -247,7 +311,17 @@ public class Service {
 		}
 	}
 
+	/**
+	 * reads the set of policies
+	 * 
+	 * @param nffgName
+	 *            an optional filter (can be null for no filtering) to read the
+	 *            policies belonging to an nffg with this name
+	 * @return a list of policies matching the desired criteria
+	 */
 	public List<Policy> getPolicies(String nffgName) {
+		// acquire shared lock because the removeIf done by deleteNffg is not
+		// atomic
 		long stamp = l.readLock();
 		try {
 			return data.getPoliciesMap().values().stream().filter(p -> {
@@ -262,10 +336,31 @@ public class Service {
 		}
 	}
 
+	/**
+	 * get a single policy
+	 * 
+	 * @param policyName
+	 *            the name of the policy to be read
+	 * @return the policy corresponding to this name or {@code null} if no
+	 *         policy was stored with this name
+	 */
 	public Policy getPolicy(String policyName) {
 		return data.getPoliciesMap().get(policyName);
 	}
 
+	/**
+	 * update the result of a stored policy using neo4j (the update will be kept
+	 * in the DataStorage)
+	 * 
+	 * @param policyName
+	 *            the name of the policy whose result needs verification
+	 * @return the updated policy or {@code null} if no policy was stored with
+	 *         this name
+	 * @throws NeoFailedException
+	 *             if it is impossible to update the verification result because
+	 *             of some issues with neo4j (or when storing the nffg or now
+	 *             when testing the reachability)
+	 */
 	public Policy updatePolicyResult(String policyName) {
 		long stamp = l.readLock();
 		try {
@@ -282,6 +377,9 @@ public class Service {
 		}
 	}
 
+	/**
+	 * delete all the policies
+	 */
 	public void deleteAllPolicies() {
 		long stamp = l.readLock();
 		try {
@@ -291,6 +389,9 @@ public class Service {
 		}
 	}
 
+	/**
+	 * delete all the data inside the DataStorage
+	 */
 	public void deleteAll() {
 		long stamp = l.writeLock();
 		try {
@@ -309,7 +410,14 @@ public class Service {
 	 * on the service)
 	 * 
 	 * @param policy
-	 * @return
+	 * @return the updated policy
+	 * @throws InconsistentDataException
+	 *             if the nffg was not found. This is a serious error because it
+	 *             means that consistency of data has been violated
+	 * @throws NeoFailedException
+	 *             if the ids of the nodes are not retrievable (this means that
+	 *             the creation of the nffg inside neo4j was not successful) or
+	 *             if the reachability cannot be tested
 	 */
 	public Policy verifyPolicy(Policy policy) {
 
@@ -344,6 +452,8 @@ public class Service {
 	 * Checks that the referred nffg exists and contains src and dst nodes
 	 * 
 	 * @param policy
+	 * @throws MissingReferenceException
+	 *             if some references are not valid
 	 */
 	public void validateReferences(Policy policy) {
 		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
