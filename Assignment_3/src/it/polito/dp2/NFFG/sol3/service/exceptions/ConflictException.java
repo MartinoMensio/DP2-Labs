@@ -12,9 +12,6 @@ import javax.ws.rs.core.*;
  */
 public class ConflictException extends ClientErrorException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public ConflictException(String string) {

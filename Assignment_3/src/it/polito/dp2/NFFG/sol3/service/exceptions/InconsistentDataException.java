@@ -11,9 +11,6 @@ import javax.ws.rs.InternalServerErrorException;
  */
 public class InconsistentDataException extends InternalServerErrorException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public InconsistentDataException(String string) {

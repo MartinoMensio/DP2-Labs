@@ -10,9 +10,6 @@ import javax.ws.rs.*;
  */
 public class NeoFailedException extends InternalServerErrorException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public NeoFailedException(String string) {

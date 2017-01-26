@@ -23,4 +23,3 @@ public interface ThrowingTransformer<T extends Object, R extends Object, E exten
 	 */
 	public R transform(T input) throws E;
 }
-

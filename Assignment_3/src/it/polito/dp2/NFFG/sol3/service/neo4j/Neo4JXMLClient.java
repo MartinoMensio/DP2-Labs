@@ -2,7 +2,6 @@ package it.polito.dp2.NFFG.sol3.service.neo4j;
 
 import java.net.*;
 
-import javax.ws.rs.*;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
@@ -17,19 +16,19 @@ import it.polito.dp2.NFFG.sol3.service.exceptions.*;
 public class Neo4JXMLClient {
 
 	private static ObjectFactory factory = new ObjectFactory();
-	private WebTarget target;
+	private final WebTarget target;
 
 	public Neo4JXMLClient(URI neo4jLocation) {
 		target = ClientBuilder.newClient().target(neo4jLocation).path("resource");
 	}
 
 	/**
-	 * POST /resource/node
+	 * POST /resource/node always call addNamedNode instead
 	 * 
 	 * @param node
 	 * @return
 	 */
-	public Node addNode(Node node) {
+	private Node addNode(Node node) {
 		try {
 			Response res = target.path("node").request(MediaType.APPLICATION_XML)
 					.post(Entity.entity(node, MediaType.APPLICATION_XML));
