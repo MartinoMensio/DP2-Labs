@@ -4,48 +4,28 @@ import java.net.*;
 import java.util.concurrent.*;
 
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
-import it.polito.dp2.NFFG.sol3.service.neo4j.Neo4JXMLClient;
 
 /**
- * Class for persistence
+ * Class for data storage. This is not a singleton class and has no static data
+ * or methods. The caller (the Service) creates a single instance of this class
+ * when it is created, and the Service class itself is singleton. This choice
+ * has been done in order to easily allow the service to have multiple
+ * "databases" whose lifecycle could be managed explicitly.
  * 
  * @author Martino Mensio
  *
  */
 public class DataStorage {
-	// singleton class
-	private static DataStorage data = new DataStorage();
-
-	// The Maps are kept private in order to avoid overwriting, getters below
 
 	// NFFGs are cached in the service together with mappings between node name
 	// and node id
-	private ConcurrentMap<String, NffgStorage> nffgsMap = new ConcurrentSkipListMap<>();
+	private final ConcurrentMap<String, NffgStorage> nffgsMap;
 	// policies are stored in the service
-	private ConcurrentMap<String, Policy> policiesMap = new ConcurrentSkipListMap<>();
+	private final ConcurrentMap<String, Policy> policiesMap;
 
-	private DataStorage() {
-		String url = System.getProperty("it.polito.dp2.NFFG.lab3.NEO4JURL");
-		if (url == null) {
-			url = "http://localhost:8080/Neo4JXML/rest";
-		}
-		Neo4JXMLClient neoClient;
-		try {
-			neoClient = new Neo4JXMLClient(new URI(url));
-			neoClient.deleteAllNodes();
-		} catch (URISyntaxException e) {
-			// wrong URI
-			throw new RuntimeException(e);
-		} catch (Exception e) {
-			// Some exceptions calling deleteAllNodes
-			throw new RuntimeException(
-					"impossible to delete all the nodes at persistence instantiation. Reason: " + e.getMessage());
-		}
-
-	}
-
-	public static DataStorage getData() {
-		return data;
+	protected DataStorage() {
+		nffgsMap = new ConcurrentSkipListMap<>();
+		policiesMap = new ConcurrentSkipListMap<>();
 	}
 
 	public ConcurrentMap<String, NffgStorage> getNffgsMap() {

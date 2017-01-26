@@ -22,11 +22,11 @@ import it.polito.dp2.NFFG.sol3.service.neo4j.Neo4JXMLClient;
  */
 public class Service {
 
-	private ObjectFactory factory;
+	private final ObjectFactory factory;
 
-	private Neo4JXMLClient neoClient;
+	private final Neo4JXMLClient neoClient;
 
-	private DataStorage data;
+	private final DataStorage data;
 
 	/**
 	 * This lock allows two kinds of locking and is only used to protect
@@ -50,6 +50,13 @@ public class Service {
 		neoClient = new Neo4JXMLClient(neo4jLocation);
 		this.data = data;
 		l = new StampedLock();
+		try {
+			neoClient.deleteAllNodes();
+		} catch (NeoFailedException e) {
+			// impossible to delete all the nodes from neo4j, but this is not
+			// preventing the right behavior of the service, so nothing is done
+			// thanks to our tolerance
+		}
 	}
 
 	public final static Service standardService = createStandardService();
@@ -60,7 +67,8 @@ public class Service {
 			url = "http://localhost:8080/Neo4JXML/rest";
 		}
 		try {
-			return new Service(new URI(url), DataStorage.getData());
+			URI uri = new URI(url);
+			return new Service(uri, new DataStorage());
 		} catch (URISyntaxException e) {
 			return null;
 		}
@@ -273,7 +281,7 @@ public class Service {
 			l.unlockRead(stamp);
 		}
 	}
-	
+
 	public void deleteAllPolicies() {
 		long stamp = l.readLock();
 		try {
@@ -282,7 +290,7 @@ public class Service {
 			l.unlockRead(stamp);
 		}
 	}
-	
+
 	public void deleteAll() {
 		long stamp = l.writeLock();
 		try {
