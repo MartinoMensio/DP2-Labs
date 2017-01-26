@@ -312,7 +312,7 @@ public class Service {
 		String srcId = nffgStorage.getId(policy.getSrc().getRef());
 		String dstId = nffgStorage.getId(policy.getDst().getRef());
 		if (srcId == null || dstId == null) {
-			throw new InconsistentDataException(
+			throw new NeoFailedException(
 					"in the verification process there was an error retrieving the neo4j nodes id");
 		}
 		boolean reachabilityStatus = neoClient.testReachability(srcId, dstId);
