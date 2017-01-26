@@ -22,14 +22,14 @@ public class PoliciesResource extends GenericResource {
 
 	@GET
 	@ApiOperation(value = "get the collection of policies", notes = "")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK, in the response the set of policies") })
 	public List<Policy> getPolicies(@QueryParam("nffg") String nffgName) {
 		return service.getPolicies(nffgName);
 	}
 
 	@DELETE
 	@ApiOperation(value = "delete the collection of policies", notes = "")
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "no content") })
+	@ApiResponses(value = { @ApiResponse(code = 204, message = "all the policies have been deleted") })
 	public Response deleteAllPolicies() {
 		service.deleteAllPolicies();
 		return Response.noContent().build();
@@ -37,11 +37,12 @@ public class PoliciesResource extends GenericResource {
 
 	@PUT
 	@ApiOperation(value = "store a policy to a specified resource", notes = "both for creation and update, identified by policy name")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "policy updated"),
-			@ApiResponse(code = 201, message = "policy created"),
-			@ApiResponse(code = 400, message = "validation of policy failed or or invalid reference to stored resources") })
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "the policy has been updated successfully and is provided back to the client"),
+			@ApiResponse(code = 201, message = "the policy has been created successfully and is provided back to the client"),
+			@ApiResponse(code = 400, message = "validation error or invalid reference to stored resources") })
 	@Path("{policy_name}")
-	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
+	public Response putPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
 		// Check that the policy name is the same in the pathParam and in the
 		// request body, because validation is done only on the request body
 		if (!policyName.equals(policy.getName())) {
@@ -60,8 +61,8 @@ public class PoliciesResource extends GenericResource {
 
 	@GET
 	@ApiOperation(value = "get a policy", notes = "identified by its name")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 404, message = "policy not found") })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK, in the response the policy"),
+			@ApiResponse(code = 404, message = "no policy exists with this name") })
 	@Path("{policy_name}")
 	public Policy getPolicy(@PathParam("policy_name") String policyName) {
 		Policy policy = service.getPolicy(policyName);
@@ -73,8 +74,9 @@ public class PoliciesResource extends GenericResource {
 
 	@DELETE
 	@ApiOperation(value = "Delete a policy", notes = "identified by its name")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "policy deleted"),
-			@ApiResponse(code = 404, message = "policy not found") })
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "the policy has been deleted and is provided back to the client"),
+			@ApiResponse(code = 404, message = "no policy exists with this name") })
 	@Path("{policy_name}")
 	public Response deletePolicy(@PathParam("policy_name") String policyName) {
 		Policy policy = service.deletePolicy(policyName);
@@ -85,9 +87,10 @@ public class PoliciesResource extends GenericResource {
 	}
 
 	@POST
-	@ApiOperation(value = "Evaluate the result of a policy", notes = "The policy is verified using neo4j")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "result updated"),
-			@ApiResponse(code = 404, message = "policy not found") })
+	@ApiOperation(value = "Update the result of a policy", notes = "The policy is verified using neo4j")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "the reachability policy has been tested and updated in the service and the policy is provided back to the client"),
+			@ApiResponse(code = 404, message = "no policy exists with this name") })
 	@Path("{policy_name}/result")
 	public Policy updatePolicyResult(@PathParam("policy_name") String policyName) {
 		Policy policy = service.updatePolicyResult(policyName);

@@ -18,9 +18,10 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 public class TesterResource extends GenericResource {
 
 	@POST
-	@ApiOperation(value = "verify a policy without storing it", notes = "to be called on the child resource of the nffg of reference")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "verification done"),
-			@ApiResponse(code = 400, message = "policy is not compliant with the schema or invalid reference to stored resources") })
+	@ApiOperation(value = "verify a policy without storing it", notes = "")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "the reachability policy has been tested and the policy is provided back to the client with the updated result"),
+			@ApiResponse(code = 400, message = "validation error or invalid reference to stored resources") })
 	public Policy verifyResultOnTheFly(Policy policy) {
 		return service.verifyResultOnTheFly(policy);
 	}

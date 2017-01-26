@@ -23,16 +23,17 @@ public class NffgsResource extends GenericResource {
 
 	@GET
 	@ApiOperation(value = "get the collection of NFFGs", notes = "")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK, in the response the set of NFFGs") })
 	public List<Nffg> getNffgs() {
 		return service.getNffgs();
 	}
 
 	@POST
 	@ApiOperation(value = "store a new NFFG", notes = "the name of the NFFG is the id of the created resource")
-	@ApiResponses(value = { @ApiResponse(code = 201, message = "NFFG created"),
-			@ApiResponse(code = 409, message = "conflict because of already stored nffg with same name"),
-			@ApiResponse(code = 400, message = "validation failed") })
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "the NFFG has been created and is provided back to the client"),
+			@ApiResponse(code = 400, message = "schema validation error"),
+			@ApiResponse(code = 409, message = "a NFFG with the same name is already stored") })
 	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) {
 		Nffg response = service.storeNffg(nffg);
 		if (response != null) {
@@ -45,8 +46,8 @@ public class NffgsResource extends GenericResource {
 
 	@GET
 	@ApiOperation(value = "get a single NFFG", notes = "identified by its name")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"),
-			@ApiResponse(code = 404, message = "NFFG not found") })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK, in the response the NFFG"),
+			@ApiResponse(code = 404, message = "no NFFG exists with this name") })
 	@Path("{nffg_name}")
 	public Nffg getNffg(@PathParam("nffg_name") String nffgName) {
 		Nffg result = service.getNffg(nffgName);
@@ -58,8 +59,10 @@ public class NffgsResource extends GenericResource {
 
 	@DELETE
 	@ApiOperation(value = "delete an NFFG", notes = "identifying the NFFG by its name")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "NFFG deleted"),
-			@ApiResponse(code = 404, message = "NFFG not found") })
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "the NFFG has been deleted and is provided back to the client"),
+			@ApiResponse(code = 403, message = "impossible to delete the NFFG because some policies refer to it"),
+			@ApiResponse(code = 404, message = "no NFFG exists with this name") })
 	@Path("{nffg_name}")
 	public Response deleteNffg(@PathParam("nffg_name") String nffgName,
 			@DefaultValue("false") @QueryParam("force") Boolean force) {
