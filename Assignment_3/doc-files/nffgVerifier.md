@@ -2,47 +2,45 @@
 
 ## 1. Conceptual structure of the resources
 
-### Basic structure
+### 1.1 Basic structure
 
 The conceptual structure of the data to be represented in the service has a hierarchical structure that is:
 
 - there is a collection of **NFFGs** (top level resource)
 - the collection is a set of **NFFG** (child resource), that contain information about nodes and links
-- each NFFG has a child resource that represents **policies**
+- each **NFFG** has a child resource that represents **policies**
 - policies is a collection of **policy** resources
 - each policy can have a **result** resource
+- each **NFFG** has a child resource for verification of policies that won't be stored
 
-```text
-     nffgs
-       |
-      nffg
-       |
-    policies
-       |
-     policy
-       |
-     result
-```
+However this structure has some problems with the details of the specifications provided. The first big problem is that the policies need to be accessible by clients without knowing the NFFG they belong to. For this reason the **policies** resource should be a top level one instead of being a child resource of the **NFFG** resource. This is a direct consequence of the fact that the policies are identified by their name in the global scope insted of being restricted to the scope of the single NFFG they belong to.
 
-This basic schema has resources only for unit of data that need to be manipulated separately. This is not the actual structure that I designed. The complete structure, that has some more resources and moves the `policies` resource as a top level one, will be explained in details and is needed in order to make the data available in an easier way for the clients.
+The verification of policies that won't be stored has been moved as a top level resource in order to have consistency with the responses provided in case of errors: if the verification was a child resource of **NFFG**, the 404 status code should have been used by the service if the policy refers an unknown NFFG because the NFFG would have been in the path. But since the **policies** resource are detached from the **NFFGs** the checks performed by the service when receiving a policy to be stored don't use 404 because the path will not include the information about the related NFFG.
 
-### Complete structure
+Details about the solution to these problems are provided below.
+
+### 1.2 Effective structure
+
+This is the effective structure that has been designed.
 
 ![hierarchy of resources](../doc-files/resources_chart.svg)
 
-The service consists of two top level resources: one for NFFGs and the other one for policies.
+The resources are:
+
+- **nffgs**: represents the stored collection of nffgs
+- **nffg**: represents a single stored nffg belonging to the collection
+- **policies**: represents the stored collection of policies
+- **policy**: represents a single stored policy belonging to the collection
+- **result**: represent the result of a policy
+- **tester**: the endpoint for verification of policies that won't be stored
 
 #### Policies placement
 
 The `policies` are made available as root elements because the clients may want to get the whole set of policies stored inside the server. Since the name of a policy is unique not only iniside a single NFFG, but has a global scope, it is appropriate that also the child resource `policy` belongs to this subtree.
 
-Therefore the `policies` resource has no more purpose of existing.
-
 #### Policy creation and modification
 
-Single policies can be created and updated using the same procedure: a PUT request on the `policy` resource child of `policies`. Because the requirements specify that if a new policy is submitted with the same name as an already stored one, a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent.
-
-#### Other notes on the strucure TODO
+Single policies can be created and updated using the same procedure: a PUT request on the `policy` resource child of `policies`. Because the requirements specify that if a new policy is submitted with the same name as an already stored one a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent and the resource path is chosen by the client (see the discussion about IDs below).
 
 ## 2. Mapping of the resources to URLs
 
@@ -61,23 +59,38 @@ The tree structure of the resources previously shown is reflected on the URLs us
 | `/policies/{policy_name}`       | policy        | GET    | obtain a single policy given its name
 |                                 |               | PUT    | store a policy on this resource (both creation or update)
 |                                 |               | DELETE | delete a single policy given its name
-| `/policies/{policy_name}/result`| result        | GET    | obtain (if any) the stored result for the stored policy given its name
-|                                 |               | POST   | recompute and obtain the result of a stored policy
-| `/verifier`                     | result        | POST   | obtain the result of a policy provided in the request testing it against an existing NFFG given its name
+| `/policies/{policy_name}/result`| result        | POST   | recompute the result and obtain the policy with the updated result
+| `/tester`                       | policy        | POST   | verify the policy provided in the request testing it against an existing NFFG
 
-### IDs
+### 2.1 IDs
 
-Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directy as path elements and therefore the ID of the resources is chosen by the client.
+Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directy as path elements and therefore the ID of the resources is chosen by the client. In this way the client is able to retrieve the wanted data by simply knowing the name of the nffg / policy. This reflects the methods of the interface NffgVerifier, that allows to read the data in a similar way.
 
-For the NFFGs creation, the POST method is used because the creation is not idempotent as explained in the requirements (creation of an NFFG with the same name as an existing one is forbidden). Instead for the policies, since the creation of a policy with the same name as one already stored in the service is allowed and is used for replacement, the creation of a policy uses the same method as the replacement/update. In this way the client directly submits a PUT request to the path that contains the name of the policy, and since PUT is idempotent the creation follows the same approach as an update.
+For the NFFGs creation, the POST method is used because the creation is not idempotent as explained in the requirements (creation of an NFFG with the same name as an existing one is forbidden). Instead for the policies, since the creation of a policy with the same name as one already stored in the service is allowed and is used for replacement, the creation of a policy uses the same method as the replacement / update. In this way the client directly submits a PUT request to the path that contains the name of the policy, and since PUT is idempotent the creation follows the same approach as an update.
 
 ## 3. Operations by resource
 
-All the operations are available with Content-Type (both requests and responses) `application/xml` or `application/json`. The types used are the ones contained in the XSD.
+All the operations are available with Accept and Content-Type with value `application/xml`. The Accept can also be using `application/json` since the JAXB framework can handle this too, but for the Content-Type this data representation is not available because of implementation details: the requests are validated against an XML schema, and since the JSON schema is not required the validation of JSON could not be done. Some automatic generators of JSON schema from XML schema exist, but I preferred not to use them.
 
-Errors on all the resources: 406 500 400 
+The types used for data exchange are the ones contained in the XSD: `nffg` and `policy`.
+
+All the resources also have in common some HTTP response status codes (that are automatically managed by tomcat):
+
+- `405`: the client is using an HTTP method not allowed
+- `406`: the client is asking for an Accept that is not allowed
+- `500`: generic internal server error when something unexpected happens in the service
+
+Some custom exceptions have been designed for specific situations:
+
+- `409`: when the client tries to violate the contraint about uniqueness based on the name
+- `400`: used both when validation of request fails against the schema or when the request references some data that is not stored in the service
+- `500`: when something in the service is not working as expected. This could be a communication error with neo4j or some constraint failures. Before reaching some points that will generate unmanaged runtime exceptions, a specific exception is thrown providing a message to the client.
+
+The following paragraphs show the details about each resource with the allowed methods.
 
 ### `/`
+
+The root resource is made available only for cleaning purposes. It cannot be read (for this the clients need to read the `nffgs` and `policies` separately) but can be used to clear all the data stored inside the service.
 
 | method | request type | response type | explaination                | result         | errors
 | ------ | ------------ | ------------- | ------------                | -----------    | ------
@@ -85,7 +98,7 @@ Errors on all the resources: 406 500 400
 
 ### `/nffgs`
 
-NFFGs collection
+The collection of nffgs. Can be used to read the data about nffgs or to create a new nffg. There is no possibility to delete the whole set of NFFGs because, since all the policies stored refer an NFFG, to keep the constrains valid also the whole set of policies should be removed. For this reason the deletion of all the data has been moved to the root resource.
 
 | method | request type | response type | explaination                | result      | errors
 | ------ | ------------ | ------------- | ------------                | ----------- | ------
@@ -96,7 +109,7 @@ The POST request must contain the field `name`, that will be the identifier of t
 
 ### `/nffgs/{nffg_name}`
 
-A single nffg identified by its name.
+A single nffg identified by its name. It can be read or deleted.
 
 | method | request type | response type | explaination           | result | errors
 | ------ | ------------ | ------------- | ------------           | ------ | ------
@@ -105,50 +118,50 @@ A single nffg identified by its name.
 
 The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is `force` and the behaviour of the service is the following:
 
-| DELETE                | with queryParam | without queryParam
-| --------------------- | --------------- | --------------
-| NFFG without policies | success         | success
-| NFFG with policies    | success         | FAIL
+| DELETE                | `force=true`                                             | `force` not true or missing
+| --------------------- | ------------                                             | --------------
+| NFFG without policies | success (removed NFFG)                                   | success (removed NFFG)
+| NFFG with policies    | success (removed NFFG and all the policies referring it) | FAIL
 
 ### `/policies`
 
-Policies collection
+Policies collection. Can be used to read the data about policies (with some filtering using queryParams) and to delete the whole set of policies.
 
 | method | request type | response type | explaination                   | result         | errors
 | ------ | ------------ | ------------- | ------------                   | ------         | ------
-| GET    | -            | policies      | get the collection of policies | 200 OK         |
-| DELETE | -            | -             | delete all the policies        | 204 no content |
+| GET    | -            | policies      | get the collection of policies | 200 OK         | -
+| DELETE | -            | -             | delete all the policies        | 204 no content | -
 
-queryParam:
+queryParams to be used in GET to filter the data:
 
-- `nffg`: only get policies for a specific NFFG
-- `from`: get policies only from a certain time
+- `nffg`: only get policies for a specific NFFG (whose name is the value of the parameter)
+- `from`: get policies that have been verified after the specified time and date (not implemented)
 
 ### `/policies/{policy_name}`
 
-A single policy identified by its id.
+A single policy identified by its id. Can be used to read the policy, delete it or sending a policy for creation or update purposes.
 
 | method | request type | response type | explaination             | result              | errors
 | ------ | ------------ | ------------- | ------------             | ------              | ------
 | GET    | -            | policy        | get the policy           | 200 OK              | 404: no policy exists with this name
 | DELETE | -            | -             | delete the policy        | 200 OK              | 404: no policy exists with this name
-| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 400: validation error, 422 invalid reference to stored resources
+| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 400: validation error or invalid reference to stored resources
 
 ### `/policies/{policy_name}/result`
 
-The corresponding result for this policy.
+The corresponding result for this policy. This subresource can only be used to ask to the service an update of the verification result. The verification is done using neo4j service, and the updated policy is returned to the client.
 
 | method | request type | response type | explaination             | result | errors
 | ------ | ------------ | ------------- | ------------             | ------ | ------
 | POST   | -            | policy        | update the policy result | 200 OK | 404: no policy exists with this name
 
-### `/verifier`
+### `/tester`
 
-Verification endpoint for client policies, not stored on the service
+Verification endpoint for client policies, not stored on the service. The reachability policy is tested by using neo4j service.
 
 | method | request type | response type | explaination           | result | errors
 | ------ | ------------ | ------------- | ------------           | ------ | ------
-| POST   | policy       | policy        | verify this policy     | 200 OK | 400: validation error, 422 invalid reference to stored resources (nffg or node)
+| POST   | policy       | policy        | verify this policy     | 200 OK | 400: validation error or invalid reference to stored resources (nffg or node)
 
 ## 4. Implementation details
 
@@ -165,12 +178,14 @@ The synchronization without considering the removal of NFFGs is simply obtained 
 - `verifyResultOnTheFly` is first validating the references contained in the policy (nffg, src, dst) and then verifying the result. Since the referenced nffg cannot be deleted (or updated) the data are still valid also if these operations are not performed atomically
 
 Considering also the deletion, the modifications done are the following:
+
 - a RWLock is added for operations that modify the policies in order to make the assumptions above explained to be still valid:
   - the exclusive lock is used by the `deleteNffg` method. In this way, when this lock is acquired no other threads can operate on the policies (modification)
   - the shared lock is used by methods that modify the policies map
   - the getters need no synchronization if the modification keep the state always valid during the execution of single operations
 
 In details the usage of locks by each method:
+
 - `deleteNffg` in the critical section protected by exclusive lock is:
   - checking if some policies are linked and in this case can block the execution if the request does not force the removal
   - removing all the policies linked to this nffg from the policies map

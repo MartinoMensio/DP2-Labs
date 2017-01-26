@@ -12,53 +12,59 @@
 <a id="user-content-1-conceptual-structure-of-the-resources" class="anchor" href="#1-conceptual-structure-of-the-resources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Conceptual structure of the resources</h2>
 
 <h3>
-<a id="user-content-basic-structure" class="anchor" href="#basic-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basic structure</h3>
+<a id="user-content-11-basic-structure" class="anchor" href="#11-basic-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1.1 Basic structure</h3>
 
 <p>The conceptual structure of the data to be represented in the service has a hierarchical structure that is:</p>
 
 <ul>
 <li>there is a collection of <strong>NFFGs</strong> (top level resource)</li>
 <li>the collection is a set of <strong>NFFG</strong> (child resource), that contain information about nodes and links</li>
-<li>each NFFG has a child resource that represents <strong>policies</strong>
+<li>each <strong>NFFG</strong> has a child resource that represents <strong>policies</strong>
 </li>
 <li>policies is a collection of <strong>policy</strong> resources</li>
 <li>each policy can have a <strong>result</strong> resource</li>
+<li>each <strong>NFFG</strong> has a child resource for verification of policies that won't be stored</li>
 </ul>
 
-<pre lang="text"><code>     nffgs
-       |
-      nffg
-       |
-    policies
-       |
-     policy
-       |
-     result
-</code></pre>
+<p>However this structure has some problems with the details of the specifications provided. The first big problem is that the policies need to be accessible by clients without knowing the NFFG they belong to. For this reason the <strong>policies</strong> resource should be a top level one instead of being a child resource of the <strong>NFFG</strong> resource. This is a direct consequence of the fact that the policies are identified by their name in the global scope insted of being restricted to the scope of the single NFFG they belong to.</p>
 
-<p>This basic schema has resources only for unit of data that need to be manipulated separately. This is not the actual structure that I designed. The complete structure, that has some more resources and moves the <code>policies</code> resource as a top level one, will be explained in details and is needed in order to make the data available in an easier way for the clients.</p>
+<p>The verification of policies that won't be stored has been moved as a top level resource in order to have consistency with the responses provided in case of errors: if the verification was a child resource of <strong>NFFG</strong>, the 404 status code should have been used by the service if the policy refers an unknown NFFG because the NFFG would have been in the path. But since the <strong>policies</strong> resource are detached from the <strong>NFFGs</strong> the checks performed by the service when receiving a policy to be stored don't use 404 because the path will not include the information about the related NFFG.</p>
+
+<p>Details about the solution to these problems are provided below.</p>
 
 <h3>
-<a id="user-content-complete-structure" class="anchor" href="#complete-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Complete structure</h3>
+<a id="user-content-12-effective-structure" class="anchor" href="#12-effective-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1.2 Effective structure</h3>
+
+<p>This is the effective structure that has been designed.</p>
 
 <p><a href="../doc-files/resources_chart.svg" target="_blank"><img src="../doc-files/resources_chart.svg" alt="hierarchy of resources" style="max-width:100%;"></a></p>
 
-<p>The service consists of two top level resources: one for NFFGs and the other one for policies.</p>
+<p>The resources are:</p>
+
+<ul>
+<li>
+<strong>nffgs</strong>: represents the stored collection of nffgs</li>
+<li>
+<strong>nffg</strong>: represents a single stored nffg belonging to the collection</li>
+<li>
+<strong>policies</strong>: represents the stored collection of policies</li>
+<li>
+<strong>policy</strong>: represents a single stored policy belonging to the collection</li>
+<li>
+<strong>result</strong>: represent the result of a policy</li>
+<li>
+<strong>tester</strong>: the endpoint for verification of policies that won't be stored</li>
+</ul>
 
 <h4>
 <a id="user-content-policies-placement" class="anchor" href="#policies-placement" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policies placement</h4>
 
 <p>The <code>policies</code> are made available as root elements because the clients may want to get the whole set of policies stored inside the server. Since the name of a policy is unique not only iniside a single NFFG, but has a global scope, it is appropriate that also the child resource <code>policy</code> belongs to this subtree.</p>
 
-<p>Therefore the <code>policies</code> resource has no more purpose of existing.</p>
-
 <h4>
 <a id="user-content-policy-creation-and-modification" class="anchor" href="#policy-creation-and-modification" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policy creation and modification</h4>
 
-<p>Single policies can be created and updated using the same procedure: a PUT request on the <code>policy</code> resource child of <code>policies</code>. Because the requirements specify that if a new policy is submitted with the same name as an already stored one, a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent.</p>
-
-<h4>
-<a id="user-content-other-notes-on-the-strucure-todo" class="anchor" href="#other-notes-on-the-strucure-todo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other notes on the strucure TODO</h4>
+<p>Single policies can be created and updated using the same procedure: a PUT request on the <code>policy</code> resource child of <code>policies</code>. Because the requirements specify that if a new policy is submitted with the same name as an already stored one a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent and the resource path is chosen by the client (see the discussion about IDs below).</p>
 
 <h2>
 <a id="user-content-2-mapping-of-the-resources-to-urls" class="anchor" href="#2-mapping-of-the-resources-to-urls" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Mapping of the resources to URLs</h2>
@@ -144,41 +150,61 @@
 <tr>
 <td><code>/policies/{policy_name}/result</code></td>
 <td>result</td>
-<td>GET</td>
-<td>obtain (if any) the stored result for the stored policy given its name</td>
+<td>POST</td>
+<td>recompute the result and obtain the policy with the updated result</td>
 </tr>
 <tr>
-<td></td>
-<td></td>
+<td><code>/tester</code></td>
+<td>policy</td>
 <td>POST</td>
-<td>recompute and obtain the result of a stored policy</td>
-</tr>
-<tr>
-<td><code>/verifier</code></td>
-<td>result</td>
-<td>POST</td>
-<td>obtain the result of a policy provided in the request testing it against an existing NFFG given its name</td>
+<td>verify the policy provided in the request testing it against an existing NFFG</td>
 </tr>
 </tbody>
 </table>
 
 <h3>
-<a id="user-content-ids" class="anchor" href="#ids" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>IDs</h3>
+<a id="user-content-21-ids" class="anchor" href="#21-ids" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2.1 IDs</h3>
 
-<p>Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directy as path elements and therefore the ID of the resources is chosen by the client.</p>
+<p>Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directy as path elements and therefore the ID of the resources is chosen by the client. In this way the client is able to retrieve the wanted data by simply knowing the name of the nffg / policy. This reflects the methods of the interface NffgVerifier, that allows to read the data in a similar way.</p>
 
-<p>For the NFFGs creation, the POST method is used because the creation is not idempotent as explained in the requirements (creation of an NFFG with the same name as an existing one is forbidden). Instead for the policies, since the creation of a policy with the same name as one already stored in the service is allowed and is used for replacement, the creation of a policy uses the same method as the replacement/update. In this way the client directly submits a PUT request to the path that contains the name of the policy, and since PUT is idempotent the creation follows the same approach as an update.</p>
+<p>For the NFFGs creation, the POST method is used because the creation is not idempotent as explained in the requirements (creation of an NFFG with the same name as an existing one is forbidden). Instead for the policies, since the creation of a policy with the same name as one already stored in the service is allowed and is used for replacement, the creation of a policy uses the same method as the replacement / update. In this way the client directly submits a PUT request to the path that contains the name of the policy, and since PUT is idempotent the creation follows the same approach as an update.</p>
 
 <h2>
 <a id="user-content-3-operations-by-resource" class="anchor" href="#3-operations-by-resource" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Operations by resource</h2>
 
-<p>All the operations are available with Content-Type (both requests and responses) <code>application/xml</code> or <code>application/json</code>. The types used are the ones contained in the XSD.</p>
+<p>All the operations are available with Accept and Content-Type with value <code>application/xml</code>. The Accept can also be using <code>application/json</code> since the JAXB framework can handle this too, but for the Content-Type this data representation is not available because of implementation details: the requests are validated against an XML schema, and since the JSON schema is not required the validation of JSON could not be done. Some automatic generators of JSON schema from XML schema exist, but I preferred not to use them.</p>
 
-<p>Errors on all the resources: 406 500 400 </p>
+<p>The types used for data exchange are the ones contained in the XSD: <code>nffg</code> and <code>policy</code>.</p>
+
+<p>All the resources also have in common some HTTP response status codes (that are automatically managed by tomcat):</p>
+
+<ul>
+<li>
+<code>405</code>: the client is using an HTTP method not allowed</li>
+<li>
+<code>406</code>: the client is asking for an Accept that is not allowed</li>
+<li>
+<code>500</code>: generic internal server error when something unexpected happens in the service</li>
+</ul>
+
+<p>Some custom exceptions have been designed for specific situations:</p>
+
+<ul>
+<li>
+<code>409</code>: when the client tries to violate the contraint about uniqueness based on the name</li>
+<li>
+<code>400</code>: used both when validation of request fails against the schema or when the request references some data that is not stored in the service</li>
+<li>
+<code>500</code>: when something in the service is not working as expected. This could be a communication error with neo4j or some constraint failures. Before reaching some points that will generate unmanaged runtime exceptions, a specific exception is thrown providing a message to the client.</li>
+</ul>
+
+<p>The following paragraphs show the details about each resource with the allowed methods.</p>
 
 <h3>
 <a id="" class="anchor" href="#" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/</code>
 </h3>
+
+<p>The root resource is made available only for cleaning purposes. It cannot be read (for this the clients need to read the <code>nffgs</code> and <code>policies</code> separately) but can be used to clear all the data stored inside the service.</p>
 
 <table>
 <thead>
@@ -207,7 +233,7 @@
 <a id="user-content-nffgs" class="anchor" href="#nffgs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs</code>
 </h3>
 
-<p>NFFGs collection</p>
+<p>The collection of nffgs. Can be used to read the data about nffgs or to create a new nffg. There is no possibility to delete the whole set of NFFGs because, since all the policies stored refer an NFFG, to keep the constrains valid also the whole set of policies should be removed. For this reason the deletion of all the data has been moved to the root resource.</p>
 
 <table>
 <thead>
@@ -246,7 +272,7 @@
 <a id="user-content-nffgsnffg_name" class="anchor" href="#nffgsnffg_name" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs/{nffg_name}</code>
 </h3>
 
-<p>A single nffg identified by its name.</p>
+<p>A single nffg identified by its name. It can be read or deleted.</p>
 
 <table>
 <thead>
@@ -285,19 +311,20 @@
 <thead>
 <tr>
 <th>DELETE</th>
-<th>with queryParam</th>
-<th>without queryParam</th>
+<th><code>force=true</code></th>
+<th>
+<code>force</code> not true or missing</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>NFFG without policies</td>
-<td>success</td>
-<td>success</td>
+<td>success (removed NFFG)</td>
+<td>success (removed NFFG)</td>
 </tr>
 <tr>
 <td>NFFG with policies</td>
-<td>success</td>
+<td>success (removed NFFG and all the policies referring it)</td>
 <td>FAIL</td>
 </tr>
 </tbody>
@@ -307,7 +334,7 @@
 <a id="user-content-policies" class="anchor" href="#policies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies</code>
 </h3>
 
-<p>Policies collection</p>
+<p>Policies collection. Can be used to read the data about policies (with some filtering using queryParams) and to delete the whole set of policies.</p>
 
 <table>
 <thead>
@@ -327,7 +354,7 @@
 <td>policies</td>
 <td>get the collection of policies</td>
 <td>200 OK</td>
-<td></td>
+<td>-</td>
 </tr>
 <tr>
 <td>DELETE</td>
@@ -335,25 +362,25 @@
 <td>-</td>
 <td>delete all the policies</td>
 <td>204 no content</td>
-<td></td>
+<td>-</td>
 </tr>
 </tbody>
 </table>
 
-<p>queryParam:</p>
+<p>queryParams to be used in GET to filter the data:</p>
 
 <ul>
 <li>
-<code>nffg</code>: only get policies for a specific NFFG</li>
+<code>nffg</code>: only get policies for a specific NFFG (whose name is the value of the parameter)</li>
 <li>
-<code>from</code>: get policies only from a certain time</li>
+<code>from</code>: get policies that have been verified after the specified time and date (not implemented)</li>
 </ul>
 
 <h3>
 <a id="user-content-policiespolicy_name" class="anchor" href="#policiespolicy_name" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies/{policy_name}</code>
 </h3>
 
-<p>A single policy identified by its id.</p>
+<p>A single policy identified by its id. Can be used to read the policy, delete it or sending a policy for creation or update purposes.</p>
 
 <table>
 <thead>
@@ -389,7 +416,7 @@
 <td>policy</td>
 <td>update/create the policy</td>
 <td>200 OK, 201 CREATED</td>
-<td>400: validation error, 422 invalid reference to stored resources</td>
+<td>400: validation error or invalid reference to stored resources</td>
 </tr>
 </tbody>
 </table>
@@ -398,7 +425,7 @@
 <a id="user-content-policiespolicy_nameresult" class="anchor" href="#policiespolicy_nameresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies/{policy_name}/result</code>
 </h3>
 
-<p>The corresponding result for this policy.</p>
+<p>The corresponding result for this policy. This subresource can only be used to ask to the service an update of the verification result. The verification is done using neo4j service, and the updated policy is returned to the client.</p>
 
 <table>
 <thead>
@@ -424,10 +451,10 @@
 </table>
 
 <h3>
-<a id="user-content-verifier" class="anchor" href="#verifier" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/verifier</code>
+<a id="user-content-tester" class="anchor" href="#tester" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/tester</code>
 </h3>
 
-<p>Verification endpoint for client policies, not stored on the service</p>
+<p>Verification endpoint for client policies, not stored on the service. The reachability policy is tested by using neo4j service.</p>
 
 <table>
 <thead>
@@ -447,7 +474,7 @@
 <td>policy</td>
 <td>verify this policy</td>
 <td>200 OK</td>
-<td>400: validation error, 422 invalid reference to stored resources (nffg or node)</td>
+<td>400: validation error or invalid reference to stored resources (nffg or node)</td>
 </tr>
 </tbody>
 </table>
