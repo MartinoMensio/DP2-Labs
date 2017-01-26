@@ -23,7 +23,7 @@ Details about the solution to these problems are provided below.
 
 This is the effective structure that has been designed.
 
-![hierarchy of resources](../doc-files/resources_chart.svg)
+![hierarchy of resources](resources_chart.svg)
 
 The resources are:
 
@@ -118,6 +118,7 @@ A single nffg identified by its name. It can be read or deleted.
 | GET    | -            | get the NFFG           | 200 OK        | nffg         | in the response the NFFG corresponding to `nffg_name`
 |        |              |                        | 404 NOT FOUND | error string | no NFFG exists with this name
 | DELETE | -            | delete the NFFG        | 200 OK        | deleted nffg | the NFFG has been deleted and is provided back to the client
+|        |              |                        | 403 FORBIDDEN | error string | impossible to delete the NFFG because some policies refer to it
 |        |              |                        | 404 NOT FOUND | error string | no NFFG exists with this name
 
 The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is `force` and the behaviour of the service is the following:
