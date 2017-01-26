@@ -92,18 +92,20 @@ The following paragraphs show the details about each resource with the allowed m
 
 The root resource is made available only for cleaning purposes. It cannot be read (for this the clients need to read the `nffgs` and `policies` separately) but can be used to clear all the data stored inside the service.
 
-| method | request type | response type | explaination                | result         | errors
-| ------ | ------------ | ------------- | ------------                | -----------    | ------
-| DELETE | -            | -             | delete all the data         | 204 no content | -
+| method | request type | explaination                | result status  | response      | meaning
+| ------ | ------------ | ------------                | -----------    | ------------- | --------
+| DELETE | -            | delete all the data         | 204 no content | -             | all the data has been deleted
 
 ### `/nffgs`
 
 The collection of nffgs. Can be used to read the data about nffgs or to create a new nffg. There is no possibility to delete the whole set of NFFGs because, since all the policies stored refer an NFFG, to keep the constrains valid also the whole set of policies should be removed. For this reason the deletion of all the data has been moved to the root resource.
 
-| method | request type | response type | explaination                | result      | errors
-| ------ | ------------ | ------------- | ------------                | ----------- | ------
-| GET    | -            | nffgs         | get the collection of NFFGs | 200 OK      | -
-| POST   | nffg         | nffg          | create a new NFFG           | 201 CREATED | 400 validation error, 409 already existing
+| method | request type | explaination                | result status   | response      | meaning
+| ------ | ------------ | ------------                | -----------     | ------------- | ------
+| GET    | -            | get the collection of NFFGs | 200 OK          | set of nffgs  | in the response the set of NFFGs
+| POST   | nffg         | create a new NFFG           | 201 CREATED     | created nffg  | the NFFG has been created and is provided back to the client
+|        |              |                             | 400 BAD REQUEST | error string  | schema validation error
+|        |              |                             | 409 CONFLICT    | error string  | a NFFG with the same name is already stored
 
 The POST request must contain the field `name`, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 409 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 400 error.
 
@@ -111,10 +113,12 @@ The POST request must contain the field `name`, that will be the identifier of t
 
 A single nffg identified by its name. It can be read or deleted.
 
-| method | request type | response type | explaination           | result | errors
-| ------ | ------------ | ------------- | ------------           | ------ | ------
-| GET    | -            | nffg          | get the NFFG           | 200 OK | 404: no NFFG exists with this name
-| DELETE | -            | nffg          | delete the NFFG        | 200 OK | 404: no NFFG exists with this name
+| method | request type | explaination           | result status | response     | meaning
+| ------ | ------------ | ------------           | ------        | ------------ | ------
+| GET    | -            | get the NFFG           | 200 OK        | nffg         | in the response the NFFG corresponding to `nffg_name`
+|        |              |                        | 404 NOT FOUND | error string | no NFFG exists with this name
+| DELETE | -            | delete the NFFG        | 200 OK        | deleted nffg | the NFFG has been deleted and is provided back to the client
+|        |              |                        | 404 NOT FOUND | error string | no NFFG exists with this name
 
 The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is `force` and the behaviour of the service is the following:
 
@@ -127,10 +131,10 @@ The DELETE has an optional queryParam that is required in the case that some pol
 
 Policies collection. Can be used to read the data about policies (with some filtering using queryParams) and to delete the whole set of policies.
 
-| method | request type | response type | explaination                   | result         | errors
-| ------ | ------------ | ------------- | ------------                   | ------         | ------
-| GET    | -            | policies      | get the collection of policies | 200 OK         | -
-| DELETE | -            | -             | delete all the policies        | 204 no content | -
+| method | request type | explaination                   | result status  | response      | meaning
+| ------ | ------------ | ------------                   | ------         | ------------- | ------
+| GET    | -            | get the collection of policies | 200 OK         | policies      | in the response the set of policies
+| DELETE | -            | delete all the policies        | 204 no content | -             | all the policies have been deleted
 
 queryParams to be used in GET to filter the data:
 
@@ -141,31 +145,47 @@ queryParams to be used in GET to filter the data:
 
 A single policy identified by its id. Can be used to read the policy, delete it or sending a policy for creation or update purposes.
 
-| method | request type | response type | explaination             | result              | errors
-| ------ | ------------ | ------------- | ------------             | ------              | ------
-| GET    | -            | policy        | get the policy           | 200 OK              | 404: no policy exists with this name
-| DELETE | -            | -             | delete the policy        | 200 OK              | 404: no policy exists with this name
-| PUT    | policy       | policy        | update/create the policy | 200 OK, 201 CREATED | 400: validation error or invalid reference to stored resources
+| method | request type | explaination             | result status   | response       | meaning
+| ------ | ------------ | ------------             | ------          | -------------  | ------
+| GET    | -            | get the policy           | 200 OK          | policy         | in the response the policy corresponding to `policy_name`
+|        |              |                          | 404 NOT FOUND   | error string   | no policy exists with this name
+| DELETE | -            | delete the policy        | 200 OK          | deleted policy | the policy has been deleted and is provided back to the client
+|        |              |                          | 404 NOT FOUND   | error string   | no policy exists with this name
+| PUT    | policy       | update/create the policy | 200 OK          | updated policy | the policy has been updated successfully and is provided back to the client
+|        |              |                          | 201 CREATED     | created policy | the policy has been created successfully and is provided back to the client
+|        |              |                          | 400 BAD REQUEST | error string   | validation error or invalid reference to stored resources
 
 ### `/policies/{policy_name}/result`
 
 The corresponding result for this policy. This subresource can only be used to ask to the service an update of the verification result. The verification is done using neo4j service, and the updated policy is returned to the client.
 
-| method | request type | response type | explaination             | result | errors
-| ------ | ------------ | ------------- | ------------             | ------ | ------
-| POST   | -            | policy        | update the policy result | 200 OK | 404: no policy exists with this name
+| method | request type | explaination             | result status  | response type              | meaning
+| ------ | ------------ | ------------             | -------------- | -------------              | ------
+| POST   | -            | update the policy result | 200 OK         | policy with updated result | the reachability policy has been tested and updated in the service and the policy is provided back to the client
+|        |              |                          | 404 NOT FOUND  | error string               | no policy exists with this name
 
 ### `/tester`
 
 Verification endpoint for client policies, not stored on the service. The reachability policy is tested by using neo4j service.
 
-| method | request type | response type | explaination           | result | errors
-| ------ | ------------ | ------------- | ------------           | ------ | ------
-| POST   | policy       | policy        | verify this policy     | 200 OK | 400: validation error or invalid reference to stored resources (nffg or node)
+| method | request type | explaination           | result status | response type | meaning
+| ------ | ------------ | ------------           | ------        | ------------- | ------
+| POST   | policy       | verify this policy     | 200 OK        | policy        | the reachability policy has been tested and the policy is provided back to the client with the updated result
+|        |              |                        | 400 NOT FOUND | error string  | validation error or invalid reference to stored resources
 
 ## 4. Implementation details
 
-### Concurrency management
+### 4.1 Data storage
+
+The data are stored using two maps: one for NFFGs and one for policies. While the map for policies contains directly the objects belonging to the generated class `Policy`, the map of NFFGs contain object belonging to the class `NffgStorage`. This class contains:
+
+- the object belonging to the generated class `Nffg` (the data that clients can get)
+- a map that contains the mapping between the node names and the ids used for the communication with neo4j: this mapping is local to each NFFG because there can be noded with the same name belonging to different NFFGs
+- some flags to keep a state of the state of the communication with neo4j: those flags allow better performance in the concurrency management (see below)
+
+### 4.2 Concurrency management
+
+#### Analysis of methods
 
 The synchronization without considering the removal of NFFGs is simply obtained by using ConcurrentMap.
 
@@ -176,6 +196,30 @@ The synchronization without considering the removal of NFFGs is simply obtained 
 - `deleteAllPolicies` is clearing the policy map in a single atomic operation
 - `updatePolicyResult` is first getting the policy from its name then is verifying its result. Also if this is not a single operation and a deletion can occur in between, this is not a problem because in this case the serialized view of the events would be that the deletion occurred after the update of the result, without side effects because the update of the result does not operate on the map but only on an object that is stored inside it, and can be safely removed from the map preventing other threads to reach this policy that still exist for the thread that is handling the update
 - `verifyResultOnTheFly` is first validating the references contained in the policy (nffg, src, dst) and then verifying the result. Since the referenced nffg cannot be deleted (or updated) the data are still valid also if these operations are not performed atomically
+
+#### Preponing the put in the NFFGs map with respect to the communication with neo4j
+
+The method `storeNffg` seems to act in a strange way: first it inserts the NFFG into the map (by checking the constraints) then it handles the storage of nodes inside neo4j service. This has some consequences:
+
+- the communication with neo4j could fail: the creator of the NFFG will receive a 500
+- some GET could read the NFFG before its node are stored inside neo4j: this is not a problem because the NFFG data won't change
+- some GET could read a NFFG that whose nodes have not been uploaded correctly to neo4j: those clients won't detect any problems until they want to test some policies
+- some policies could refer this NFFG, and no errors will be detected
+
+When some policies referring this NFFG will be requested an update, the check on the completeness of the storage inside neo4j is performed (because the `getId` method of the `NffgStorage` class is synchronized and checks the flags of the status). The possible situations are:
+
+- the NFFG was successfully uploaded to neo4j: the ids will be retrieved and the verification of reachability will take place
+- the NFFG was not successfully uploaded to neo4j: the `getId` will return `null` and the verification won't be executed
+- the NFFG is still being uploaded to neo4j: the `getId` will wait for the end of the operation (success or fail):
+  - on success it will proceed as above
+  - on fail it will stop as above
+
+The advantages of this solution are:
+
+- there is no need of synchronization because the operation done on the map is a single `putIfAbsent` instead of doing a `containsKey` then after the neo4j communication doing the `put`
+- avoiding the synchronization, more than a single `storeNffg` can be executed in parallel without unwanted race conditions. Since the communication with neo4j could take a lot of time (some seconds for a huge NFFG), this would kill the performances.
+
+#### Considering the deletion of NFFGs (not required but implemented)
 
 Considering also the deletion, the modifications done are the following:
 

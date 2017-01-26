@@ -211,20 +211,20 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>response type</th>
 <th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>DELETE</td>
 <td>-</td>
-<td>-</td>
 <td>delete all the data</td>
 <td>204 no content</td>
 <td>-</td>
+<td>all the data has been deleted</td>
 </tr>
 </tbody>
 </table>
@@ -240,28 +240,44 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>response type</th>
 <th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>GET</td>
 <td>-</td>
-<td>nffgs</td>
 <td>get the collection of NFFGs</td>
 <td>200 OK</td>
-<td>-</td>
+<td>set of nffgs</td>
+<td>in the response the set of NFFGs</td>
 </tr>
 <tr>
 <td>POST</td>
 <td>nffg</td>
-<td>nffg</td>
 <td>create a new NFFG</td>
 <td>201 CREATED</td>
-<td>400 validation error, 409 already existing</td>
+<td>created nffg</td>
+<td>the NFFG has been created and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>400 BAD REQUEST</td>
+<td>error string</td>
+<td>schema validation error</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>409 CONFLICT</td>
+<td>error string</td>
+<td>a NFFG with the same name is already stored</td>
 </tr>
 </tbody>
 </table>
@@ -279,28 +295,45 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>response type</th>
 <th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>GET</td>
 <td>-</td>
-<td>nffg</td>
 <td>get the NFFG</td>
 <td>200 OK</td>
-<td>404: no NFFG exists with this name</td>
+<td>nffg</td>
+<td>in the response the NFFG corresponding to <code>nffg_name</code>
+</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no NFFG exists with this name</td>
 </tr>
 <tr>
 <td>DELETE</td>
 <td>-</td>
-<td>nffg</td>
 <td>delete the NFFG</td>
 <td>200 OK</td>
-<td>404: no NFFG exists with this name</td>
+<td>deleted nffg</td>
+<td>the NFFG has been deleted and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no NFFG exists with this name</td>
 </tr>
 </tbody>
 </table>
@@ -341,28 +374,28 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>response type</th>
 <th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>GET</td>
 <td>-</td>
-<td>policies</td>
 <td>get the collection of policies</td>
 <td>200 OK</td>
-<td>-</td>
+<td>policies</td>
+<td>in the response the set of policies</td>
 </tr>
 <tr>
 <td>DELETE</td>
 <td>-</td>
-<td>-</td>
 <td>delete all the policies</td>
 <td>204 no content</td>
 <td>-</td>
+<td>all the policies have been deleted</td>
 </tr>
 </tbody>
 </table>
@@ -387,36 +420,69 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>response type</th>
 <th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>GET</td>
 <td>-</td>
-<td>policy</td>
 <td>get the policy</td>
 <td>200 OK</td>
-<td>404: no policy exists with this name</td>
+<td>policy</td>
+<td>in the response the policy corresponding to <code>policy_name</code>
+</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no policy exists with this name</td>
 </tr>
 <tr>
 <td>DELETE</td>
 <td>-</td>
-<td>-</td>
 <td>delete the policy</td>
 <td>200 OK</td>
-<td>404: no policy exists with this name</td>
+<td>deleted policy</td>
+<td>the policy has been deleted and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no policy exists with this name</td>
 </tr>
 <tr>
 <td>PUT</td>
 <td>policy</td>
-<td>policy</td>
 <td>update/create the policy</td>
-<td>200 OK, 201 CREATED</td>
-<td>400: validation error or invalid reference to stored resources</td>
+<td>200 OK</td>
+<td>updated policy</td>
+<td>the policy has been updated successfully and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>201 CREATED</td>
+<td>created policy</td>
+<td>the policy has been created successfully and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>400 BAD REQUEST</td>
+<td>error string</td>
+<td>validation error or invalid reference to stored resources</td>
 </tr>
 </tbody>
 </table>
@@ -432,20 +498,28 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>response type</th>
 <th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>result status</th>
+<th>response type</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>POST</td>
 <td>-</td>
-<td>policy</td>
 <td>update the policy result</td>
 <td>200 OK</td>
-<td>404: no policy exists with this name</td>
+<td>policy with updated result</td>
+<td>the reachability policy has been tested and updated in the service and the policy is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no policy exists with this name</td>
 </tr>
 </tbody>
 </table>
@@ -461,20 +535,28 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>response type</th>
 <th>explaination</th>
-<th>result</th>
-<th>errors</th>
+<th>result status</th>
+<th>response type</th>
+<th>meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>POST</td>
 <td>policy</td>
-<td>policy</td>
 <td>verify this policy</td>
 <td>200 OK</td>
-<td>400: validation error or invalid reference to stored resources (nffg or node)</td>
+<td>policy</td>
+<td>the reachability policy has been tested and the policy is provided back to the client with the updated result</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>400 NOT FOUND</td>
+<td>error string</td>
+<td>validation error or invalid reference to stored resources</td>
 </tr>
 </tbody>
 </table>
@@ -483,7 +565,21 @@
 <a id="user-content-4-implementation-details" class="anchor" href="#4-implementation-details" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4. Implementation details</h2>
 
 <h3>
-<a id="user-content-concurrency-management" class="anchor" href="#concurrency-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concurrency management</h3>
+<a id="user-content-41-data-storage" class="anchor" href="#41-data-storage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4.1 Data storage</h3>
+
+<p>The data are stored using two maps: one for NFFGs and one for policies. While the map for policies contains directly the objects belonging to the generated class <code>Policy</code>, the map of NFFGs contain object belonging to the class <code>NffgStorage</code>. This class contains:</p>
+
+<ul>
+<li>the object belonging to the generated class <code>Nffg</code> (the data that clients can get)</li>
+<li>a map that contains the mapping between the node names and the ids used for the communication with neo4j: this mapping is local to each NFFG because there can be noded with the same name belonging to different NFFGs</li>
+<li>some flags to keep a state of the state of the communication with neo4j: those flags allow better performance in the concurrency management (see below)</li>
+</ul>
+
+<h3>
+<a id="user-content-42-concurrency-management" class="anchor" href="#42-concurrency-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4.2 Concurrency management</h3>
+
+<h4>
+<a id="user-content-analysis-of-methods" class="anchor" href="#analysis-of-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Analysis of methods</h4>
 
 <p>The synchronization without considering the removal of NFFGs is simply obtained by using ConcurrentMap.</p>
 
@@ -502,6 +598,43 @@
 <li>
 <code>verifyResultOnTheFly</code> is first validating the references contained in the policy (nffg, src, dst) and then verifying the result. Since the referenced nffg cannot be deleted (or updated) the data are still valid also if these operations are not performed atomically</li>
 </ul>
+
+<h4>
+<a id="user-content-preponing-the-put-in-the-nffgs-map-with-respect-to-the-communication-with-neo4j" class="anchor" href="#preponing-the-put-in-the-nffgs-map-with-respect-to-the-communication-with-neo4j" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Preponing the put in the NFFGs map with respect to the communication with neo4j</h4>
+
+<p>The method <code>storeNffg</code> seems to act in a strange way: first it inserts the NFFG into the map (by checking the constraints) then it handles the storage of nodes inside neo4j service. This has some consequences:</p>
+
+<ul>
+<li>the communication with neo4j could fail: the creator of the NFFG will receive a 500</li>
+<li>some GET could read the NFFG before its node are stored inside neo4j: this is not a problem because the NFFG data won't change</li>
+<li>some GET could read a NFFG that whose nodes have not been uploaded correctly to neo4j: those clients won't detect any problems until they want to test some policies</li>
+<li>some policies could refer this NFFG, and no errors will be detected</li>
+</ul>
+
+<p>When some policies referring this NFFG will be requested an update, the check on the completeness of the storage inside neo4j is performed (because the <code>getId</code> method of the <code>NffgStorage</code> class is synchronized and checks the flags of the status). The possible situations are:</p>
+
+<ul>
+<li>the NFFG was successfully uploaded to neo4j: the ids will be retrieved and the verification of reachability will take place</li>
+<li>the NFFG was not successfully uploaded to neo4j: the <code>getId</code> will return <code>null</code> and the verification won't be executed</li>
+<li>the NFFG is still being uploaded to neo4j: the <code>getId</code> will wait for the end of the operation (success or fail):
+
+<ul>
+<li>on success it will proceed as above</li>
+<li>on fail it will stop as above</li>
+</ul>
+</li>
+</ul>
+
+<p>The advantages of this solution are:</p>
+
+<ul>
+<li>there is no need of synchronization because the operation done on the map is a single <code>putIfAbsent</code> instead of doing a <code>containsKey</code> then after the neo4j communication doing the <code>put</code>
+</li>
+<li>avoiding the synchronization, more than a single <code>storeNffg</code> can be executed in parallel without unwanted race conditions. Since the communication with neo4j could take a lot of time (some seconds for a huge NFFG), this would kill the performances.</li>
+</ul>
+
+<h4>
+<a id="user-content-considering-the-deletion-of-nffgs-not-required-but-implemented" class="anchor" href="#considering-the-deletion-of-nffgs-not-required-but-implemented" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Considering the deletion of NFFGs (not required but implemented)</h4>
 
 <p>Considering also the deletion, the modifications done are the following:</p>
 
