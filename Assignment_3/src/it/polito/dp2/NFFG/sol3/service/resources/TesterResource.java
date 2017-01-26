@@ -13,9 +13,9 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
  * @author Martino Mensio
  *
  */
-@Path("verifier")
-@Api(value = "verifier", description = "verifies policies against the stored nffgs, without storing the policy")
-public class VerifierResource extends GenericResource {
+@Path("tester")
+@Api(value = "tester", description = "verifies policies against the stored nffgs, without storing the policy")
+public class TesterResource extends GenericResource {
 
 	@POST
 	@ApiOperation(value = "verify a policy without storing it", notes = "to be called on the child resource of the nffg of reference")
