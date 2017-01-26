@@ -32,7 +32,7 @@ public class NffgsResource extends GenericResource {
 	@ApiOperation(value = "store a new NFFG", notes = "the name of the NFFG is the id of the created resource")
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "NFFG created"),
 			@ApiResponse(code = 409, message = "conflict because of already stored nffg with same name"),
-			@ApiResponse(code = 422, message = "validation failed") })
+			@ApiResponse(code = 400, message = "validation failed") })
 	public Response postNffg(Nffg nffg, @Context UriInfo uriInfo) {
 		Nffg response = service.storeNffg(nffg);
 		if (response != null) {

@@ -39,7 +39,7 @@ public class PoliciesResource extends GenericResource {
 	@ApiOperation(value = "store a policy to a specified resource", notes = "both for creation and update, identified by policy name")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "policy updated"),
 			@ApiResponse(code = 201, message = "policy created"),
-			@ApiResponse(code = 422, message = "validation of policy failed or or invalid reference to stored resources") })
+			@ApiResponse(code = 400, message = "validation of policy failed or or invalid reference to stored resources") })
 	@Path("{policy_name}")
 	public Response postPolicy(Policy policy, @PathParam("policy_name") String policyName, @Context UriInfo uriInfo) {
 		// Check that the policy name is the same in the pathParam and in the
