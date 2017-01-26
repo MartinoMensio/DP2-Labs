@@ -1,0 +1,4 @@
+@import url(markdown.css);
+body, code {
+    font-size: 10px !important
+}

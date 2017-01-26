@@ -76,6 +76,12 @@
 </thead>
 <tbody>
 <tr>
+<td><code>/</code></td>
+<td>-</td>
+<td>DELETE</td>
+<td>delete all the data stored in the service</td>
+</tr>
+<tr>
 <td><code>/nffgs</code></td>
 <td>nffgs</td>
 <td>GET</td>
@@ -106,16 +112,16 @@
 <td>obtain the collection of policies belonging to a NFFG whose name is given</td>
 </tr>
 <tr>
-<td><code>/nffgs/{nffg_name}/online_result</code></td>
-<td>result</td>
-<td>POST</td>
-<td>obtain the result of a policy provided in the request testing it against an existing NFFG given its name</td>
-</tr>
-<tr>
 <td><code>/policies</code></td>
 <td>policies</td>
 <td>GET</td>
 <td>obtain the collection of all the policies</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>DELETE</td>
+<td>delete all the policies</td>
 </tr>
 <tr>
 <td><code>/policies/{policy_name}</code></td>
@@ -147,6 +153,12 @@
 <td>POST</td>
 <td>recompute and obtain the result of a stored policy</td>
 </tr>
+<tr>
+<td><code>/verifier</code></td>
+<td>result</td>
+<td>POST</td>
+<td>obtain the result of a policy provided in the request testing it against an existing NFFG given its name</td>
+</tr>
 </tbody>
 </table>
 
@@ -163,6 +175,33 @@
 <p>All the operations are available with Content-Type (both requests and responses) <code>application/xml</code> or <code>application/json</code>. The types used are the ones contained in the XSD.</p>
 
 <p>Errors on all the resources: 406 500 400 </p>
+
+<h3>
+<a id="" class="anchor" href="#" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/</code>
+</h3>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>response type</th>
+<th>explaination</th>
+<th>result</th>
+<th>errors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>-</td>
+<td>delete all the data</td>
+<td>204 no content</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
 
 <h3>
 <a id="user-content-nffgs" class="anchor" href="#nffgs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs</code>
@@ -196,12 +235,12 @@
 <td>nffg</td>
 <td>create a new NFFG</td>
 <td>201 CREATED</td>
-<td>422 validation error, 409 already existing</td>
+<td>400 validation error, 409 already existing</td>
 </tr>
 </tbody>
 </table>
 
-<p>The POST request must contain the field <code>name</code>, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 403 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 422 error.</p>
+<p>The POST request must contain the field <code>name</code>, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 409 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 400 error.</p>
 
 <h3>
 <a id="user-content-nffgsnffg_name" class="anchor" href="#nffgsnffg_name" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs/{nffg_name}</code>
@@ -290,6 +329,14 @@
 <td>200 OK</td>
 <td></td>
 </tr>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>-</td>
+<td>delete all the policies</td>
+<td>204 no content</td>
+<td></td>
+</tr>
 </tbody>
 </table>
 
@@ -342,7 +389,7 @@
 <td>policy</td>
 <td>update/create the policy</td>
 <td>200 OK, 201 CREATED</td>
-<td>422: validation error or invalid reference to stored resources</td>
+<td>400: validation error, 422 invalid reference to stored resources</td>
 </tr>
 </tbody>
 </table>
@@ -400,7 +447,7 @@
 <td>policy</td>
 <td>verify this policy</td>
 <td>200 OK</td>
-<td>422: validation error or invalid reference to stored resources (nffg or node)</td>
+<td>400: validation error, 422 invalid reference to stored resources (nffg or node)</td>
 </tr>
 </tbody>
 </table>
@@ -421,6 +468,8 @@
 <code>storePolicy</code> is checking the references to nffg and nodes (src and dst) then is putting the new policy into the policies map. But since an NFFG cannot be deleted, after the check the references cannot be invalidated in any ways, so also in this case there is no need of additional synchronization</li>
 <li>
 <code>deletePolicy</code> is removing the policy from the map of policies in a single atomic operation</li>
+<li>
+<code>deleteAllPolicies</code> is clearing the policy map in a single atomic operation</li>
 <li>
 <code>updatePolicyResult</code> is first getting the policy from its name then is verifying its result. Also if this is not a single operation and a deletion can occur in between, this is not a problem because in this case the serialized view of the events would be that the deletion occurred after the update of the result, without side effects because the update of the result does not operate on the map but only on an object that is stored inside it, and can be safely removed from the map preventing other threads to reach this policy that still exist for the thread that is handling the update</li>
 <li>
@@ -453,9 +502,13 @@
 </ul>
 </li>
 <li>
+<code>deleteAll</code> also uses the exclusive lock</li>
+<li>
 <code>storePolicy</code> uses a shared lock to validate the references and then storing in the policies map the new one. In this way the removal cannot occur between the two operations, and therefore the references are still valid</li>
 <li>
 <code>deletePolcy</code> uses a shared lock because the iteration that is occurring in the <code>deleteNffg</code> over the collection of policies acts on the valueSet that is not explicitly concurrent-safe also if it coming from a ConcurrentMap. In order to avoid any problems, the deletion of a single policy is done in a protected block</li>
+<li>
+<code>deleteAllPolicies</code> uses the shared lock for the same reason as above</li>
 <li>
 <code>updatePolicyResult</code> uses the shared lock because after getting the policy from the name the verification is accessing the related nffg in order to use the ids, that must not be deleted between the two operations</li>
 <li>
