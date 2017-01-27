@@ -15,12 +15,19 @@ import org.xml.sax.*;
 
 import it.polito.dp2.NFFG.sol3.service.jaxb.*;
 
+/**
+ * 
+ * @author Martino Mensio
+ *
+ * @param <T>
+ */
 @Provider
 @Consumes({ MediaType.APPLICATION_XML })
 public class ValidatingReader<T> implements MessageBodyReader<T> {
 
 	final String jaxbPackage = "it.polito.dp2.NFFG.sol3.service.jaxb";
-	Unmarshaller unmarshaller;
+	private JAXBContext context = null;
+	private Schema schema = null;
 
 	public ValidatingReader() {
 		try {
@@ -28,15 +35,13 @@ public class ValidatingReader<T> implements MessageBodyReader<T> {
 			if (schemaStream == null) {
 				throw new IOException("schema file not found");
 			}
-			JAXBContext jc = JAXBContext.newInstance(jaxbPackage);
-			unmarshaller = jc.createUnmarshaller();
+			context = JAXBContext.newInstance(jaxbPackage);
 			SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = sf.newSchema(new StreamSource(schemaStream));
-			unmarshaller.setSchema(schema);
+			schema = sf.newSchema(new StreamSource(schemaStream));
 
 		} catch (SAXException | JAXBException | IOException se) {
 			// set unmarshaller to null so that readFrom can find the error
-			unmarshaller = null;
+			context = null;
 		}
 	}
 
@@ -50,8 +55,16 @@ public class ValidatingReader<T> implements MessageBodyReader<T> {
 	public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
 			throws IOException, WebApplicationException {
-		if (unmarshaller == null) {
-			throw new InternalServerErrorException("unmarshaler null");
+		// the unmarshaller is created locally to this method because it is not
+		// thread-safe
+		Unmarshaller unmarshaller = null;
+		try {
+			unmarshaller = context.createUnmarshaller();
+			unmarshaller.setSchema(schema);
+		} catch (Exception e) {
+			// throw a RuntimeException so that the custom mapper won't catch
+			// it, but will display the problem
+			throw new RuntimeException(e);
 		}
 
 		try {
