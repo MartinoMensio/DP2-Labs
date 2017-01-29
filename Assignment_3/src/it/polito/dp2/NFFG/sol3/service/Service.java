@@ -460,12 +460,15 @@ public class Service {
 		if (nffgStorage == null) {
 			throw new MissingReferenceException("the policy refers to inexistent nffg named " + policy.getNffg());
 		}
-		if (nffgStorage.getId(policy.getSrc().getRef()) == null) {
-			throw new MissingReferenceException("the policy source node named " + policy.getSrc().getRef()
+		String srcName = policy.getSrc().getRef();
+		String dstName = policy.getDst().getRef();
+
+		if (nffgStorage.getNffg().getNode().stream().noneMatch(n -> n.getName().equals(srcName))) {
+			throw new MissingReferenceException("the policy source node named " + srcName
 					+ " does not belong to stored nffg named " + policy.getNffg());
 		}
-		if (nffgStorage.getId(policy.getDst().getRef()) == null) {
-			throw new MissingReferenceException("the policy destination node named " + policy.getDst().getRef()
+		if (nffgStorage.getNffg().getNode().stream().noneMatch(n -> n.getName().equals(dstName))) {
+			throw new MissingReferenceException("the policy destination node named " + dstName
 					+ " does not belong to stored nffg named " + policy.getNffg());
 		}
 	}
