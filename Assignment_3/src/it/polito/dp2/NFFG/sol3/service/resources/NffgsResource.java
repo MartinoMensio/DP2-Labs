@@ -68,7 +68,7 @@ public class NffgsResource extends GenericResource {
 			@DefaultValue("false") @QueryParam("force") Boolean force) {
 		Nffg nffg = service.deleteNffg(nffgName, force);
 		if (nffg == null) {
-			throw new NotFoundException("Policy with name " + nffgName + " is not stored in the service");
+			throw new NotFoundException("Nffg with name " + nffgName + " is not stored in the service");
 		}
 		return Response.ok(nffg).build();
 	}
