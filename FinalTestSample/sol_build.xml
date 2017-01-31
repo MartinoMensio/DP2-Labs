@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="NFFG-3 build service" default="build-service" basedir=".">
+	<description>
+		Script for building service for NFFG Assignment 3
+	</description>
+
+	<!-- The classpath to be used for compilation of the solution -->
+	<path id="sol.classpath">
+		<pathelement location="${lib.dir}/NFFG.jar" />
+		<pathelement location="${lib.dir}/lab3.jar" />
+		<pathelement location="${lib.dir}/lab3_0.jar" />
+		<pathelement location="${lib.dir}/javax.ws.rs-api-2.0.1.jar" />
+		<pathelement location="${lib.dir}/jersey-client-1.19.1.jar" />
+		<pathelement location="${lib.dir}/jersey-core-1.19.1.jar" />
+		<pathelement location="${lib.dir}/swagger-annotations-1.3.5.jar" />
+	</path>
+
+	<property name="src.dir" location="${basedir}/src" />
+	<property name="custom.dir" value="${basedir}/custom" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="schema.dir" value="${basedir}/xsd" />
+	<property name="gen.dir" value="${basedir}/gen-src" />
+	<property name="jaxb.dir" value="${gen.dir}/jaxb" />
+	<property name="neo4j.dir" value="${gen.dir}/neo4j" />
+	<property name="lib.dir" location="${basedir}/lib" />
+	<property name="NEO4JURL" value="http://localhost:8080/Neo4JXML/rest" />
+	<property name="WADL" value="${NEO4JURL}/application.wadl" />
+	<property name="service.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/service" />
+	<property name="client1.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client1" />
+	<property name="client2.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client2" />
+
+	<target name="build-service" depends="compile-neo4j,compile-jaxb">
+		<!-- TODO -->
+		<javac srcdir="${service.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
+	</target>
+	<target name="build-client" depends="compile-jaxb">
+		<!-- TODO -->
+		<javac srcdir="${client1.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
+		<javac srcdir="${client2.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
+	</target>
+	<target name="clean">
+		<delete dir="${jaxb.dir}" />
+		<delete dir="${neo4j.dir}" />
+	</target>
+<!--
+	<target name="build-lab3">
+		<javac destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath">
+			<src path="${src.dir}" />
+			<include name="it/polito/dp2/NFFG/lab3/**" />
+			<exclude name="it/polito/dp2/NFFG/lab3/tests/**" />
+		</javac>
+	</target>
+-->
+	<!-- TODO split in two directories the neo4j and jaxb artifacts -->
+	<target name="compile-neo4j" depends="generate-neo4j,generate-jaxb">
+		<!-- Removing the file that has problems -->
+		<!--<delete>
+			<fileset dir="${neo4j.dir}/it/polito/dp2/NFFG/sol3/service/neo4j">
+				<include name="Localhost_Neo4JXMLRest.java" />
+			</fileset>
+		</delete>-->
+		<javac srcdir="${neo4j.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
+	</target>
+	<target name="compile-jaxb" depends="generate-jaxb">
+		<javac srcdir="${jaxb.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
+	</target>
+
+
+	<!-- Target chk-bindings -->
+	<target name="-chk-jaxb">
+		<uptodate property="generate-jaxb.notRequired" targetfile="${jaxb.dir}/.jaxb_flagfile">
+			<srcfiles dir="${schema.dir}" includes="**/*.xsd" />
+		</uptodate>
+	</target>
+	<!-- Target generate-bindings -->
+	<target name="generate-jaxb" unless="generate-jaxb.notRequired" depends="-chk-jaxb" description="Generate bindings from schema">
+		<mkdir dir="${jaxb.dir}" />
+		<exec executable="xjc" failonerror="true">
+			<arg value="-d" />
+			<arg value="${jaxb.dir}" />
+			<arg value="-p" />
+			<arg value="it.polito.dp2.NFFG.sol3.service.jaxb" />
+			<arg value="${schema.dir}/nffgVerifier.xsd" />
+		</exec>
+		<touch file="${jaxb.dir}/.jaxb_flagfile" />
+	</target>
+
+	<taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask">
+		<classpath>
+			<fileset dir="${lib.dir}" includes="*.jar" />
+		</classpath>
+	</taskdef>
+	<!-- Target chk-artifacts -->
+	<target name="-chk-neo4j">
+		<uptodate property="generate-neo4j.notRequired" targetfile="${neo4j.dir}/.neo4j_flagfile">
+			<!-- regenerate artifacts if this build file is modified (or if the flagfile is removed) -->
+			<srcfiles dir="${basedir}" includes="sol_build.xml" />
+			<!-- update also in case some customization files are updated -->
+			<srcfiles dir="${custom.dir}" includes="*.*" />
+		</uptodate>
+	</target>
+
+	<!-- define the client artifacts generation target -->
+	<target name="generate-neo4j" depends="-chk-neo4j" unless="generate-neo4j.notRequired">
+		<mkdir dir="${neo4j.dir}" />
+		<echo message="Compiling the WADL descriptions..." />
+		<wjc target="${neo4j.dir}" autoSchemaPackage="false" package="it.polito.dp2.NFFG.sol3.service.neo4j" description="${WADL}">
+			<produces dir="${neo4j.dir}/it/polito/dp2/NFFG/sol3.service" includes="*.java" />
+			<!-- if this file is modified with respect to the produces set, rebuild also if the wadl and xsd didn't change -->
+			<depends dir="${basedir}" includes="sol_build.xml" />
+			<!-- use customizations -->
+			<customizations dir="${custom.dir}" includes="*.xjb" />
+		</wjc>
+		<touch file="${neo4j.dir}/.neo4j_flagfile" />
+	</target>
+</project>

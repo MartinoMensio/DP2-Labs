@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://dp2.polito.it/nffgVerifier"
+	xmlns:tns="http://dp2.polito.it/nffgVerifier" elementFormDefault="qualified">
+
+	<element name="nffg">
+		<complexType>
+			<complexContent>
+				<extension base="tns:named_element">
+					<sequence>
+						<element name="node" type="tns:node" minOccurs="0"
+							maxOccurs="unbounded" />
+						<element name="link" type="tns:link" minOccurs="0"
+							maxOccurs="unbounded" />
+					</sequence>
+					<attribute name="updated" type="dateTime" use="required" />
+				</extension>
+			</complexContent>
+		</complexType>
+		<key name="node_key">
+			<selector xpath="tns:node" />
+			<field xpath="@name" />
+		</key>
+		<keyref name="link_src_keyref" refer="tns:node_key">
+			<selector xpath="tns:link/tns:src" />
+			<field xpath="@ref"></field>
+		</keyref>
+		<keyref name="link_dst_keyref" refer="tns:node_key">
+			<selector xpath="tns:link/tns:dst" />
+			<field xpath="@ref"></field>
+		</keyref>
+	</element>
+
+	<element name="policy">
+		<complexType>
+			<complexContent>
+				<extension base="tns:named_element">
+					<sequence>
+						<element name="specification" type="tns:policy_specification" />
+						<element name="result" type="tns:result" minOccurs="0" />
+					</sequence>
+					<attribute name="nffg" type="tns:name" use="required" />
+					<attribute name="positive" type="boolean" use="optional"
+						default="true" />
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+
+	<complexType name="policy_specification">
+		<choice>
+			<element name="reachability" type="tns:reachability" />
+			<element name="isolation" type="tns:isolation" />
+		</choice>
+	</complexType>
+
+	<complexType name="reachability">
+		<sequence>
+			<element name="src" type="tns:node_ref" />
+			<element name="dst" type="tns:node_ref" />
+			<element name="functionality" minOccurs="0" maxOccurs="unbounded"
+				type="tns:functionality" />
+		</sequence>
+	</complexType>
+
+	<complexType name="isolation">
+		<sequence>
+			<element name="firstSet" type="tns:node_ref" maxOccurs="unbounded" />
+			<element name="secondSet" type="tns:node_ref" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="result" mixed="true">
+		<attribute name="satisfied" type="boolean" use="required" />
+		<attribute name="verified" type="dateTime" use="required" />
+	</complexType>
+
+	<complexType name="node">
+		<complexContent>
+			<extension base="tns:named_element">
+				<sequence>
+					<element name="functionality" type="tns:functionality" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="link">
+		<complexContent>
+			<extension base="tns:named_element">
+				<sequence>
+					<element name="src" type="tns:node_ref" />
+					<element name="dst" type="tns:node_ref" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="named_element">
+		<attribute name="name" type="tns:name" use="required" />
+	</complexType>
+
+	<complexType name="node_ref">
+		<attribute name="ref" type="tns:name" use="required" />
+	</complexType>
+
+	<simpleType name="functionality">
+		<restriction base="string">
+			<enumeration value="CACHE" />
+			<enumeration value="DPI" />
+			<enumeration value="FW" />
+			<enumeration value="MAIL_CLIENT" />
+			<enumeration value="MAIL_SERVER" />
+			<enumeration value="NAT" />
+			<enumeration value="SPAM" />
+			<enumeration value="VPN" />
+			<enumeration value="WEB_CLIENT" />
+			<enumeration value="WEB_SERVER" />
+		</restriction>
+	</simpleType>
+
+	<simpleType name="name">
+		<restriction base="string">
+			<pattern value="[a-zA-Z][a-zA-Z\d]*" />
+		</restriction>
+	</simpleType>
+</schema>

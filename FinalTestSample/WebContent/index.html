@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NffgService API</title>
+  <link rel="stylesheet" href="markdown.css">
+</head>
+<body>
+<h1>
+<a id="user-content-design-of-restful-api-for-nffg-verifier" class="anchor" href="#design-of-restful-api-for-nffg-verifier" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Design of RESTful API for NFFG verifier</h1>
+
+<h2>
+<a id="user-content-1-conceptual-structure-of-the-resources" class="anchor" href="#1-conceptual-structure-of-the-resources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Conceptual structure of the resources</h2>
+
+<h3>
+<a id="user-content-11-basic-structure" class="anchor" href="#11-basic-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1.1 Basic structure</h3>
+
+<p>The conceptual structure of the data to be represented in the service has a hierarchical structure that is:</p>
+
+<ul>
+<li>there is a collection of <strong>NFFGs</strong> (top level resource)</li>
+<li>the collection is a set of <strong>NFFG</strong> (child resource), that contain information about nodes and links</li>
+<li>each <strong>NFFG</strong> has a child resource that represents <strong>policies</strong>
+</li>
+<li>policies is a collection of <strong>policy</strong> resources</li>
+<li>each policy can have a <strong>result</strong> resource</li>
+<li>each <strong>NFFG</strong> has a child resource for verification of policies that won't be stored</li>
+</ul>
+
+<p>However this structure has some problems with the details of the specifications provided. The first big problem is that the policies need to be accessible by clients without knowing the NFFG they belong to. For this reason the <strong>policies</strong> resource should be a top level one instead of being a child resource of the <strong>NFFG</strong> resource. This is a direct consequence of the fact that the policies are identified by their name in the global scope insted of being restricted to the scope of the single NFFG they belong to.</p>
+
+<p>The verification of policies that won't be stored has been moved as a top level resource in order to have consistency with the responses provided by the creation / update of stored policies: if the verification was a child resource of <strong>NFFG</strong>, the 404 status code should have been used by the service if the policy refers an unknown NFFG because the NFFG would have been in the path. But since the <strong>policies</strong> resource are detached from the <strong>NFFGs</strong> the checks performed by the service when receiving a policy to be stored don't use 404 because the path will not include the information about the related NFFG.</p>
+
+<p>Details about the solution to these problems are provided below.</p>
+
+<h3>
+<a id="user-content-12-effective-structure" class="anchor" href="#12-effective-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1.2 Effective structure</h3>
+
+<p>This is the effective structure that has been designed.</p>
+
+<p><a href="resources_chart.svg" target="_blank"><img src="resources_chart.svg" alt="hierarchy of resources" style="max-width:100%;"></a></p>
+
+<p>The resources are:</p>
+
+<ul>
+<li>
+<strong>nffgs</strong>: represents the stored collection of nffgs</li>
+<li>
+<strong>nffg</strong>: represents a single stored nffg belonging to the collection</li>
+<li>
+<strong>policies</strong>: represents the stored collection of policies</li>
+<li>
+<strong>policy</strong>: represents a single stored policy belonging to the collection</li>
+<li>
+<strong>result</strong>: represent the result of a policy</li>
+<li>
+<strong>tester</strong>: the endpoint for verification of policies that won't be stored</li>
+</ul>
+
+<h4>
+<a id="user-content-policies-placement" class="anchor" href="#policies-placement" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policies placement</h4>
+
+<p>The <code>policies</code> are made available as root elements because the clients may want to get the whole set of policies stored inside the service. Since the name of a policy is unique not only iniside a single NFFG, but has a global scope, it is appropriate that also the child resource <code>policy</code> belongs to this subtree.</p>
+
+<h4>
+<a id="user-content-policy-creation-and-modification" class="anchor" href="#policy-creation-and-modification" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policy creation and modification</h4>
+
+<p>Single policies can be created and updated using the same procedure: a PUT request on the <code>policy</code> resource child of <code>policies</code>. Because the requirements specify that if a new policy is submitted with the same name as an already stored one a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent and the resource path is chosen by the client (see the discussion about IDs below).</p>
+
+<h2>
+<a id="user-content-2-mapping-of-the-resources-to-urls" class="anchor" href="#2-mapping-of-the-resources-to-urls" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Mapping of the resources to URLs</h2>
+
+<p>The tree structure of the resources previously shown is reflected on the URLs used. Curly braces are used in the following when the path contains an identifier.</p>
+
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>resource type</th>
+<th>method</th>
+<th>usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td>-</td>
+<td>DELETE</td>
+<td>delete all the data stored in the service</td>
+</tr>
+<tr>
+<td><code>/nffgs</code></td>
+<td>nffgs</td>
+<td>GET</td>
+<td>obtain the collection of NFFGs</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>POST</td>
+<td>store a new NFFG</td>
+</tr>
+<tr>
+<td><code>/nffgs/{nffg_name}</code></td>
+<td>nffg</td>
+<td>GET</td>
+<td>obtain a single NFFG given its name</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>DELETE</td>
+<td>delete a single NFFG given its name</td>
+</tr>
+<tr>
+<td><code>/policies</code></td>
+<td>policies</td>
+<td>GET</td>
+<td>obtain the collection of all the policies</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>DELETE</td>
+<td>delete all the policies</td>
+</tr>
+<tr>
+<td><code>/policies/{policy_name}</code></td>
+<td>policy</td>
+<td>GET</td>
+<td>obtain a single policy given its name</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>PUT</td>
+<td>store a policy on this resource (both creation or update)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>DELETE</td>
+<td>delete a single policy given its name</td>
+</tr>
+<tr>
+<td><code>/policies/{policy_name}/result</code></td>
+<td>result</td>
+<td>POST</td>
+<td>recompute the result and obtain the policy with the updated result</td>
+</tr>
+<tr>
+<td><code>/tester</code></td>
+<td>policy</td>
+<td>POST</td>
+<td>verify the policy provided in the request testing it against an existing NFFG</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-21-ids" class="anchor" href="#21-ids" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2.1 IDs</h3>
+
+<p>Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directy as path elements and therefore the ID of the resources is chosen by the client. In this way the client is able to retrieve the wanted data by simply knowing the name of the nffg / policy. This reflects the methods of the interface NffgVerifier, that allows to read the data in a similar way.</p>
+
+<p>For the NFFGs creation, the POST method is used because the creation is not idempotent as explained in the requirements (creation of an NFFG with the same name as an existing one is forbidden). Instead for the policies, since the creation of a policy with the same name as one already stored in the service is allowed and is used for replacement, the creation of a policy uses the same method as the replacement / update. In this way the client directly submits a PUT request to the path that contains the name of the policy, and since PUT is idempotent the creation follows the same approach as an update.</p>
+
+<h2>
+<a id="user-content-3-operations-by-resource" class="anchor" href="#3-operations-by-resource" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Operations by resource</h2>
+
+<p>All the operations are available with Accept and Content-Type with value <code>application/xml</code>. The Accept can also be <code>application/json</code> since the JAXB framework can handle this too, but for the Content-Type this data representation is not available because of implementation details: the requests are validated against an XML schema, and since the JSON schema is not required the validation of JSON could not be done. Some automatic generators of JSON schema from XML schema exist, but I preferred not to use them.</p>
+
+<p>The types used for data exchange are the ones contained in the XSD: elements <code>nffg</code> and <code>policy</code> in the namespace <code>http://dp2.polito.it/nffgVerifier</code>. Some data exchange used for collections are simply a list of elements belonging to the xsd: <code>nffgs</code> is simply a sequence of <code>nffg</code> elements, while <code>policies</code> is a sequence of <code>policies</code>. This is handled by the JAXB framework, because the types transferred are lists of elements that are manageable. So the collections look like:</p>
+
+<div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">nffgs</span>&gt;
+    &lt;<span class="pl-ent">nffg</span> <span class="pl-e">xmlns</span>=<span class="pl-s"><span class="pl-pds">"</span>http://dp2.polito.it/nffgVerifier<span class="pl-pds">"</span></span> <span class="pl-e">updated</span>=<span class="pl-s"><span class="pl-pds">"</span>2017-01-23T11:36:03.820+01:00<span class="pl-pds">"</span></span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>NFFGtest<span class="pl-pds">"</span></span>/&gt;
+    &lt;<span class="pl-ent">nffg</span> <span class="pl-e">xmlns</span>=<span class="pl-s"><span class="pl-pds">"</span>http://dp2.polito.it/nffgVerifier<span class="pl-pds">"</span></span> <span class="pl-e">updated</span>=<span class="pl-s"><span class="pl-pds">"</span>2017-01-23T11:36:19.527+01:00<span class="pl-pds">"</span></span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>NFFGtest2<span class="pl-pds">"</span></span>/&gt;
+&lt;/<span class="pl-ent">nffgs</span>&gt;</pre></div>
+
+<p>All the resources also have in common some HTTP response status codes (that are automatically managed by tomcat):</p>
+
+<ul>
+<li>
+<code>405</code>: the client is using an HTTP method not allowed</li>
+<li>
+<code>406</code>: the client is asking for an Accept that is not allowed</li>
+<li>
+<code>500</code>: generic internal server error when something unexpected happens in the service</li>
+</ul>
+
+<p>Some custom exceptions have been designed for specific situations:</p>
+
+<ul>
+<li>
+<code>409</code>: when the client tries to violate the contraint about uniqueness based on the name</li>
+<li>
+<code>400</code>: used both when validation of request fails against the schema or when the request references some data that is not stored in the service</li>
+<li>
+<code>500</code>: when something in the service is not working as expected. This could be a communication error with neo4j or some constraint failures. Before reaching some points that will generate unmanaged runtime exceptions, a specific exception is thrown providing a message to the client.</li>
+</ul>
+
+<p>The following paragraphs show the details about each resource with the allowed methods.</p>
+
+<h3>
+<a id="" class="anchor" href="#" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/</code>
+</h3>
+
+<p>The root resource is made available only for cleaning purposes. It cannot be read (for this the clients need to read the <code>nffgs</code> and <code>policies</code> separately) but can be used to clear all the data stored inside the service.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>explaination</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>delete all the data</td>
+<td>204 no content</td>
+<td>-</td>
+<td>all the data has been deleted</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-nffgs" class="anchor" href="#nffgs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs</code>
+</h3>
+
+<p>The collection of nffgs. Can be used to read the data about nffgs or to create a new nffg. There is no possibility to delete the whole set of NFFGs because, since all the policies stored refer an NFFG, to keep the constrains valid also the whole set of policies should be removed. For this reason the deletion of all the data has been moved to the root resource.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>explaination</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>get the collection of NFFGs</td>
+<td>200 OK</td>
+<td>set of <code>nffgs</code>
+</td>
+<td>in the response the set of NFFGs</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>nffg</td>
+<td>create a new NFFG</td>
+<td>201 CREATED</td>
+<td>created <code>nffg</code>
+</td>
+<td>the NFFG has been created and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>400 BAD REQUEST</td>
+<td>error string</td>
+<td>schema validation error</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>409 CONFLICT</td>
+<td>error string</td>
+<td>a NFFG with the same name is already stored</td>
+</tr>
+</tbody>
+</table>
+
+<p>The POST request must contain the field <code>name</code>, that will be the identifier of the created resource if the request succeeds. In case the name is already used by another stored NFFG, the service returns a HTTP 409 error. Instead if the request itself contains an error when doing validation of the data contained, the service returns a HTTP 400 error.</p>
+
+<h3>
+<a id="user-content-nffgsnffg_name" class="anchor" href="#nffgsnffg_name" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/nffgs/{nffg_name}</code>
+</h3>
+
+<p>A single nffg identified by its name. It can be read or deleted.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>explaination</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>get the NFFG</td>
+<td>200 OK</td>
+<td><code>nffg</code></td>
+<td>in the response the NFFG corresponding to <code>nffg_name</code>
+</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no NFFG exists with this name</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>delete the NFFG</td>
+<td>200 OK</td>
+<td>deleted <code>nffg</code>
+</td>
+<td>the NFFG has been deleted and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>403 FORBIDDEN</td>
+<td>error string</td>
+<td>impossible to delete the NFFG because some policies refer to it</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no NFFG exists with this name</td>
+</tr>
+</tbody>
+</table>
+
+<p>The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is <code>force</code> and the behaviour of the service is the following:</p>
+
+<table>
+<thead>
+<tr>
+<th>DELETE</th>
+<th><code>force=true</code></th>
+<th>
+<code>force</code> not true or missing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NFFG without policies</td>
+<td>success (removed NFFG)</td>
+<td>success (removed NFFG)</td>
+</tr>
+<tr>
+<td>NFFG with policies</td>
+<td>success (removed NFFG and all the policies referring it)</td>
+<td>FAIL</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-policies" class="anchor" href="#policies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies</code>
+</h3>
+
+<p>Policies collection. Can be used to read the data about policies (with some filtering using queryParams) and to delete the whole set of policies.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>explaination</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>get the collection of policies</td>
+<td>200 OK</td>
+<td><code>policies</code></td>
+<td>in the response the set of policies</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>delete all the policies</td>
+<td>204 no content</td>
+<td>-</td>
+<td>all the policies have been deleted</td>
+</tr>
+</tbody>
+</table>
+
+<p>queryParams to be used in GET to filter the data:</p>
+
+<ul>
+<li>
+<code>nffg</code>: only get policies for a specific NFFG (whose name is the value of the parameter)</li>
+<li>
+<code>from</code>: get policies that have been verified after the specified time and date (not implemented)</li>
+</ul>
+
+<h3>
+<a id="user-content-policiespolicy_name" class="anchor" href="#policiespolicy_name" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies/{policy_name}</code>
+</h3>
+
+<p>A single policy identified by its id. Can be used to read the policy, delete it or sending a policy for creation or update purposes.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>explaination</th>
+<th>result status</th>
+<th>response</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>-</td>
+<td>get the policy</td>
+<td>200 OK</td>
+<td><code>policy</code></td>
+<td>in the response the policy corresponding to <code>policy_name</code>
+</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no policy exists with this name</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>-</td>
+<td>delete the policy</td>
+<td>200 OK</td>
+<td>deleted <code>policy</code>
+</td>
+<td>the policy has been deleted and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no policy exists with this name</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>policy</td>
+<td>update/create the policy</td>
+<td>200 OK</td>
+<td>updated <code>policy</code>
+</td>
+<td>the policy has been updated successfully and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>201 CREATED</td>
+<td>created <code>policy</code>
+</td>
+<td>the policy has been created successfully and is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>400 BAD REQUEST</td>
+<td>error string</td>
+<td>validation error or invalid reference to stored resources</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-policiespolicy_nameresult" class="anchor" href="#policiespolicy_nameresult" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/policies/{policy_name}/result</code>
+</h3>
+
+<p>The corresponding result for this policy. This subresource can only be used to ask to the service an update of the verification result. The verification is done using neo4j service, and the updated policy is returned to the client.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>explaination</th>
+<th>result status</th>
+<th>response type</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>-</td>
+<td>update the policy result</td>
+<td>200 OK</td>
+<td>
+<code>policy</code> with updated result</td>
+<td>the reachability policy has been tested and updated in the service and the policy is provided back to the client</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>404 NOT FOUND</td>
+<td>error string</td>
+<td>no policy exists with this name</td>
+</tr>
+</tbody>
+</table>
+
+<h3>
+<a id="user-content-tester" class="anchor" href="#tester" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>/tester</code>
+</h3>
+
+<p>Verification endpoint for client policies, not stored on the service. The reachability policy is tested by using neo4j service.</p>
+
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>request type</th>
+<th>explaination</th>
+<th>result status</th>
+<th>response type</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>policy</td>
+<td>verify this policy</td>
+<td>200 OK</td>
+<td><code>policy</code></td>
+<td>the reachability policy has been tested and the policy is provided back to the client with the updated result</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>400 NOT FOUND</td>
+<td>error string</td>
+<td>validation error or invalid reference to stored resources</td>
+</tr>
+</tbody>
+</table>
+
+<h2>
+<a id="user-content-4-implementation-details" class="anchor" href="#4-implementation-details" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4. Implementation details</h2>
+
+<h3>
+<a id="user-content-41-data-storage" class="anchor" href="#41-data-storage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4.1 Data storage</h3>
+
+<p>The data are stored using two maps: one for NFFGs and one for policies. While the map for policies contains directly the objects belonging to the generated class <code>Policy</code>, the map of NFFGs contain object belonging to the class <code>NffgStorage</code>. This class contains:</p>
+
+<ul>
+<li>the object belonging to the generated class <code>Nffg</code> (the data that clients can get)</li>
+<li>a map that contains the mapping between the node names and the ids used for the communication with neo4j: this mapping is local to each NFFG because there can be nodes with the same name belonging to different NFFGs</li>
+<li>some flags to keep a state of the state of the communication with neo4j: those flags allow better performance in the concurrency management (see below)</li>
+</ul>
+
+<h3>
+<a id="user-content-42-concurrency-management" class="anchor" href="#42-concurrency-management" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4.2 Concurrency management</h3>
+
+<h4>
+<a id="user-content-analysis-of-methods" class="anchor" href="#analysis-of-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Analysis of methods</h4>
+
+<p>The synchronization without considering the removal of NFFGs is simply obtained by using ConcurrentMap.</p>
+
+<ul>
+<li>All the getters perform atomic operations on a single map (nffgs or policies). Then some filters can be applied on the set of values, but this operation is performed after the read of the data, so it is not a problem</li>
+<li>
+<code>storeNffg</code> performs a single atomic operation on the nffgs map: a <code>putIfAbsent</code> that is checking the existence and storing the new nffg in atomic way</li>
+<li>
+<code>storePolicy</code> is checking the references to nffg and nodes (src and dst) then is putting the new policy into the policies map as a single atomic <code>put</code>. But since an NFFG cannot be deleted, after the check the references cannot be invalidated in any ways, so also in this case there is no need of additional synchronization</li>
+<li>
+<code>deletePolicy</code> is removing the policy from the map of policies in a single atomic operation</li>
+<li>
+<code>deleteAllPolicies</code> is clearing the policy map in a single atomic operation</li>
+<li>
+<code>updatePolicyResult</code> is first getting the policy from its name then is verifying its result. Also if this is not a single operation and a deletion can occur in between, this is not a problem because in this case the serialized view of the events would be that the deletion occurred after the update of the result, without side effects because the update of the result does not operate on the map but only on an object that is stored inside it, and can be safely removed from the map preventing other threads to reach this policy that still exist for the thread that is handling the update</li>
+<li>
+<code>verifyResultOnTheFly</code> is first validating the references contained in the policy (nffg, src, dst) and then verifying the result. Since the referenced nffg cannot be deleted (or updated) the data are still valid also if these operations are not performed atomically</li>
+</ul>
+
+<h4>
+<a id="user-content-preponing-the-put-in-the-nffgs-map-with-respect-to-the-communication-with-neo4j" class="anchor" href="#preponing-the-put-in-the-nffgs-map-with-respect-to-the-communication-with-neo4j" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Preponing the put in the NFFGs map with respect to the communication with neo4j</h4>
+
+<p>The method <code>storeNffg</code> seems to act in a strange way: first it inserts the NFFG into the map (by checking the constraints) then it handles the storage of nodes inside neo4j service. This has some consequences:</p>
+
+<ul>
+<li>the communication with neo4j could fail: the creator of the NFFG will receive a 500</li>
+<li>some GET could read the NFFG before its node are stored inside neo4j: this is not a problem because the NFFG data won't change</li>
+<li>some GET could read a NFFG whose nodes have not been uploaded correctly to neo4j: those clients won't detect any problems until they want to test some policies</li>
+<li>some policies could refer this NFFG, and no errors will be detected</li>
+</ul>
+
+<p>When some policies referring this NFFG will be requested an update, the check on the completeness of the storage inside neo4j is performed (because the <code>getId</code> method of the <code>NffgStorage</code> class is synchronized and checks the flags of the status). The possible situations are:</p>
+
+<ul>
+<li>the NFFG was successfully uploaded to neo4j: the ids will be retrieved and the verification of reachability will take place</li>
+<li>the NFFG was not successfully uploaded to neo4j: the <code>getId</code> will return <code>null</code> and the verification won't be executed</li>
+<li>the NFFG is still being uploaded to neo4j: the <code>getId</code> will wait for the end of the operation (success or fail):
+
+<ul>
+<li>on success it will proceed as above</li>
+<li>on fail it will stop as above</li>
+</ul>
+</li>
+</ul>
+
+<p>The advantages of this solution are:</p>
+
+<ul>
+<li>there is no need of synchronization because the operation done on the map is a single <code>putIfAbsent</code> instead of doing a <code>containsKey</code> then after the neo4j communication doing the <code>put</code>
+</li>
+<li>avoiding the synchronization, more than a single <code>storeNffg</code> can be executed in parallel without unwanted race conditions. Since the communication with neo4j could take a lot of time (some seconds for a huge NFFG), this would kill the performances.</li>
+<li>if neo4j is not available, the service is able to provide simple storage functionalities (CRUD operations are still available to clients) only blocking the verification of policies</li>
+</ul>
+
+<h4>
+<a id="user-content-considering-the-deletion-of-nffgs-not-required-but-implemented" class="anchor" href="#considering-the-deletion-of-nffgs-not-required-but-implemented" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Considering the deletion of NFFGs (not required but implemented)</h4>
+
+<p>Considering also the deletion, the modifications done are the following:</p>
+
+<ul>
+<li>a RWLock is added for operations that modify the policies in order to make the assumptions above explained to be still valid:
+
+<ul>
+<li>the exclusive lock is used by the <code>deleteNffg</code> and <code>deleteAll</code> methods (the ones that would make the references to NFFGs invalid). In this way, when this lock is acquired no other threads can operate on the policies (modification)</li>
+<li>the shared lock is used by methods that modify the policies map</li>
+<li>the getters need no synchronization if the modification keep the state always valid during the execution of single operations</li>
+</ul>
+</li>
+</ul>
+
+<p>In details the usage of locks by each method:</p>
+
+<ul>
+<li>
+<code>deleteNffg</code> in the critical section protected by exclusive lock is:
+
+<ul>
+<li>checking if some policies are linked and in this case can block the execution if the request does not force the removal</li>
+<li>removing all the policies linked to this nffg from the policies map</li>
+<li>removing the nffg from the nffgs map</li>
+</ul>
+</li>
+<li>
+<code>deleteAll</code> also uses the exclusive lock</li>
+<li>
+<code>storePolicy</code> uses a shared lock to validate the references and then storing in the policies map the new one. In this way the removal cannot occur between the two operations, and therefore the references are still valid</li>
+<li>
+<code>deletePolicy</code> uses a shared lock because the iteration that is occurring in the <code>deleteNffg</code> over the collection of policies acts on the valueSet that is not explicitly concurrent-safe also if it coming from a ConcurrentMap. In order to avoid any problems, the deletion of a single policy is done in a protected block</li>
+<li>
+<code>deleteAllPolicies</code> uses the shared lock for the same reason as above</li>
+<li>
+<code>updatePolicyResult</code> uses the shared lock because after getting the policy from the name the verification is accessing the related nffg in order to use the ids, that must not be deleted between the two operations</li>
+<li>
+<code>verifyResultOnTheFly</code> uses the shared lock because after checking the references, the nffg must continue to be stored inside the nffgs map</li>
+<li>
+<code>storeNffg</code> does not need any locks because acts on completely new data. If the nffg stored with the same name is still being removed but not yet from the map, the serialized view of events will have the store before the deletion, without causing side effects.</li>
+<li>the getters don't require any lock because they read the data from a single map in atomic way. They also don't modify the data so they don't produce side effects.</li>
+<li>
+<code>getPolicies</code> is the only critical getter, that could give back a partial set of policies because the method <code>removeIf</code> called on the entrySet by the <code>deleteNffg</code> could be iterating and having removed only some policies belonging to the nffg that is being deleted. To avoid this problem, this method also uses the shared lock</li>
+</ul>
+
+</body>
+</html>

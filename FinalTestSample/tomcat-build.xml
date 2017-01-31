@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." name="tomcat-build">
+	<description>
+		Script for Controlling Tomcat (to be imported in main build)
+	</description>
+
+	<property name="tomcatUsername" value="root" />
+	<property name="tomcatPassword" value="root" />
+
+	<property name="tomcatPort" value="8080" />
+	<property name="tomcatUrl" value="http://localhost:${tomcatPort}/manager/text" />
+
+	<property name="NEO4JURL" value="http://localhost:${tomcatPort}/Neo4JXML/rest" />
+	<property name="Client2" value="it.polito.dp2.NFFG.sol3.client1.NFFGClientFactory" />
+
+	<!-- OS dependent stuff -->
+	<condition property="isWindows" value="true">
+		<os family="windows" />
+	</condition>
+	<condition property="isLinux" value="true">
+		<os family="unix" />
+	</condition>
+	<!-- Windows -->
+	<condition property="server.location" value="C:\xampp\tomcat">
+		<isset property="isWindows" />
+	</condition>
+	<condition property="tomcat.lib" value="${server.location}\lib">
+		<isset property="isWindows" />
+	</condition>
+	<condition property="tomcat.bin" value="${server.location}/bin">
+		<isset property="isWindows" />
+	</condition>
+	<!-- Linux -->
+	<condition property="server.location" value="">
+		<isset property="isLinux" />
+	</condition>
+	<condition property="tomcat.lib" value="/usr/share/java/tomcat8">
+		<isset property="isLinux" />
+	</condition>
+	<condition property="tomcat.bin" value="/usr/share/tomcat8/bin">
+		<isset property="isLinux" />
+	</condition>
+
+
+	<!--PROPERTIES AND TASKS TO BE OVERRIDDEN BY MAIN BUILD-->
+	<property name="serviceName" value="NffgService" />
+
+	<target name="package-service">
+	</target>
+
+
+	<path id="tomcat.class.path">
+		<fileset dir="${tomcat.lib}">
+			<include name="**/*.jar" />
+			<include name="**/*.zip" />
+		</fileset>
+		<pathelement location="${tomcat.bin}/bootstrap.jar" />
+		<pathelement location="${tomcat.bin}/tomcat-juli.jar" />
+	</path>
+
+	<!-- Configure the custom Ant tasks for the Manager application -->
+	<import file="${tomcat.bin}/catalina-tasks.xml" />
+
+	<!-- TOMCAT LIFECICLE MANAGEMENT-->
+	<target name="start-tomcat" depends="check-tomcat-status" unless="tomcat.started">
+		<echo>Start Tomcat</echo>
+		<java classname="org.apache.catalina.startup.Bootstrap" fork="true" classpathref="tomcat.class.path">
+			<jvmarg value="-Dcatalina.home=${server.location}/" />
+			<jvmarg value="-Dit.polito.dp2.NFFG.lab3.NEO4JURL=${NEO4JURL}" />
+			<jvmarg value="-Dit.polito.dp2.NFFG.NFFGClientFactory=${Client2}" />
+		</java>
+	</target>
+
+	<target name="stop-tomcat" depends="check-tomcat-status" if="tomcat.started">
+		<echo>Stop Tomcat</echo>
+		<java classname="org.apache.catalina.startup.Bootstrap" fork="true" classpathref="tomcat.class.path">
+			<jvmarg value="-Dcatalina.home=${server.location}/" />
+			<arg line="stop" />
+		</java>
+	</target>
+
+	<target name="check-tomcat-status">
+		<condition property="tomcat.started">
+			<socket server="localhost" port="${tomcatPort}" />
+		</condition>
+	</target>
+
+
+	<!-- WEBSERVICE LIFECICLE MANAGEMENT-->
+	<target name="deployWS" depends="package-service" description="Deploy service to tomcat">
+		<echo>Deploying to tomcat...</echo>
+		<deploy url="${tomcatUrl}" username="${tomcatUsername}" password="${tomcatPassword}" path="/${serviceName}" war="file:${lab3.location}/war/${serviceName}.war" />
+	</target>
+
+	<target name="undeployWS" description="Undeploy to tomcat">
+		<echo>Undeploying...</echo>
+		<undeploy url="${tomcatUrl}" username="${tomcatUsername}" password="${tomcatPassword}" path="/${serviceName}" failonerror="false" />
+	</target>
+
+	<target name="startWS" description="Start service in tomcat">
+		<echo>Starting...</echo>
+		<start url="${tomcatUrl}" username="${tomcatUsername}" password="${tomcatPassword}" path="/${serviceName}" />
+	</target>
+
+	<target name="stopWS" description="Stop service in tomcat">
+		<echo>Stopping...</echo>
+		<stop url="${tomcatUrl}" username="${tomcatUsername}" password="${tomcatPassword}" path="/${serviceName}" />
+	</target>
+
+	<target name="reloadWS" description="Reload service in tomcat">
+		<echo>Reloading...</echo>
+		<reload url="${tomcatUrl}" username="${tomcatUsername}" password="${tomcatPassword}" path="/${serviceName}" />
+	</target>
+
+	<target name="redeployWS" depends="undeployWS" description="Redeploy service in tomcat">
+		<antcall target="deployWS" />
+	</target>
+
+</project>
