@@ -402,6 +402,16 @@ public class Service {
 		}
 	}
 
+	public int countPolicies() {
+		// using the shared lock because of the removeIf non-atomicity
+		long stamp = l.readLock();
+		try {
+			return data.getPoliciesMap().size();
+		} finally {
+			l.unlockRead(stamp);
+		}
+	}
+
 	/**
 	 * Called by other methods above. This is a slave method. Considering
 	 * synchronization issues with removeNffg, this method is always called by a
