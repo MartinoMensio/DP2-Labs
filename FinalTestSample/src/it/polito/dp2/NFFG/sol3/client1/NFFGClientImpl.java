@@ -76,12 +76,16 @@ public class NFFGClientImpl implements NFFGClient {
 		ObjectFactory factory = policyReaderTransformer.getFactory();
 		Policy policy = factory.createPolicy();
 		policy.setName(name);
+		PolicySpecification spec = factory.createPolicySpecification();
+		Reachability reachability = factory.createReachability();
 		NodeRef srcRef = factory.createNodeRef();
 		NodeRef dstRef = factory.createNodeRef();
 		srcRef.setRef(srcNodeName);
 		dstRef.setRef(dstNodeName);
-		policy.setSrc(srcRef);
-		policy.setDst(dstRef);
+		reachability.setSrc(srcRef);
+		reachability.setDst(dstRef);
+		spec.setReachability(reachability);
+		policy.setSpecification(spec);
 		policy.setNffg(nffgName);
 		policy.setPositive(isPositive);
 		// load the policy

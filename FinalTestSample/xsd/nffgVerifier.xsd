@@ -33,10 +33,9 @@
 	<element name="policy">
 		<complexType>
 			<complexContent>
-				<extension base="tns:link">
+				<extension base="tns:named_element">
 					<sequence>
-						<element name="functionality" minOccurs="0" maxOccurs="unbounded"
-							type="tns:functionality" />
+						<element name="specification" type="tns:policy_specification" />
 						<element name="result" type="tns:result" minOccurs="0" />
 					</sequence>
 					<attribute name="nffg" type="tns:name" use="required" />
@@ -46,6 +45,29 @@
 			</complexContent>
 		</complexType>
 	</element>
+
+	<complexType name="policy_specification">
+		<choice>
+			<element name="reachability" type="tns:reachability" />
+			<element name="isolation" type="tns:isolation" />
+		</choice>
+	</complexType>
+
+	<complexType name="reachability">
+		<sequence>
+			<element name="src" type="tns:node_ref" />
+			<element name="dst" type="tns:node_ref" />
+			<element name="functionality" minOccurs="0" maxOccurs="unbounded"
+				type="tns:functionality" />
+		</sequence>
+	</complexType>
+
+	<complexType name="isolation">
+		<sequence>
+			<element name="firstSet" type="tns:node_ref" maxOccurs="unbounded" />
+			<element name="secondSet" type="tns:node_ref" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
 
 	<complexType name="result" mixed="true">
 		<attribute name="satisfied" type="boolean" use="required" />

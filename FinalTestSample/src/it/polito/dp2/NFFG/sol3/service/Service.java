@@ -431,12 +431,17 @@ public class Service {
 	 */
 	public Policy verifyPolicy(Policy policy) {
 
+		Reachability reachability = policy.getSpecification().getReachability();
+		if (reachability == null) {
+			throw new ForbiddenException("Cannot verify policies that don't belong to reachability type");
+		}
+
 		NffgStorage nffgStorage = data.getNffgsMap().get(policy.getNffg());
 		if (nffgStorage == null) {
 			throw new InconsistentDataException("in the verification process the nffg was not found");
 		}
-		String srcId = nffgStorage.getId(policy.getSrc().getRef());
-		String dstId = nffgStorage.getId(policy.getDst().getRef());
+		String srcId = nffgStorage.getId(reachability.getSrc().getRef());
+		String dstId = nffgStorage.getId(reachability.getDst().getRef());
 		if (srcId == null || dstId == null) {
 			throw new NeoFailedException(
 					"in the verification process there was an error retrieving the neo4j nodes id");
@@ -470,16 +475,37 @@ public class Service {
 		if (nffgStorage == null) {
 			throw new MissingReferenceException("the policy refers to inexistent nffg named " + policy.getNffg());
 		}
-		String srcName = policy.getSrc().getRef();
-		String dstName = policy.getDst().getRef();
+		Reachability reachability = policy.getSpecification().getReachability();
+		Isolation isolation = policy.getSpecification().getIsolation();
+		if (reachability != null) {
+			// this is a reachability or a traversal policy
+			String srcName = reachability.getSrc().getRef();
+			String dstName = reachability.getDst().getRef();
 
-		if (nffgStorage.getNffg().getNode().stream().noneMatch(n -> n.getName().equals(srcName))) {
-			throw new MissingReferenceException("the policy source node named " + srcName
-					+ " does not belong to stored nffg named " + policy.getNffg());
-		}
-		if (nffgStorage.getNffg().getNode().stream().noneMatch(n -> n.getName().equals(dstName))) {
-			throw new MissingReferenceException("the policy destination node named " + dstName
-					+ " does not belong to stored nffg named " + policy.getNffg());
+			if (nffgStorage.getNffg().getNode().stream().noneMatch(n -> n.getName().equals(srcName))) {
+				throw new MissingReferenceException("the policy source node named " + srcName
+						+ " does not belong to stored nffg named " + policy.getNffg());
+			}
+			if (nffgStorage.getNffg().getNode().stream().noneMatch(n -> n.getName().equals(dstName))) {
+				throw new MissingReferenceException("the policy destination node named " + dstName
+						+ " does not belong to stored nffg named " + policy.getNffg());
+			}
+		} else if (isolation != null) {
+			// this is an isolation policy
+			Set<String> nodeNames = nffgStorage.getNffg().getNode().stream().map(Node::getName)
+					.collect(Collectors.toSet());
+			if (!nodeNames
+					.containsAll(isolation.getFirstSet().stream().map(NodeRef::getRef).collect(Collectors.toSet()))) {
+				throw new MissingReferenceException(
+						"the isolation policy contains some nodes in the first set that don't belong to the stored nffg named "
+								+ policy.getNffg());
+			}
+			if (!nodeNames
+					.containsAll(isolation.getSecondSet().stream().map(NodeRef::getRef).collect(Collectors.toSet()))) {
+				throw new MissingReferenceException(
+						"the isolation policy contains some nodes in the second set that don't belong to the stored nffg named "
+								+ policy.getNffg());
+			}
 		}
 	}
 }

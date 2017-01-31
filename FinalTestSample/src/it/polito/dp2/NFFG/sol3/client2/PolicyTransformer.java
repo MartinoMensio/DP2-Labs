@@ -29,26 +29,38 @@ public class PolicyTransformer implements ThrowingTransformer<Policy, PolicyRead
 
 	@Override
 	public PolicyReaderImpl transform(Policy policy) throws NffgVerifierException {
-		NodeReader src = nffgR.getNode(policy.getSrc().getRef());
-		NodeReader dst = nffgR.getNode(policy.getDst().getRef());
 		VerificationResultReaderImpl result = null;
 		// if there is a result, transform it
 		if (policy.getResult() != null) {
 			result = transformResult(policy.getResult());
 		}
-		PolicyReaderImpl policyR;
-		// if some functionality need to be traversed it is a traversal policy,
-		// otherwise this is a reachability policy
-		if (policy.getFunctionality().isEmpty()) {
-			policyR = new ReachabilityPolicyReaderImpl(policy.getName(), nffgR, result, policy.isPositive(), src, dst);
-		} else {
-			policyR = new TraversalPolicyReaderImpl(policy.getName(), nffgR, result, policy.isPositive(), src, dst,
-					transformFunctionalities(policy.getFunctionality()));
+		PolicyReaderImpl policyR = null;
+		Reachability reachability = policy.getSpecification().getReachability();
+		Isolation isolation = policy.getSpecification().getIsolation();
+		if (reachability != null) {
+			NodeReader src = nffgR.getNode(reachability.getSrc().getRef());
+			NodeReader dst = nffgR.getNode(reachability.getDst().getRef());
+			// if some functionality need to be traversed it is a traversal
+			// policy,
+			// otherwise this is a reachability policy
+			if (reachability.getFunctionality().isEmpty()) {
+				policyR = new ReachabilityPolicyReaderImpl(policy.getName(), nffgR, result, policy.isPositive(), src,
+						dst);
+			} else {
+				policyR = new TraversalPolicyReaderImpl(policy.getName(), nffgR, result, policy.isPositive(), src, dst,
+						transformFunctionalities(reachability.getFunctionality()));
+			}
+			if (policy.getResult() != null) {
+				// add the circular reference (thanks to the fact that this is a
+				// VerificationReaderImpl object)
+				result.setPolicy(policyR);
+			}
 		}
-		if (policy.getResult() != null) {
-			// add the circular reference (thanks to the fact that this is a
-			// VerificationReaderImpl object)
-			result.setPolicy(policyR);
+		else if (isolation != null) {
+			List<NodeReader> firstSet = isolation.getFirstSet().stream().map(n -> nffgR.getNode(n.getRef())).collect(Collectors.toList());
+			List<NodeReader> secondSet = isolation.getSecondSet().stream().map(n -> nffgR.getNode(n.getRef())).collect(Collectors.toList());
+			policyR = new IsolationPolicyReaderImpl(policy.getName(), nffgR, result, policy.isPositive(), firstSet,
+					secondSet);
 		}
 		return policyR;
 	}
