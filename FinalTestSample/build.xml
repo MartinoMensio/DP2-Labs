@@ -142,6 +142,7 @@
         		<include name="*.jar"/>
         		<exclude name="NFFGRandom.jar"/>
         		<exclude name="lab3.jar"/>
+				<exclude name="jsr311-api-0.6.jar" />
 			</fileset>
       	</copy> 
 		<!-- make war archive -->
