@@ -8,6 +8,7 @@
 	<path id="sol.classpath">
 		<pathelement location="${lib.dir}/NFFG.jar" />
 		<pathelement location="${lib.dir}/lab3.jar" />
+		<pathelement location="${lib.dir}/lab3_0.jar" />
 		<pathelement location="${lib.dir}/javax.ws.rs-api-2.0.1.jar" />
 		<pathelement location="${lib.dir}/jersey-client-1.19.1.jar" />
 		<pathelement location="${lib.dir}/jersey-core-1.19.1.jar" />
