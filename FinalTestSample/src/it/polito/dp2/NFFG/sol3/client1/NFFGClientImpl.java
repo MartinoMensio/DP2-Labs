@@ -16,10 +16,10 @@ import it.polito.dp2.NFFG.sol3.service.jaxb.*;
  */
 public class NFFGClientImpl implements NFFGClient {
 
-	private NffgVerifier verifier;
+	protected NffgVerifier verifier;
 	private WebTarget target;
 	private NffgReaderToJaxb nffgReaderTransformer;
-	private PolicyReaderToJaxb policyReaderTransformer;
+	protected PolicyReaderToJaxb policyReaderTransformer;
 
 	public NFFGClientImpl(NffgVerifier verifier, URI uri) {
 		this.verifier = verifier;
