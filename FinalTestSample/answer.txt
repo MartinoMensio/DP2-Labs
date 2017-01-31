@@ -1,0 +1,2 @@
+The race condition is avoided by simply doing nothing (if the removal of NFFGs is not considered) because the ConcurrentMap will provide its size in atomic way.
+If the removal of NFFGs is considered, the method to retrieve the size will use the shared lock in order not to read the size while the removeIf is iterating and removing some policies belonging to an nffg that is being removed.
