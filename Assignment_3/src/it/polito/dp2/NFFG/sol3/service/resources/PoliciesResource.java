@@ -52,7 +52,7 @@ public class PoliciesResource extends GenericResource {
 		Policy old = service.storePolicy(policy);
 		if (old == null) {
 			UriBuilder builder = uriInfo.getAbsolutePathBuilder();
-			URI u = builder.path(policy.getName()).build();
+			URI u = builder.build();
 			return Response.created(u).entity(policy).build();
 		} else {
 			return Response.ok(policy).build();
