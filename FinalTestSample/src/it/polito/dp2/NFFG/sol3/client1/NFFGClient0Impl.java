@@ -37,25 +37,20 @@ public class NFFGClient0Impl extends NFFGClientImpl implements NFFGClient0 {
 			throw new UnknownNameException("the policy refers an unknown node in the second set");
 		}
 
-		List<NodeReader> firstSet = nffgR.getNodes().stream().filter(n -> nodeSet1.contains(n.getName()))
-				.collect(Collectors.toList());
-		List<NodeReader> secondSet = nffgR.getNodes().stream().filter(n -> nodeSet2.contains(n.getName()))
-				.collect(Collectors.toList());
-
 		// build a Policy from the values
 		ObjectFactory factory = policyReaderTransformer.getFactory();
 		Policy policy = factory.createPolicy();
 		policy.setName(name);
 		PolicySpecification spec = factory.createPolicySpecification();
 		Isolation isolation = factory.createIsolation();
-		firstSet.stream().forEach(n -> {
+		nodeSet1.stream().forEach(n -> {
 			NodeRef ref = factory.createNodeRef();
-			ref.setRef(n.getName());
+			ref.setRef(n);
 			isolation.getFirstSet().add(ref);
 		});
-		secondSet.stream().forEach(n -> {
+		nodeSet2.stream().forEach(n -> {
 			NodeRef ref = factory.createNodeRef();
-			ref.setRef(n.getName());
+			ref.setRef(n);
 			isolation.getSecondSet().add(ref);
 		});
 
