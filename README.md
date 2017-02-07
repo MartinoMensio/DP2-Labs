@@ -1,6 +1,10 @@
+
+
 # DP2-labs
 
 Distributed Programming 2 Laboratories @ Polytechnic University of Turin
+
+Labs done by Martino Mensio School Year: 2016-2017
 
 ## First assignment
 
