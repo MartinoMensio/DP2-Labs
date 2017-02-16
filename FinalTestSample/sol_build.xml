@@ -30,11 +30,9 @@
 	<property name="client2.src.dir" value="${basedir}/src/it/polito/dp2/NFFG/sol3/client2" />
 
 	<target name="build-service" depends="compile-neo4j,compile-jaxb">
-		<!-- TODO -->
 		<javac srcdir="${service.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
 	<target name="build-client" depends="compile-jaxb">
-		<!-- TODO -->
 		<javac srcdir="${client1.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 		<javac srcdir="${client2.src.dir}" destdir="${build.dir}" includeantruntime="false" classpathref="sol.classpath" />
 	</target>
@@ -51,7 +49,6 @@
 		</javac>
 	</target>
 -->
-	<!-- TODO split in two directories the neo4j and jaxb artifacts -->
 	<target name="compile-neo4j" depends="generate-neo4j,generate-jaxb">
 		<!-- Removing the file that has problems -->
 		<!--<delete>
