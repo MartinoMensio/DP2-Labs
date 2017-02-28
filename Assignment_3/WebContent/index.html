@@ -26,7 +26,7 @@
 <li>each <strong>NFFG</strong> has a child resource for verification of policies that won't be stored</li>
 </ul>
 
-<p>However this structure has some problems with the details of the specifications provided. The first big problem is that the policies need to be accessible by clients without knowing the NFFG they belong to. For this reason the <strong>policies</strong> resource should be a top level one instead of being a child resource of the <strong>NFFG</strong> resource. This is a direct consequence of the fact that the policies are identified by their name in the global scope insted of being restricted to the scope of the single NFFG they belong to.</p>
+<p>However this structure has some problems with the details of the specifications provided. The first big problem is that the policies need to be accessible by clients without knowing the NFFG they belong to. For this reason the <strong>policies</strong> resource should be a top level one instead of being a child resource of the <strong>NFFG</strong> resource. This is a direct consequence of the fact that the policies are identified by their name in the global scope instead of being restricted to the scope of the single NFFG they belong to.</p>
 
 <p>The verification of policies that won't be stored has been moved as a top level resource in order to have consistency with the responses provided by the creation / update of stored policies: if the verification was a child resource of <strong>NFFG</strong>, the 404 status code should have been used by the service if the policy refers an unknown NFFG because the NFFG would have been in the path. But since the <strong>policies</strong> resource are detached from the <strong>NFFGs</strong> the checks performed by the service when receiving a policy to be stored don't use 404 because the path will not include the information about the related NFFG.</p>
 
@@ -59,12 +59,12 @@
 <h4>
 <a id="user-content-policies-placement" class="anchor" href="#policies-placement" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policies placement</h4>
 
-<p>The <code>policies</code> are made available as root elements because the clients may want to get the whole set of policies stored inside the service. Since the name of a policy is unique not only iniside a single NFFG, but has a global scope, it is appropriate that also the child resource <code>policy</code> belongs to this subtree.</p>
+<p>The <code>policies</code> are made available as root elements because the clients may want to get the whole set of policies stored inside the service. Since the name of a policy is unique not only inside a single NFFG, but has a global scope, it is appropriate that also the child resource <code>policy</code> belongs to this subtree.</p>
 
 <h4>
 <a id="user-content-policy-creation-and-modification" class="anchor" href="#policy-creation-and-modification" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Policy creation and modification</h4>
 
-<p>Single policies can be created and updated using the same procedure: a PUT request on the <code>policy</code> resource child of <code>policies</code>. Because the requirements specify that if a new policy is submitted with the same name as an already stored one a replacement will occurr, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent and the resource path is chosen by the client (see the discussion about IDs below).</p>
+<p>Single policies can be created and updated using the same procedure: a PUT request on the <code>policy</code> resource child of <code>policies</code>. Because the requirements specify that if a new policy is submitted with the same name as an already stored one a replacement will occur, to update or to create a policy the client can use the same PUT request. The HTTP method chosen is PUT, because it is idempotent and the resource path is chosen by the client (see the discussion about IDs below).</p>
 
 <h2>
 <a id="user-content-2-mapping-of-the-resources-to-urls" class="anchor" href="#2-mapping-of-the-resources-to-urls" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. Mapping of the resources to URLs</h2>
@@ -159,7 +159,7 @@
 <h3>
 <a id="user-content-21-ids" class="anchor" href="#21-ids" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2.1 IDs</h3>
 
-<p>Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directy as path elements and therefore the ID of the resources is chosen by the client. In this way the client is able to retrieve the wanted data by simply knowing the name of the nffg / policy. This reflects the methods of the interface NffgVerifier, that allows to read the data in a similar way.</p>
+<p>Since both the NFFGs and the policies are identified by their name (as specified in the requirements of assignment 1) and since their pattern is quite strict (only alphabetical characters), the names can be used directly as path elements and therefore the ID of the resources is chosen by the client. In this way the client is able to retrieve the wanted data by simply knowing the name of the nffg / policy. This reflects the methods of the interface NffgVerifier, that allows to read the data in a similar way.</p>
 
 <p>For the NFFGs creation, the POST method is used because the creation is not idempotent as explained in the requirements (creation of an NFFG with the same name as an existing one is forbidden). Instead for the policies, since the creation of a policy with the same name as one already stored in the service is allowed and is used for replacement, the creation of a policy uses the same method as the replacement / update. In this way the client directly submits a PUT request to the path that contains the name of the policy, and since PUT is idempotent the creation follows the same approach as an update.</p>
 
@@ -190,7 +190,7 @@
 
 <ul>
 <li>
-<code>409</code>: when the client tries to violate the contraint about uniqueness based on the name</li>
+<code>409</code>: when the client tries to violate the constraint about uniqueness based on the name</li>
 <li>
 <code>400</code>: used both when validation of request fails against the schema or when the request references some data that is not stored in the service</li>
 <li>
@@ -210,7 +210,7 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>explaination</th>
+<th>explanation</th>
 <th>result status</th>
 <th>response</th>
 <th>meaning</th>
@@ -239,7 +239,7 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>explaination</th>
+<th>explanation</th>
 <th>result status</th>
 <th>response</th>
 <th>meaning</th>
@@ -296,7 +296,7 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>explaination</th>
+<th>explanation</th>
 <th>result status</th>
 <th>response</th>
 <th>meaning</th>
@@ -348,7 +348,7 @@
 </tbody>
 </table>
 
-<p>The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is <code>force</code> and the behaviour of the service is the following:</p>
+<p>The DELETE has an optional queryParam that is required in the case that some policies are attached to this NFFG. The queryParam is <code>force</code> and the behavior of the service is the following:</p>
 
 <table>
 <thead>
@@ -384,7 +384,7 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>explaination</th>
+<th>explanation</th>
 <th>result status</th>
 <th>response</th>
 <th>meaning</th>
@@ -430,7 +430,7 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>explaination</th>
+<th>explanation</th>
 <th>result status</th>
 <th>response</th>
 <th>meaning</th>
@@ -511,7 +511,7 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>explaination</th>
+<th>explanation</th>
 <th>result status</th>
 <th>response type</th>
 <th>meaning</th>
@@ -549,7 +549,7 @@
 <tr>
 <th>method</th>
 <th>request type</th>
-<th>explaination</th>
+<th>explanation</th>
 <th>result status</th>
 <th>response type</th>
 <th>meaning</th>
